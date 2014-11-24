@@ -8,16 +8,21 @@
 
 import UIKit
 
-class LoginViewController: UIViewController {
+class LoginViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet var containerView: UIView!
     @IBOutlet var signupButton: UIButton!
     
+    @IBOutlet var textField: UITextField!
+    
+    @IBOutlet var scrollView: UIScrollView!
     var containerTopBottomConstraintPort: NSArray!
     var containerTopBottomConstraintLand: NSArray!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //textField.delegate = self
         
         // style containerView
         containerView.layer.cornerRadius = 8
@@ -29,7 +34,6 @@ class LoginViewController: UIViewController {
         maskLayer.frame = signupButton.bounds
         maskLayer.path = maskPath.CGPath
         signupButton.layer.mask = maskLayer
-        signupButton.setTranslatesAutoresizingMaskIntoConstraints(false)
         
     }
 
@@ -42,6 +46,18 @@ class LoginViewController: UIViewController {
         return UIStatusBarStyle.LightContent
     }
     
+    func textFieldDidBeginEditing(textField: UITextField) {
+        if self.view.frame.height - (textField.frame.origin.y + textField.frame.size.height) < 285{
+            let yPoint = 285 - (self.view.frame.height - (textField.frame.origin.y + textField.frame.size.height))
+            let scrollPoint: CGPoint = CGPointMake(0, yPoint);
+            self.scrollView.setContentOffset(scrollPoint, animated: true);
+        }
+    }
+    
+    func textFieldDidEndEditing(textField: UITextField) {
+        println("here")
+        self.scrollView.setContentOffset(CGPointZero, animated: true)
+    }
 
     /*
     // MARK: - Navigation
