@@ -20,15 +20,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     var scrollViewDefaultContentSize: CGSize!
     
     @IBOutlet var scrollContainerView: UIView!
+    @IBOutlet var loginButton: UIButton!
     
-    var containerTopBottomConstraintPort: NSArray!
-    var containerTopBottomConstraintLand: NSArray!
+    var viewsDict: NSMutableDictionary!
     
     var isEditing:Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        println("Name : \(UIDevice.currentDevice().name)")
+        println("Model : \(UIDevice.currentDevice().model)")
+        
+        // textField delegate
         passwordTextfield.delegate = self
         usernameTextfield.delegate = self
         
@@ -60,6 +64,18 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         maskLayer.path = maskPath.CGPath
         signupButton.layer.mask = maskLayer
         
+        // style loginButton
+        let loginButtonImageView = UIImageView()
+        loginButtonImageView.image = UIImage(named: "tick_white")
+        loginButtonImageView.contentMode = UIViewContentMode.ScaleAspectFit
+        loginButton.addSubview(loginButtonImageView)
+        loginButtonImageView.setTranslatesAutoresizingMaskIntoConstraints(false)
+        viewsDict = ["loginButtonImageView": loginButtonImageView, "loginButton": loginButton]
+        loginButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:[loginButton]-(<=0)-[loginButtonImageView(28)]", options: NSLayoutFormatOptions.AlignAllCenterY, metrics: nil, views: viewsDict))
+        loginButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[loginButton]-(<=0)-[loginButtonImageView(21.5)]", options: NSLayoutFormatOptions.AlignAllCenterX, metrics: nil, views: viewsDict))
+        //loginButton.setBackgroundImage(<#image: UIImage?#>, forState: <#UIControlState#>)
+        
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -67,38 +83,62 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: - Orientation
+    
+    override func supportedInterfaceOrientations() -> Int {
+        if (UIDevice.currentDevice().userInterfaceIdiom == UIUserInterfaceIdiom.Pad){
+            return Int(UIInterfaceOrientationMask.All.rawValue)
+        }
+        return Int(UIInterfaceOrientationMask.Portrait.rawValue)
+    }
+    
+    override func shouldAutorotate() -> Bool {
+        return true
+    }
+    
+    // MARK: - StatusBar Style
+    
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return UIStatusBarStyle.LightContent
     }
+    
+    // MARK: - ContainerView tap handle
     
     func onContainerViewTap(sender: UIView){
         passwordTextfield.resignFirstResponder()
         usernameTextfield.resignFirstResponder()
         if self.isEditing == true{
+            self.isEditing = false
+            self.scrollView.setContentOffset(CGPointZero, animated: true)
             let delay: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, 300 * Int64(NSEC_PER_MSEC))
             let dispatchAfter: Void = dispatch_after(delay, dispatch_get_main_queue()) { () -> Void in
-                self.isEditing = false
                 self.scrollView.contentSize = self.scrollViewDefaultContentSize
-                self.scrollView.setContentOffset(CGPointZero, animated: true)
+            
             }
         }
     }
     
+    // MARK: - TextField Delegate
+    
     func textFieldDidBeginEditing(textField: UITextField) {
+        // capture scrollView contentSize for the first time
         if scrollViewDefaultContentSize == nil{
             scrollViewDefaultContentSize = self.scrollView.contentSize
         }
-        if (self.view.frame.height - (textField.frame.origin.y + textField.frame.size.height) < 285) && (isEditing == false){
-            isEditing = true
-            
-            let yPoint = 285 - (self.view.frame.height - (textField.frame.origin.y + textField.frame.size.height))
+        
+        // calculation to auto scroll up scroll view when textfield hides behind keyboard
+        let yPoint = 285 - (self.view.frame.height - (textField.frame.origin.y + textField.frame.size.height))
+        if (self.view.frame.height - (textField.frame.origin.y + textField.frame.size.height) < 285) && (self.scrollView.contentOffset.y < yPoint){
             let scrollPoint: CGPoint = CGPointMake(0, yPoint)
             self.scrollView.setContentOffset(scrollPoint, animated: true)
+        }
+        
+        // check if textField is editing and set new contentSize so user can scroll all inputs
+        if isEditing == false{
+            isEditing = true
             
-            let newContentSize: CGSize = CGSizeMake(scrollViewDefaultContentSize.width, scrollViewDefaultContentSize.height + 280)
-            println(newContentSize)
+            let newContentSize: CGSize = CGSizeMake(scrollViewDefaultContentSize.width, scrollViewDefaultContentSize.height + (280 - yPoint))
             self.scrollView.contentSize = newContentSize
-
         }
     }
     
