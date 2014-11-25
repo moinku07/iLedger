@@ -25,7 +25,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     var viewsDict: NSMutableDictionary!
     
     var isEditing:Bool = false
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -142,6 +142,33 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        let nextTag: Int = textField.tag + 1
+        
+        if let nextResponder: UIResponder = textField.superview?.viewWithTag(nextTag)?{
+            nextResponder.becomeFirstResponder()
+        }else{
+            textField.resignFirstResponder()
+            self.onContainerViewTap(self.containerView)
+        }
+        
+        if textField.tag == 2{
+            println("Login action")
+            self.loginButton.sendActionsForControlEvents(UIControlEvents.TouchUpInside)
+        }
+        
+        return false
+    }
+    
+    
+    // MARK: - Login Button Action
+    
+    @IBAction func onLoginButtonTap(sender: UIButton) {
+        UICustomActivityView().showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
+        DataManager.getDataFromFileWithSuccess("moin", fileType: "json", success: { (data) -> Void in
+            //
+        })
+    }
 
     /*
     // MARK: - Navigation
