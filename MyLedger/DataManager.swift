@@ -9,9 +9,43 @@
 
 import Foundation
 
-let TopAppURL = "https://itunes.apple.com/us/rss/topgrossingipadapplications/limit=25/json"
 
 class DataManager {
+    
+    class func postDataWithCallback(url: NSString, jsonData: NSDictionary, completion: (data: NSData?, error: NSError?) -> Void){
+        let nsurl:NSURL = NSURL(string: url)!
+        
+        var err: NSError?
+        
+        var request:NSMutableURLRequest = NSMutableURLRequest(URL: nsurl)
+        request.HTTPMethod = "POST"
+        request.HTTPBody = NSJSONSerialization.dataWithJSONObject(jsonData, options: nil, error: &err)
+        //request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        var reponseError: NSError?
+        var response: NSURLResponse?
+        
+        var urlData: NSData? = NSURLConnection.sendSynchronousRequest(request, returningResponse:&response, error:&reponseError)
+        
+        if(urlData != nil ) {
+            if let httpResponse = response as? NSHTTPURLResponse {
+                if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300){
+                    //println(urlData)
+                    completion(data: urlData, error: nil)
+                }else{
+                    var statusError = NSError(domain:url, code:httpResponse.statusCode, userInfo:[NSLocalizedDescriptionKey : "HTTP status code has unexpected value."])
+                    completion(data: nil, error: statusError)
+                }
+            }
+        }else {
+            if let error = reponseError {
+                completion(data: nil, error: error)
+            }
+        }
+
+    }
   
     class func getDataFromFileWithSuccess(fileName: String, fileType: String, success: ((data: NSData) -> Void)) {
     //1
@@ -48,4 +82,6 @@ class DataManager {
     
     loadDataTask.resume()
   }
+    
+    
 }

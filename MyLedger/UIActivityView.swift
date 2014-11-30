@@ -34,9 +34,11 @@ class UICustomActivityView {
         
         activityIndicator.frame = CGRectMake(0.0, 0.0, 40.0, 40.0)
         var activitStyle: UIActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.WhiteLarge
+        
         if style != nil{
             activitStyle = style!
         }
+        //println(activitStyle.rawValue)
         activityIndicator.activityIndicatorViewStyle = activitStyle
         
         if shouldHaveContainer == true{
@@ -58,7 +60,7 @@ class UICustomActivityView {
     
     @param uiView - remove activity indicator from this view
     */
-    func hideActivityIndicator(uiView: UIView) {
+    func hideActivityIndicator() {
         activityIndicator.stopAnimating()
         container.removeFromSuperview()
     }

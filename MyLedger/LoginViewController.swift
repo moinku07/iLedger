@@ -164,10 +164,24 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     // MARK: - Login Button Action
     
     @IBAction func onLoginButtonTap(sender: UIButton) {
-        UICustomActivityView().showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
-        DataManager.getDataFromFileWithSuccess("moin", fileType: "json", success: { (data) -> Void in
-            //
-        })
+        //println(UIActivityIndicatorViewStyle.Gray.rawValue)
+        var activityIndicator = UICustomActivityView()
+        activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
+        
+        
+        var params = ["User": ["username":"moin_ku07@yahoo.com", "password":"Durlov_ku07", "ajax" : true]]
+        
+        
+        DataManager.postDataWithCallback("http://10.0.0.10/ledger/admin/users/login", jsonData: params) { (data, error) -> Void in
+            activityIndicator.hideActivityIndicator()
+            if let posterror = error{
+                println(posterror.code)
+                println(posterror.localizedDescription)
+            }else{
+                let json = JSON(data: data!)
+                println(json)
+            }
+        }
     }
 
     /*
