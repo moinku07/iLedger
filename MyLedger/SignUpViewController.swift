@@ -34,6 +34,9 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // add keyboard disappear observer
+        NSNotificationCenter.defaultCenter().addObserver(self, selector:"keyboardWillDisappear:", name: UIKeyboardWillHideNotification, object: nil)
+        
         // style containerView
         containerView.layer.cornerRadius = 8
         
@@ -74,16 +77,17 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     override func viewWillAppear(animated: Bool) {
         self.navigationController?.navigationBarHidden = true
         
+        let contentHeight = self.scrollContainerView.bounds.size.height
+        
         // setting initial scrollView content height
-        let delay: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, 1000 * Int64(NSEC_PER_MSEC))
+        let delay: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, 300 * Int64(NSEC_PER_MSEC))
         dispatch_after(delay, dispatch_get_main_queue()) { () -> Void in
             if self.scrollViewDefaultContentSize == nil{
                 self.scrollViewDefaultContentSize = self.scrollView.contentSize
             }
-            self.scrollView.setContentOffset(CGPointZero, animated: true)
-            let newContentSize: CGSize = CGSizeMake(self.scrollViewDefaultContentSize.width, self.scrollContainerView.bounds.size.height)
+            let newContentSize: CGSize = CGSizeMake(self.scrollViewDefaultContentSize.width, contentHeight)
             self.scrollView.contentSize = newContentSize
-            println(self.scrollView.contentSize)
+            self.scrollViewDefaultContentSize.height = newContentSize.height
         }
     }
 
@@ -98,11 +102,15 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         if (UIDevice.currentDevice().userInterfaceIdiom == UIUserInterfaceIdiom.Pad){
             return Int(UIInterfaceOrientationMask.All.rawValue)
         }
-        return Int(UIInterfaceOrientationMask.Portrait.rawValue)
+        return Int(UIInterfaceOrientationMask.All.rawValue)
     }
     
     override func shouldAutorotate() -> Bool {
         return true
+    }
+    
+    override func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {
+        self.scrollView.contentSize = scrollViewDefaultContentSize
     }
     
     // MARK: - StatusBar Style
@@ -169,6 +177,11 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         }
         
         return false
+    }
+    
+    // MARK: - Keyboard Disappear Observer
+    func keyboardWillDisappear(notification: NSNotification){
+        self.onContainerViewTap(self.containerView)
     }
     
     

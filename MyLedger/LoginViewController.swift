@@ -29,6 +29,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // add keyboard disappear observer
+        NSNotificationCenter.defaultCenter().addObserver(self, selector:"keyboardWillDisappear:", name: UIKeyboardWillHideNotification, object: nil)
+        
         println("Name : \(UIDevice.currentDevice().name)")
         println("Model : \(UIDevice.currentDevice().model)")
         
@@ -161,6 +164,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
         
         return false
+    }
+    
+    // MARK: - Keyboard Disappear Observer
+    func keyboardWillDisappear(notification: NSNotification){
+        self.onContainerViewTap(self.containerView)
     }
     
     
