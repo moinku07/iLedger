@@ -32,7 +32,11 @@ class DataManager {
         if(urlData != nil ) {
             if let httpResponse = response as? NSHTTPURLResponse {
                 if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300){
-                    //println(urlData)
+                    /*
+                    var jsonParseError: NSError? = nil
+                    let object: AnyObject = NSString(data: urlData!, encoding: NSUTF8StringEncoding)!
+                    println(object)
+                    */
                     completion(data: urlData, error: nil)
                 }else{
                     var statusError = NSError(domain:url, code:httpResponse.statusCode, userInfo:[NSLocalizedDescriptionKey : "HTTP status code has unexpected value."])

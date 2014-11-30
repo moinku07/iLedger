@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CD044F8D1A2AD47F00EFE5EA /* AlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD044F8C1A2AD47F00EFE5EA /* AlertManager.swift */; };
 		CD484DCA1A204DD200702357 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD484DC91A204DD200702357 /* AppDelegate.swift */; };
 		CD484DCD1A204DD200702357 /* MyLedger.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CD484DCB1A204DD200702357 /* MyLedger.xcdatamodeld */; };
 		CD484DCF1A204DD200702357 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD484DCE1A204DD200702357 /* ViewController.swift */; };
@@ -31,6 +32,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CD044F8C1A2AD47F00EFE5EA /* AlertManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertManager.swift; sourceTree = "<group>"; };
 		CD484DC41A204DD200702357 /* MyLedger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyLedger.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD484DC81A204DD200702357 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CD484DC91A204DD200702357 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -89,6 +91,7 @@
 			children = (
 				CD484DC91A204DD200702357 /* AppDelegate.swift */,
 				CDE3F40B1A2461AE00EBAC2D /* DataManager.swift */,
+				CD044F8C1A2AD47F00EFE5EA /* AlertManager.swift */,
 				CDE3F4091A245FF100EBAC2D /* SwiftyJSON.swift */,
 				CD484DCE1A204DD200702357 /* ViewController.swift */,
 				CDE3F40D1A246A3400EBAC2D /* UIActivityView.swift */,
@@ -227,6 +230,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD044F8D1A2AD47F00EFE5EA /* AlertManager.swift in Sources */,
 				CD484DED1A2066C600702357 /* LoginViewController.swift in Sources */,
 				CDE3F40C1A2461AE00EBAC2D /* DataManager.swift in Sources */,
 				CD484DCF1A204DD200702357 /* ViewController.swift in Sources */,

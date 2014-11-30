@@ -153,7 +153,6 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         }
         
         if textField.tag == 2{
-            println("Login action")
             self.loginButton.sendActionsForControlEvents(UIControlEvents.TouchUpInside)
         }
         
@@ -164,22 +163,32 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     // MARK: - Login Button Action
     
     @IBAction func onLoginButtonTap(sender: UIButton) {
-        //println(UIActivityIndicatorViewStyle.Gray.rawValue)
-        var activityIndicator = UICustomActivityView()
-        activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
+        // auto scroll to default
+        self.onContainerViewTap(self.containerView)
         
+        let userName = self.usernameTextfield.text
+        let passWord = self.passwordTextfield.text
         
-        var params = ["User": ["username":"moin_ku07@yahoo.com", "password":"Durlov_ku07", "ajax" : true]]
-        
-        
-        DataManager.postDataWithCallback("http://10.0.0.10/ledger/admin/users/login", jsonData: params) { (data, error) -> Void in
-            activityIndicator.hideActivityIndicator()
-            if let posterror = error{
-                println(posterror.code)
-                println(posterror.localizedDescription)
-            }else{
-                let json = JSON(data: data!)
-                println(json)
+        if(userName.isEmpty){
+            AlertManager.showAlert(self, alertTitle: "Warning", alertMessage: "Please enter username", okayButtonTitle: "Okay")
+        }else if passWord.isEmpty{
+            AlertManager.showAlert(self, alertTitle: "Warning", alertMessage: "Please enter password", okayButtonTitle: "Okay")
+        }else{
+            var params = ["User": ["username":userName, "password": passWord, "ajax" : true]]
+            
+            // activity indicator
+            var activityIndicator = UICustomActivityView()
+            activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
+            
+            DataManager.postDataWithCallback("http://10.0.0.10/ledger/admin/users/login", jsonData: params) { (data, error) -> Void in
+                activityIndicator.hideActivityIndicator()
+                if let posterror = error{
+                    println(posterror.code)
+                    println(posterror.localizedDescription)
+                }else{
+                    let json = JSON(data: data!)
+                    println(json)
+                }
             }
         }
     }
