@@ -1,17 +1,21 @@
 //
-//  LoginViewController.swift
+//  SignUpViewController.swift
 //  MyLedger
 //
-//  Created by Moin Uddin on 11/22/14.
+//  Created by Moin Uddin on 11/30/14.
 //  Copyright (c) 2014 Moin Uddin. All rights reserved.
 //
 
 import UIKit
 
-class LoginViewController: UIViewController, UITextFieldDelegate {
+class SignUpViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet var containerView: UIView!
     @IBOutlet var signupButton: UIButton!
+    
+    
+    @IBOutlet var firstName: UITextField!
+    @IBOutlet var lastName: UITextField!
     
     @IBOutlet var passwordTextfield: UITextField!
     @IBOutlet var usernameTextfield: UITextField!
@@ -20,66 +24,67 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     var scrollViewDefaultContentSize: CGSize!
     
     @IBOutlet var scrollContainerView: UIView!
-    @IBOutlet var loginButton: UIButton!
     
     var viewsDict: NSMutableDictionary!
     
     var isEditing:Bool = false
     
+    var textFields: Array<UITextField>!
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        println("Name : \(UIDevice.currentDevice().name)")
-        println("Model : \(UIDevice.currentDevice().model)")
-        
-        // textField delegate
-        passwordTextfield.delegate = self
-        usernameTextfield.delegate = self
         
         // style containerView
         containerView.layer.cornerRadius = 8
         
-        // style textInputs
-        usernameTextfield.layer.cornerRadius = 8
-        usernameTextfield.layer.borderWidth = 1
-        usernameTextfield.layer.borderColor = UIColor(red: 172/255, green: 172/255, blue: 172/255, alpha: 1.0).CGColor
-        usernameTextfield.leftViewMode = UITextFieldViewMode.Always
-        usernameTextfield.leftView = UIView(frame: CGRectMake(0, 0, 10, 10))
+        // textFields array
+        textFields = [firstName, lastName, usernameTextfield, passwordTextfield]
         
-        passwordTextfield.layer.cornerRadius = 8
-        passwordTextfield.layer.borderWidth = 1
-        passwordTextfield.layer.borderColor = UIColor(red: 172/255, green: 172/255, blue: 172/255, alpha: 1.0).CGColor
-        passwordTextfield.leftViewMode = UITextFieldViewMode.Always
-        passwordTextfield.leftView = UIView(frame: CGRectMake(0, 0, 10, 10))
-        
+        for input in textFields{
+            let textField: UITextField = input as UITextField
+            
+            // textField delegate
+            textField.delegate = self
+            
+            // style textInputs
+            textField.layer.cornerRadius = 8
+            textField.layer.borderWidth = 1
+            textField.layer.borderColor = UIColor(red: 172/255, green: 172/255, blue: 172/255, alpha: 1.0).CGColor
+            textField.leftViewMode = UITextFieldViewMode.Always
+            textField.leftView = UIView(frame: CGRectMake(0, 0, 10, 10))
+        }
         
         let containerViewTapGesture: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: "onContainerViewTap:")
         containerView.addGestureRecognizer(containerViewTapGesture)
         
         
-        //style signupButton
-        var maskPath: UIBezierPath = UIBezierPath(roundedRect: signupButton.bounds, byRoundingCorners: (UIRectCorner.TopRight | UIRectCorner.BottomLeft), cornerRadii: CGSizeMake(8.0, 8.0))
-        var maskLayer: CAShapeLayer = CAShapeLayer()
-        maskLayer.frame = signupButton.bounds
-        maskLayer.path = maskPath.CGPath
-        signupButton.layer.mask = maskLayer
-        
-        // style loginButton
+        // style signupButton
         let loginButtonImageView = UIImageView()
         loginButtonImageView.image = UIImage(named: "tick_white")
         loginButtonImageView.contentMode = UIViewContentMode.ScaleAspectFit
-        loginButton.addSubview(loginButtonImageView)
+        signupButton.addSubview(loginButtonImageView)
         loginButtonImageView.setTranslatesAutoresizingMaskIntoConstraints(false)
-        viewsDict = ["loginButtonImageView": loginButtonImageView, "loginButton": loginButton]
-        loginButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:[loginButton]-(<=0)-[loginButtonImageView(28)]", options: NSLayoutFormatOptions.AlignAllCenterY, metrics: nil, views: viewsDict))
-        loginButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[loginButton]-(<=0)-[loginButtonImageView(21.5)]", options: NSLayoutFormatOptions.AlignAllCenterX, metrics: nil, views: viewsDict))
+        viewsDict = ["loginButtonImageView": loginButtonImageView, "loginButton": signupButton]
+        signupButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:[loginButton]-(<=0)-[loginButtonImageView(28)]", options: NSLayoutFormatOptions.AlignAllCenterY, metrics: nil, views: viewsDict))
+        signupButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[loginButton]-(<=0)-[loginButtonImageView(21.5)]", options: NSLayoutFormatOptions.AlignAllCenterX, metrics: nil, views: viewsDict))
         //loginButton.setBackgroundImage(<#image: UIImage?#>, forState: <#UIControlState#>)
-        
-        
+
     }
     
     override func viewWillAppear(animated: Bool) {
         self.navigationController?.navigationBarHidden = true
+        
+        // setting initial scrollView content height
+        let delay: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, 1000 * Int64(NSEC_PER_MSEC))
+        dispatch_after(delay, dispatch_get_main_queue()) { () -> Void in
+            if self.scrollViewDefaultContentSize == nil{
+                self.scrollViewDefaultContentSize = self.scrollView.contentSize
+            }
+            self.scrollView.setContentOffset(CGPointZero, animated: true)
+            let newContentSize: CGSize = CGSizeMake(self.scrollViewDefaultContentSize.width, self.scrollContainerView.bounds.size.height)
+            self.scrollView.contentSize = newContentSize
+            println(self.scrollView.contentSize)
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -109,15 +114,18 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     // MARK: - ContainerView tap handle
     
     func onContainerViewTap(sender: UIView){
-        passwordTextfield.resignFirstResponder()
-        usernameTextfield.resignFirstResponder()
+        for input in textFields{
+            let textField: UITextField = input as UITextField
+            textField.resignFirstResponder()
+        }
+        
         if self.isEditing == true{
             self.isEditing = false
             self.scrollView.setContentOffset(CGPointZero, animated: true)
             let delay: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, 300 * Int64(NSEC_PER_MSEC))
             let dispatchAfter: Void = dispatch_after(delay, dispatch_get_main_queue()) { () -> Void in
                 self.scrollView.contentSize = self.scrollViewDefaultContentSize
-            
+                
             }
         }
     }
@@ -156,17 +164,17 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             self.onContainerViewTap(self.containerView)
         }
         
-        if textField.tag == 2{
-            self.loginButton.sendActionsForControlEvents(UIControlEvents.TouchUpInside)
+        if textField.tag == 4{
+            self.signupButton.sendActionsForControlEvents(UIControlEvents.TouchUpInside)
         }
         
         return false
     }
     
     
-    // MARK: - Login Button Action
+    // MARK: - Signup Button Action
     
-    @IBAction func onLoginButtonTap(sender: UIButton) {
+    @IBAction func onSignupButtonTap(sender: UIButton) {
         // auto scroll to default
         self.onContainerViewTap(self.containerView)
         
@@ -184,7 +192,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             var activityIndicator = UICustomActivityView()
             activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
             
-            DataManager.postDataWithCallback("http://10.0.0.10/ledger/admin/users/login", jsonData: params) { (data, error) -> Void in
+            DataManager.postDataWithCallback("http://10.0.0.10/ledger/admin/users/sign", jsonData: params) { (data, error) -> Void in
                 activityIndicator.hideActivityIndicator()
                 if let posterror = error{
                     println(posterror.code)
@@ -195,6 +203,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 }
             }
         }
+    }
+    
+    @IBAction func onCancelButtonTap(sender: AnyObject) {
+        /*
+        UIView.beginAnimations("flipview", context: nil)
+        UIView.setAnimationDuration(1)
+        UIView.setAnimationCurve(UIViewAnimationCurve.EaseInOut)
+        UIView.setAnimationTransition(UIViewAnimationTransition.FlipFromRight, forView: self.view.superview!, cache: true)
+        self.view.removeFromSuperview()
+        UIView.commitAnimations()
+        */
+        self.view.window?.rootViewController?.dismissViewControllerAnimated(true, completion: nil)
+        
     }
 
     /*
