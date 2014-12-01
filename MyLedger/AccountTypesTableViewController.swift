@@ -65,6 +65,11 @@ class AccountTypesTableViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         selectedRowIndexPath = indexPath
+        let rowTitle: String! = self.tableData.objectAtIndex(indexPath.row) as? String
+        if rowTitle == "Add Account type"{
+            let nextVC: ACTypeAddViewController = self.storyboard?.instantiateViewControllerWithIdentifier("ACTypeAddViewController") as ACTypeAddViewController
+            self.navigationController?.pushViewController(nextVC, animated: true)
+        }
     }
     
 

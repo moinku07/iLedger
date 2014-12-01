@@ -493,9 +493,6 @@
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="lqU-kR-UoR" id="KHF-61-nnS">
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <segue destination="lAi-yQ-syw" kind="show" identifier="actypesAdd" id="wmT-Nk-zTG"/>
-                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -512,7 +509,7 @@
         <!--Type Add View Controller-->
         <scene sceneID="LHy-BT-DKQ">
             <objects>
-                <viewController id="lAi-yQ-syw" customClass="ACTypeAddViewController" customModule="MyLedger" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ACTypeAddViewController" id="lAi-yQ-syw" customClass="ACTypeAddViewController" customModule="MyLedger" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="xtK-7F-rH3"/>
                         <viewControllerLayoutGuide type="bottom" id="vVp-2A-pfu"/>
