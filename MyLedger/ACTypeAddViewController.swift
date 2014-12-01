@@ -1,5 +1,5 @@
 //
-//  MainViewController.swift
+//  ACTypeAddViewController.swift
 //  MyLedger
 //
 //  Created by Moin Uddin on 12/1/14.
@@ -8,17 +8,21 @@
 
 import UIKit
 
-class MainViewController: UITabBarController {
+class ACTypeAddViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.navigationController?.navigationBarHidden = false
+        println("here")
+        self.navigationItem.title = "Add Account Type"
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return UIStatusBarStyle.LightContent
     }
     
 
@@ -31,4 +35,5 @@ class MainViewController: UITabBarController {
         // Pass the selected object to the new view controller.
     }
     */
+
 }

@@ -1,5 +1,5 @@
 //
-//  MainViewController.swift
+//  ACTypesViewController.swift
 //  MyLedger
 //
 //  Created by Moin Uddin on 12/1/14.
@@ -8,12 +8,12 @@
 
 import UIKit
 
-class MainViewController: UITabBarController {
+class ACTypesViewController: UINavigationController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationController?.navigationBarHidden = false
+        // Do any additional setup after loading the view.
     }
 
     override func didReceiveMemoryWarning() {
@@ -21,6 +21,10 @@ class MainViewController: UITabBarController {
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: - StatusBar Style
+    override func preferredStatusBarStyle() -> UIStatusBarStyle {
+        return self.viewControllers.last!.preferredStatusBarStyle()
+    }
 
     /*
     // MARK: - Navigation
@@ -31,4 +35,5 @@ class MainViewController: UITabBarController {
         // Pass the selected object to the new view controller.
     }
     */
+
 }

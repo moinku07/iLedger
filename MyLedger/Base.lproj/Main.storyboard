@@ -463,7 +463,7 @@
         <!--Account Types-->
         <scene sceneID="Ifp-kL-psR">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="hU9-4G-98Q" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="hU9-4G-98Q" customClass="ACTypesViewController" customModule="MyLedger" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Account Types" image="ac_add" id="xOd-l7-gRf"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="eIh-Rh-IU8">
@@ -479,7 +479,7 @@
             </objects>
             <point key="canvasLocation" x="2765" y="103"/>
         </scene>
-        <!--Account Types Table View Controller-->
+        <!--Account Types-->
         <scene sceneID="K1l-dt-XtO">
             <objects>
                 <tableViewController id="RiF-Uw-BSL" customClass="AccountTypesTableViewController" customModule="MyLedger" customModuleProvider="target" sceneMemberID="viewController">
@@ -493,6 +493,9 @@
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="lqU-kR-UoR" id="KHF-61-nnS">
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="lAi-yQ-syw" kind="show" identifier="actypesAdd" id="wmT-Nk-zTG"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -500,11 +503,29 @@
                             <outlet property="delegate" destination="RiF-Uw-BSL" id="f6J-ta-Pbt"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="5kd-vi-Oq4"/>
+                    <navigationItem key="navigationItem" title="Account Types" id="5kd-vi-Oq4"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UnH-vg-Sm6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="3476" y="103"/>
+        </scene>
+        <!--Type Add View Controller-->
+        <scene sceneID="LHy-BT-DKQ">
+            <objects>
+                <viewController id="lAi-yQ-syw" customClass="ACTypeAddViewController" customModule="MyLedger" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="xtK-7F-rH3"/>
+                        <viewControllerLayoutGuide type="bottom" id="vVp-2A-pfu"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="6i5-kq-agI">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="KjI-ic-YrX" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4164" y="103"/>
         </scene>
         <!--Accounts-->
         <scene sceneID="ACk-7d-EWt">
@@ -525,7 +546,7 @@
             </objects>
             <point key="canvasLocation" x="2765" y="765"/>
         </scene>
-        <!--Table View Controller-->
+        <!--Accounts-->
         <scene sceneID="C6l-tv-qoT">
             <objects>
                 <tableViewController id="hpu-iX-z5I" sceneMemberID="viewController">
@@ -546,7 +567,7 @@
                             <outlet property="delegate" destination="hpu-iX-z5I" id="wFu-yK-PN5"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="b0h-lQ-tWM"/>
+                    <navigationItem key="navigationItem" title="Accounts" id="b0h-lQ-tWM"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="C3P-c7-jn5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

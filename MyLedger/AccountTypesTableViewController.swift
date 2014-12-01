@@ -11,15 +11,27 @@ import UIKit
 class AccountTypesTableViewController: UITableViewController {
     
     let tableData: NSMutableArray = ["Add Account type", "See Account types"]
+    
+    var selectedRowIndexPath: NSIndexPath? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.navigationController?.navigationBar.barTintColor = UIColor.orangeColor()//UIColor(red: 102/255, green: 51/255, blue: 0, alpha: 1.0)
+        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
+        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.whiteColor()]
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        if selectedRowIndexPath != nil{
+            self.tableView.deselectRowAtIndexPath(selectedRowIndexPath!, animated: true)
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -46,8 +58,13 @@ class AccountTypesTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
 
         cell.textLabel.text = self.tableData.objectAtIndex(indexPath.row) as? String
+        cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
 
         return cell
+    }
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        selectedRowIndexPath = indexPath
     }
     
 
@@ -99,7 +116,6 @@ class AccountTypesTableViewController: UITableViewController {
     // MARK: - StatusBar Style
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        println("hre")
         return UIStatusBarStyle.LightContent
     }
 
