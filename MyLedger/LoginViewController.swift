@@ -26,6 +26,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     var isEditing:Bool = false
     
+    var currentOrientation: Int!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -119,7 +121,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             self.scrollView.setContentOffset(CGPointZero, animated: true)
             let delay: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, 300 * Int64(NSEC_PER_MSEC))
             let dispatchAfter: Void = dispatch_after(delay, dispatch_get_main_queue()) { () -> Void in
-                self.scrollView.contentSize = self.scrollViewDefaultContentSize
+                if self.currentOrientation == UIDevice.currentDevice().orientation.rawValue{
+                    self.scrollView.contentSize = self.scrollViewDefaultContentSize
+                }
             
             }
         }
@@ -133,19 +137,43 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             scrollViewDefaultContentSize = self.scrollView.contentSize
         }
         
-        // calculation to auto scroll up scroll view when textfield hides behind keyboard
-        let yPoint = 285 - (self.view.frame.height - (textField.frame.origin.y + textField.frame.size.height))
-        if (self.view.frame.height - (textField.frame.origin.y + textField.frame.size.height) < 285) && (self.scrollView.contentOffset.y < yPoint){
-            let scrollPoint: CGPoint = CGPointMake(0, yPoint)
-            self.scrollView.setContentOffset(scrollPoint, animated: true)
+        currentOrientation = UIDevice.currentDevice().orientation.rawValue
+        
+        if UIDevice.currentDevice().userInterfaceIdiom == .Phone{
+            // calculation to auto scroll up scroll view when textfield hides behind keyboard
+            let yPoint = 285 - (self.view.frame.height - (textField.frame.origin.y + textField.frame.size.height))
+            if (self.view.frame.height - (textField.frame.origin.y + textField.frame.size.height) < 285) && (self.scrollView.contentOffset.y < yPoint){
+                let scrollPoint: CGPoint = CGPointMake(0, yPoint)
+                self.scrollView.setContentOffset(scrollPoint, animated: true)
+            }
+            
+            // check if textField is editing and set new contentSize so user can scroll all inputs
+            if isEditing == false{
+                isEditing = true
+                
+                let newContentSize: CGSize = CGSizeMake(scrollViewDefaultContentSize.width, scrollViewDefaultContentSize.height + (280 - yPoint))
+                self.scrollView.contentSize = newContentSize
+            }
         }
         
-        // check if textField is editing and set new contentSize so user can scroll all inputs
-        if isEditing == false{
-            isEditing = true
+        if (UIDevice.currentDevice().userInterfaceIdiom == .Pad && (UIDevice.currentDevice().orientation == UIDeviceOrientation.LandscapeLeft || UIDevice.currentDevice().orientation == UIDeviceOrientation.LandscapeRight)){
+            // calculation to auto scroll up scroll view when textfield hides behind keyboard
+            let yPoint = textField.frame.origin.y + textField.frame.size.height + 25
+            let keyboardYpoint = self.view.frame.height - 352
+            let scrollY = yPoint - keyboardYpoint
+            if (yPoint > keyboardYpoint) && (self.scrollView.contentOffset.y < scrollY){
+                println("here")
+                let scrollPoint: CGPoint = CGPointMake(0, scrollY)
+                self.scrollView.setContentOffset(scrollPoint, animated: true)
+            }
             
-            let newContentSize: CGSize = CGSizeMake(scrollViewDefaultContentSize.width, scrollViewDefaultContentSize.height + (280 - yPoint))
-            self.scrollView.contentSize = newContentSize
+            // check if textField is editing and set new contentSize so user can scroll all inputs
+            if isEditing == false{
+                isEditing = true
+                
+                let newContentSize: CGSize = CGSizeMake(scrollViewDefaultContentSize.width, scrollViewDefaultContentSize.height + 120)
+                self.scrollView.contentSize = newContentSize
+            }
         }
     }
     
@@ -182,9 +210,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         let passWord = self.passwordTextfield.text
         
         if(userName.isEmpty){
-            AlertManager.showAlert(self, alertTitle: "Warning", alertMessage: "Please enter username", okayButtonTitle: "Okay")
+            AlertManager.showAlert(self, title: "Warning", message: "Please enter username", buttonNames: nil)
         }else if passWord.isEmpty{
-            AlertManager.showAlert(self, alertTitle: "Warning", alertMessage: "Please enter password", okayButtonTitle: "Okay")
+            AlertManager.showAlert(self, title: "Warning", message: "Please enter password", buttonNames: nil)
         }else{
             var params = ["User": ["username":userName, "password": passWord, "ajax" : true]]
             
@@ -199,7 +227,13 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     println(posterror.localizedDescription)
                 }else{
                     let json = JSON(data: data!)
-                    println(json)
+                    let message = json["message"]
+                    if json["success"] == false{
+                        AlertManager.showAlert(self, title: "Login Failed!", message: "\(message)", buttonNames: ["OK"], completion: nil)
+                    }else{
+                        println(json)
+                        println("login successful")
+                    }
                 }
             }
         }

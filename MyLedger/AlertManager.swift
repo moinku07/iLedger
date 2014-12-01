@@ -10,16 +10,38 @@ import UIKit
 
 class AlertManager: NSObject {
     //custom alert function
-    class func showAlert(viewController: UIViewController,alertTitle: String? = nil, alertMessage: String? = nil, okayButtonTitle: String? = nil){
-        let alertTitle1 = (alertTitle == nil || alertTitle!.isEmpty) ? "Alert" : alertTitle!;
-        let alertMsg = (alertMessage == nil || alertMessage!.isEmpty) ? alertTitle1 : alertMessage!;
-        let okayBtnTitle = (okayButtonTitle == nil || okayButtonTitle!.isEmpty) ? "Okay" : okayButtonTitle!;
+    class func showAlert(viewController: UIViewController,title: String? = nil, message: String? = nil, buttonNames: Array<String>? = nil, completion: ((index: Int) -> Void)? = nil){
+        let alertTitle1 = (title == nil || title!.isEmpty) ? "Alert" : title!;
+        let alertMsg = (message == nil || message!.isEmpty) ? alertTitle1 : message!;
+        
         if(AlertManager.isIOS8() == true){
             let alertController: UIAlertController = UIAlertController(title: alertTitle1, message: alertMsg, preferredStyle: UIAlertControllerStyle.Alert);
-            alertController.addAction(UIAlertAction(title: okayBtnTitle, style: UIAlertActionStyle.Default, handler: nil));
+            if buttonNames == nil{
+                alertController.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default, handler: { (action: UIAlertAction!) -> Void in
+                    if completion != nil{
+                        completion!(index: 0)
+                    }
+                }));
+            }else{
+                for (index,name) in enumerate(buttonNames!){
+                    alertController.addAction(UIAlertAction(title: name, style: UIAlertActionStyle.Default, handler: { (action: UIAlertAction!) -> Void in
+                        if completion != nil{
+                            completion!(index: index)
+                        }
+                    }))
+                }
+            }
+            
             viewController.presentViewController(alertController, animated: true, completion: nil)
         }else{
-            let alertView: UIAlertView = UIAlertView(title: alertTitle1, message: alertMsg, delegate: nil, cancelButtonTitle: okayBtnTitle);
+            let alertView: UIAlertView = UIAlertView(title: alertTitle1, message: alertMsg, delegate: nil, cancelButtonTitle: nil)
+            if buttonNames == nil{
+                alertView.addButtonWithTitle("Okay")
+            }else{
+                for (index,name) in enumerate(buttonNames!){
+                    alertView.addButtonWithTitle(name)
+                }
+            }
             alertView.show();
         }
     }

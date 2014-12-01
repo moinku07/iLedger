@@ -59,15 +59,6 @@
                                                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                         <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="next"/>
                                                     </textField>
-                                                    <textField opaque="NO" clipsSubviews="YES" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Durlov_ku07" placeholder="Password" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="aIp-XD-lyl">
-                                                        <rect key="frame" x="20" y="267" width="544" height="40"/>
-                                                        <color key="backgroundColor" red="0.93725490199999995" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="40" id="MHa-b3-jM8"/>
-                                                        </constraints>
-                                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="go" secureTextEntry="YES"/>
-                                                    </textField>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lFl-c3-SqB" userLabel="Login Button">
                                                         <rect key="frame" x="20" y="327" width="544" height="40"/>
                                                         <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -83,7 +74,7 @@
                                                             <action selector="onLoginButtonTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3Yq-PZ-hd3"/>
                                                         </connections>
                                                     </button>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VmD-Mb-PQF" userLabel="Facebook Login">
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VmD-Mb-PQF" userLabel="Facebook Login">
                                                         <rect key="frame" x="20" y="387" width="544" height="40"/>
                                                         <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                         <constraints>
@@ -96,10 +87,19 @@
                                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                                         </state>
                                                     </button>
+                                                    <textField opaque="NO" clipsSubviews="YES" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Durlov_ku07" placeholder="Password" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="aIp-XD-lyl">
+                                                        <rect key="frame" x="20" y="267" width="544" height="40"/>
+                                                        <color key="backgroundColor" red="0.93725490199999995" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="40" id="MHa-b3-jM8"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" returnKeyType="go" secureTextEntry="YES"/>
+                                                    </textField>
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstItem="gSm-C2-evb" firstAttribute="top" secondItem="xed-1k-PYt" secondAttribute="bottom" priority="750" constant="40" id="9ej-aQ-Y6y"/>
-                                                    <constraint firstItem="xed-1k-PYt" firstAttribute="top" secondItem="Kfl-FP-GPd" secondAttribute="top" constant="42" id="Bgo-l9-CWK"/>
+                                                    <constraint firstItem="xed-1k-PYt" firstAttribute="top" secondItem="Kfl-FP-GPd" secondAttribute="top" priority="750" constant="42" id="Bgo-l9-CWK"/>
                                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="304" id="FfF-EU-jk5"/>
                                                     <constraint firstItem="gPq-3C-lvg" firstAttribute="top" secondItem="Kfl-FP-GPd" secondAttribute="top" id="JHc-T2-OTS"/>
                                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="304" id="LmM-B4-I2l"/>
@@ -110,11 +110,17 @@
                                                     <constraint firstAttribute="bottom" secondItem="VmD-Mb-PQF" secondAttribute="bottom" constant="20" id="Roh-qq-RlE"/>
                                                     <constraint firstItem="aIp-XD-lyl" firstAttribute="leading" secondItem="Kfl-FP-GPd" secondAttribute="leading" constant="20" id="Tbg-0m-nZt"/>
                                                     <constraint firstAttribute="trailing" secondItem="aIp-XD-lyl" secondAttribute="trailing" constant="20" id="dSh-hi-qB6"/>
+                                                    <constraint firstItem="gSm-C2-evb" firstAttribute="top" secondItem="xed-1k-PYt" secondAttribute="bottom" constant="60" id="eNk-IJ-3Gu">
+                                                        <variation key="heightClass=regular-widthClass=regular" constant="80"/>
+                                                    </constraint>
                                                     <constraint firstAttribute="trailing" secondItem="lFl-c3-SqB" secondAttribute="trailing" constant="20" id="ewa-Sg-f79"/>
                                                     <constraint firstAttribute="bottom" secondItem="lFl-c3-SqB" secondAttribute="bottom" constant="80" id="h28-FV-0vq"/>
                                                     <constraint firstItem="lFl-c3-SqB" firstAttribute="top" secondItem="aIp-XD-lyl" secondAttribute="bottom" constant="20" id="hCs-AE-Qhp"/>
                                                     <constraint firstItem="VmD-Mb-PQF" firstAttribute="top" secondItem="lFl-c3-SqB" secondAttribute="bottom" constant="20" id="jaL-mn-S2z"/>
                                                     <constraint firstAttribute="centerX" secondItem="gSm-C2-evb" secondAttribute="centerX" id="lSL-Qz-CnU"/>
+                                                    <constraint firstItem="xed-1k-PYt" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Kfl-FP-GPd" secondAttribute="top" constant="60" id="naz-DM-WAD">
+                                                        <variation key="heightClass=regular-widthClass=regular" constant="80"/>
+                                                    </constraint>
                                                     <constraint firstAttribute="trailing" secondItem="gPq-3C-lvg" secondAttribute="trailing" id="szq-Ks-vFt"/>
                                                     <constraint firstItem="lFl-c3-SqB" firstAttribute="leading" secondItem="Kfl-FP-GPd" secondAttribute="leading" constant="20" id="tbX-lr-DxD"/>
                                                     <constraint firstItem="aIp-XD-lyl" firstAttribute="top" secondItem="gSm-C2-evb" secondAttribute="bottom" constant="20" id="uzq-J7-l9U"/>
@@ -125,8 +131,16 @@
                                                 </constraints>
                                                 <variation key="default">
                                                     <mask key="constraints">
+                                                        <exclude reference="eNk-IJ-3Gu"/>
+                                                        <exclude reference="naz-DM-WAD"/>
                                                         <exclude reference="h28-FV-0vq"/>
                                                         <exclude reference="Roh-qq-RlE"/>
+                                                    </mask>
+                                                </variation>
+                                                <variation key="heightClass=regular-widthClass=regular">
+                                                    <mask key="constraints">
+                                                        <include reference="eNk-IJ-3Gu"/>
+                                                        <include reference="naz-DM-WAD"/>
                                                     </mask>
                                                 </variation>
                                             </view>
@@ -317,13 +331,13 @@
                                                         </connections>
                                                     </button>
                                                 </subviews>
-                                                <color key="backgroundColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstItem="LcF-3L-5ib" firstAttribute="top" secondItem="d8b-a4-oPC" secondAttribute="bottom" constant="20" id="1M4-RR-oXw"/>
                                                     <constraint firstItem="NoV-zZ-eUS" firstAttribute="top" secondItem="UXc-4D-8vM" secondAttribute="top" constant="42" id="3JQ-y0-4fQ"/>
                                                     <constraint firstAttribute="trailing" secondItem="d8b-a4-oPC" secondAttribute="trailing" constant="20" id="3h4-9F-8hD"/>
                                                     <constraint firstAttribute="bottom" secondItem="d8b-a4-oPC" secondAttribute="bottom" constant="80" id="6Ym-ra-c2l"/>
                                                     <constraint firstItem="0wf-L6-RA6" firstAttribute="top" secondItem="aI6-xk-xxY" secondAttribute="bottom" constant="20" id="7Eh-7Q-oAu"/>
+                                                    <constraint firstAttribute="bottom" secondItem="LcF-3L-5ib" secondAttribute="bottom" constant="20" id="Ejj-PA-ym1"/>
                                                     <constraint firstAttribute="centerX" secondItem="0wf-L6-RA6" secondAttribute="centerX" id="HP9-4p-Lhh"/>
                                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="304" id="I9V-TK-eyc"/>
                                                     <constraint firstItem="aI6-xk-xxY" firstAttribute="leading" secondItem="UXc-4D-8vM" secondAttribute="leading" constant="20" id="KiW-Fa-aZy"/>
@@ -366,6 +380,11 @@
                                             <constraint firstItem="UXc-4D-8vM" firstAttribute="leading" secondItem="kpy-sl-9EI" secondAttribute="leading" id="v9Z-SE-wit"/>
                                             <constraint firstItem="UXc-4D-8vM" firstAttribute="top" secondItem="kpy-sl-9EI" secondAttribute="top" id="xpY-zY-4BX"/>
                                         </constraints>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="RwB-zh-m7F"/>
+                                            </mask>
+                                        </variation>
                                     </scrollView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -393,8 +412,8 @@
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
-                                <exclude reference="oJt-4x-fZT"/>
                                 <exclude reference="box-FW-bXk"/>
+                                <exclude reference="oJt-4x-fZT"/>
                             </mask>
                         </variation>
                         <variation key="heightClass=compact">
@@ -409,8 +428,8 @@
                     </userDefinedRuntimeAttributes>
                     <connections>
                         <outlet property="containerView" destination="9CF-JO-VRl" id="1Sh-2D-IlU"/>
-                        <outlet property="firstName" destination="aI6-xk-xxY" id="qiZ-YP-BWP"/>
-                        <outlet property="lastName" destination="0wf-L6-RA6" id="XId-sM-G1E"/>
+                        <outlet property="firstNameTextfield" destination="aI6-xk-xxY" id="KUu-72-aYD"/>
+                        <outlet property="lastNameTextfield" destination="0wf-L6-RA6" id="DLU-VX-3cY"/>
                         <outlet property="passwordTextfield" destination="888-Ab-dIK" id="8Gr-Bq-VhN"/>
                         <outlet property="scrollContainerView" destination="UXc-4D-8vM" id="c0b-Xr-BaL"/>
                         <outlet property="scrollView" destination="kpy-sl-9EI" id="rPK-yc-V82"/>

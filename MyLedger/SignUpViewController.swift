@@ -14,8 +14,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet var signupButton: UIButton!
     
     
-    @IBOutlet var firstName: UITextField!
-    @IBOutlet var lastName: UITextField!
+    @IBOutlet var firstNameTextfield: UITextField!
+    @IBOutlet var lastNameTextfield: UITextField!
     
     @IBOutlet var passwordTextfield: UITextField!
     @IBOutlet var usernameTextfield: UITextField!
@@ -41,7 +41,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         containerView.layer.cornerRadius = 8
         
         // textFields array
-        textFields = [firstName, lastName, usernameTextfield, passwordTextfield]
+        textFields = [firstNameTextfield, lastNameTextfield, usernameTextfield, passwordTextfield]
         
         for input in textFields{
             let textField: UITextField = input as UITextField
@@ -76,19 +76,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     
     override func viewWillAppear(animated: Bool) {
         self.navigationController?.navigationBarHidden = true
-        
-        let contentHeight = self.scrollContainerView.bounds.size.height
-        
-        // setting initial scrollView content height
-        let delay: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, 300 * Int64(NSEC_PER_MSEC))
-        dispatch_after(delay, dispatch_get_main_queue()) { () -> Void in
-            if self.scrollViewDefaultContentSize == nil{
-                self.scrollViewDefaultContentSize = self.scrollView.contentSize
-            }
-            let newContentSize: CGSize = CGSizeMake(self.scrollViewDefaultContentSize.width, contentHeight)
-            self.scrollView.contentSize = newContentSize
-            self.scrollViewDefaultContentSize.height = newContentSize.height
-        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -107,10 +94,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     
     override func shouldAutorotate() -> Bool {
         return true
-    }
-    
-    override func didRotateFromInterfaceOrientation(fromInterfaceOrientation: UIInterfaceOrientation) {
-        self.scrollView.contentSize = scrollViewDefaultContentSize
     }
     
     // MARK: - StatusBar Style
@@ -191,28 +174,44 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         // auto scroll to default
         self.onContainerViewTap(self.containerView)
         
+        let firstName = self.firstNameTextfield.text
+        let lastName = self.lastNameTextfield.text
         let userName = self.usernameTextfield.text
         let passWord = self.passwordTextfield.text
         
-        if(userName.isEmpty){
-            AlertManager.showAlert(self, alertTitle: "Warning", alertMessage: "Please enter username", okayButtonTitle: "Okay")
+        if(firstName.isEmpty){
+            AlertManager.showAlert(self, title: "Warning", message: "Please enter First name", buttonNames: nil)
+        }else if(lastName.isEmpty){
+            AlertManager.showAlert(self, title: "Warning", message: "Please enter Last name", buttonNames: nil)
+        }else if(userName.isEmpty){
+            AlertManager.showAlert(self, title: "Warning", message: "Please enter username", buttonNames: nil)
         }else if passWord.isEmpty{
-            AlertManager.showAlert(self, alertTitle: "Warning", alertMessage: "Please enter password", okayButtonTitle: "Okay")
+            AlertManager.showAlert(self, title: "Warning", message: "Please enter password", buttonNames: nil)
         }else{
-            var params = ["User": ["username":userName, "password": passWord, "ajax" : true]]
+            var params = ["User": ["fname": firstName,"lname": lastName,"username":userName, "password": passWord, "ajax" : true]]
             
             // activity indicator
             var activityIndicator = UICustomActivityView()
             activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
             
-            DataManager.postDataWithCallback("http://10.0.0.10/ledger/admin/users/sign", jsonData: params) { (data, error) -> Void in
+            DataManager.postDataWithCallback("http://10.0.0.10/ledger/admin/users/register", jsonData: params) { (data, error) -> Void in
                 activityIndicator.hideActivityIndicator()
                 if let posterror = error{
                     println(posterror.code)
                     println(posterror.localizedDescription)
                 }else{
                     let json = JSON(data: data!)
-                    println(json)
+                    if json["success"] == false{
+                        let message = json["message"]
+                        AlertManager.showAlert(self, title: "Alert", message: "\(message)", buttonNames: nil)
+                    }else{
+                        let message = json["message"]
+                        AlertManager.showAlert(self, title: "Success", message: "\(message)", buttonNames: nil, completion:{ (index: Int) -> Void in
+                            if let vc = self.view.window?.rootViewController?{
+                                vc.dismissViewControllerAnimated(true, completion: nil)
+                            }
+                        })
+                    }
                 }
             }
         }
