@@ -233,6 +233,10 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     }else{
                         println(json)
                         println("login successful")
+                        let vc: MainViewController = self.storyboard?.instantiateViewControllerWithIdentifier("mainviewcontroller") as MainViewController
+                        self.presentViewController(vc, animated: true, completion: nil)
+                        //self.navigationController?.pushViewController(vc, animated: true)
+                        //self.showViewController(vc, sender: vc)
                     }
                 }
             }
