@@ -83,19 +83,6 @@
                                                             <constraint firstAttribute="bottom" secondItem="NiF-4n-stZ" secondAttribute="bottom" constant="10" id="vUJ-qc-CKv"/>
                                                         </constraints>
                                                     </view>
-                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VmD-Mb-PQF" userLabel="Facebook Login">
-                                                        <rect key="frame" x="20" y="417" width="544" height="40"/>
-                                                        <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="OUC-oz-IUk"/>
-                                                            <constraint firstAttribute="height" constant="40" id="Wgr-Kb-IhZ"/>
-                                                        </constraints>
-                                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
-                                                        <state key="normal">
-                                                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                                        </state>
-                                                    </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lFl-c3-SqB" userLabel="Login Button">
                                                         <rect key="frame" x="20" y="357" width="544" height="40"/>
                                                         <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -110,6 +97,19 @@
                                                         <connections>
                                                             <action selector="onLoginButtonTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3Yq-PZ-hd3"/>
                                                         </connections>
+                                                    </button>
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VmD-Mb-PQF" userLabel="Facebook Login">
+                                                        <rect key="frame" x="20" y="417" width="544" height="40"/>
+                                                        <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="OUC-oz-IUk"/>
+                                                            <constraint firstAttribute="height" constant="40" id="Wgr-Kb-IhZ"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                                        <state key="normal">
+                                                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </state>
                                                     </button>
                                                 </subviews>
                                                 <constraints>
@@ -242,6 +242,7 @@
                     </userDefinedRuntimeAttributes>
                     <connections>
                         <outlet property="containerView" destination="epL-FF-j4d" id="ok4-eA-r1H"/>
+                        <outlet property="facebooButton" destination="VmD-Mb-PQF" id="9tl-iJ-gq4"/>
                         <outlet property="loginButton" destination="lFl-c3-SqB" id="R8R-qQ-ruR"/>
                         <outlet property="passwordTextfield" destination="aIp-XD-lyl" id="mHM-eq-jlA"/>
                         <outlet property="rememberSwitch" destination="E7t-Ft-dhW" id="ZGs-th-Rg1"/>

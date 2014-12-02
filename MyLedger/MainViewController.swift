@@ -8,17 +8,40 @@
 
 import UIKit
 
-class MainViewController: UITabBarController {
+class MainViewController: UITabBarController, SideBarDelegate {
+    
+    var sideBar: SideBar!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.navigationController?.navigationBarHidden = false
+        
+        sideBar = SideBar(sourceView: self.view, menuItems: ["Logout"])
+        sideBar.delegate = self
+        
+        sideBar.shouldDeselectSelectedRow = true
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func sideBarDidSelectRowAtIndex(index: Int) {
+        if index == 0{
+            var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+            prefs.setObject(nil, forKey: "username")
+            prefs.setObject(nil, forKey: "password")
+            prefs.synchronize()
+            self.view.window?.rootViewController?.dismissViewControllerAnimated(true, completion: nil)
+        }
+    }
+    
+    func onViewTap(recognizer: UITapGestureRecognizer){
+        if sideBar.isSideBarOpen{
+            sideBar.showSideBar(false)
+        }
     }
     
 

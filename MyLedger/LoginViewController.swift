@@ -23,10 +23,12 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet var loginButton: UIButton!
     
     @IBOutlet var rememberSwitch: UISwitch!
+    @IBOutlet var facebooButton: UIButton!
     
     var viewsDict: NSMutableDictionary!
     
     var isEditing:Bool = false
+    var preYPoint: CGFloat = 0.0
     
     var currentOrientation: Int!
     
@@ -84,6 +86,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         loginButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[loginButton]-(<=0)-[loginButtonImageView(21.5)]", options: NSLayoutFormatOptions.AlignAllCenterX, metrics: nil, views: viewsDict))
         //loginButton.setBackgroundImage(<#image: UIImage?#>, forState: <#UIControlState#>)
         
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        self.navigationController?.navigationBarHidden = true
+        
         // check for auto Login
         var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
         let userName: String? = prefs.objectForKey("username") as? String
@@ -94,11 +101,21 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             passwordTextfield.text = passWord!
             rememberSwitch.on = true
             loginButton.sendActionsForControlEvents(UIControlEvents.TouchUpInside)
+        }else{
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.passwordTextfield.text = ""
+                self.usernameTextfield.text = ""
+                self.rememberSwitch.on = false
+            })
         }
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        self.navigationController?.navigationBarHidden = true
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 300 * Int64(NSEC_PER_MSEC)), dispatch_get_main_queue()) { () -> Void in
+            println(self.loginButton.frame.origin.y + 60)
+            println(self.containerView.bounds.size.height)
+            if self.facebooButton.hidden == true &&  self.loginButton.frame.origin.y + 60 < self.containerView.bounds.size.height{
+                self.scrollView.contentSize = CGSizeMake(self.scrollContainerView.bounds.size.width, self.containerView.bounds.size.height)
+                println(self.scrollView.contentSize)
+            }
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -162,10 +179,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             }
             
             // check if textField is editing and set new contentSize so user can scroll all inputs
-            if isEditing == false{
+            if yPoint > preYPoint{
+                preYPoint = yPoint
                 isEditing = true
                 
-                let newContentSize: CGSize = CGSizeMake(scrollViewDefaultContentSize.width, scrollViewDefaultContentSize.height + (280 - yPoint))
+                let newContentSize: CGSize = CGSizeMake(scrollViewDefaultContentSize.width, scrollViewDefaultContentSize.height + yPoint)
                 self.scrollView.contentSize = newContentSize
             }
         }
@@ -235,7 +253,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
             
             DataManager.postDataAsyncWithCallback("users/login", jsonData: params) { (data, error) -> Void in
-                activityIndicator.hideActivityIndicator()
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    activityIndicator.hideActivityIndicator()
+                })
                 if let posterror = error{
                     println(posterror.code)
                     println(posterror.localizedDescription)
@@ -245,7 +265,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     if json["success"] == false{
                         AlertManager.showAlert(self, title: "Login Failed!", message: "\(message)", buttonNames: ["OK"], completion: nil)
                     }else{
-                        //println(json)
+                        println(json)
                         //println("login successful")
                         var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
                         if self.rememberSwitch.on == true{
