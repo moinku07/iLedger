@@ -22,6 +22,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet var scrollContainerView: UIView!
     @IBOutlet var loginButton: UIButton!
     
+    @IBOutlet var rememberSwitch: UISwitch!
+    
     var viewsDict: NSMutableDictionary!
     
     var isEditing:Bool = false
@@ -68,6 +70,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         maskLayer.frame = signupButton.bounds
         maskLayer.path = maskPath.CGPath
         signupButton.layer.mask = maskLayer
+        //self.view.bringSubviewToFront(signupButton)
+        //signupButton.layer.zPosition = 100
         
         // style loginButton
         let loginButtonImageView = UIImageView()
@@ -80,7 +84,17 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         loginButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[loginButton]-(<=0)-[loginButtonImageView(21.5)]", options: NSLayoutFormatOptions.AlignAllCenterX, metrics: nil, views: viewsDict))
         //loginButton.setBackgroundImage(<#image: UIImage?#>, forState: <#UIControlState#>)
         
-        
+        // check for auto Login
+        var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+        let userName: String? = prefs.objectForKey("username") as? String
+        let passWord: String? = prefs.objectForKey("password") as? String
+        println(passWord)
+        if userName != nil && passWord != nil{
+            usernameTextfield.text = userName!
+            passwordTextfield.text = passWord!
+            rememberSwitch.on = true
+            loginButton.sendActionsForControlEvents(UIControlEvents.TouchUpInside)
+        }
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -233,6 +247,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     }else{
                         //println(json)
                         //println("login successful")
+                        var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+                        if self.rememberSwitch.on == true{
+                            prefs.setObject(userName, forKey: "username")
+                            prefs.setObject(passWord, forKey: "password")
+                            //prefs.setInteger(1, forKey: "rememberSwitch")
+                            prefs.synchronize()
+                        }else{
+                            prefs.setObject(nil, forKey: "username")
+                            prefs.setObject(nil, forKey: "password")
+                            //prefs.setInteger(0, forKey: "rememberSwitch")
+                            prefs.synchronize()
+                        }
+                        
                         let vc: MainViewController = self.storyboard?.instantiateViewControllerWithIdentifier("mainviewcontroller") as MainViewController
                         self.presentViewController(vc, animated: true, completion: nil)
                         //self.navigationController?.pushViewController(vc, animated: true)
