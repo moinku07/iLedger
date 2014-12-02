@@ -100,17 +100,10 @@
 			isa = PBXGroup;
 			children = (
 				CD484DC91A204DD200702357 /* AppDelegate.swift */,
-				CDE3F40B1A2461AE00EBAC2D /* DataManager.swift */,
-				CD044F8C1A2AD47F00EFE5EA /* AlertManager.swift */,
-				CDE3F4091A245FF100EBAC2D /* SwiftyJSON.swift */,
-				CDE3F40D1A246A3400EBAC2D /* UIActivityView.swift */,
-				CD044F901A2AE79400EFE5EA /* NavigationViewController.swift */,
-				CD484DEC1A2066C600702357 /* LoginViewController.swift */,
-				CD044F8E1A2ADEF100EFE5EA /* SignUpViewController.swift */,
+				CDEFD31C1A2D8ECF00A51C74 /* Helper Files */,
+				CDEFD31D1A2D8F0100A51C74 /* LoginSignup Controllers */,
 				CD4C784C1A2C3F1B00C7260C /* MainViewController.swift */,
-				CD4C78821A2C7F6900C7260C /* ACTypesViewController.swift */,
-				CD4C78501A2C70B000C7260C /* AccountTypesTableViewController.swift */,
-				CD4C78841A2C841B00C7260C /* ACTypeAddViewController.swift */,
+				CDEFD31E1A2D8F3200A51C74 /* ACTypes Controllers */,
 				CD484DD01A204DD200702357 /* Main.storyboard */,
 				CD484DD31A204DD200702357 /* Images.xcassets */,
 				CD484DD51A204DD200702357 /* LaunchScreen.xib */,
@@ -143,6 +136,37 @@
 				CD484DE11A204DD200702357 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		CDEFD31C1A2D8ECF00A51C74 /* Helper Files */ = {
+			isa = PBXGroup;
+			children = (
+				CDE3F40D1A246A3400EBAC2D /* UIActivityView.swift */,
+				CDE3F40B1A2461AE00EBAC2D /* DataManager.swift */,
+				CD044F8C1A2AD47F00EFE5EA /* AlertManager.swift */,
+				CDE3F4091A245FF100EBAC2D /* SwiftyJSON.swift */,
+			);
+			name = "Helper Files";
+			sourceTree = "<group>";
+		};
+		CDEFD31D1A2D8F0100A51C74 /* LoginSignup Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				CD044F901A2AE79400EFE5EA /* NavigationViewController.swift */,
+				CD484DEC1A2066C600702357 /* LoginViewController.swift */,
+				CD044F8E1A2ADEF100EFE5EA /* SignUpViewController.swift */,
+			);
+			name = "LoginSignup Controllers";
+			sourceTree = "<group>";
+		};
+		CDEFD31E1A2D8F3200A51C74 /* ACTypes Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				CD4C78821A2C7F6900C7260C /* ACTypesViewController.swift */,
+				CD4C78501A2C70B000C7260C /* AccountTypesTableViewController.swift */,
+				CD4C78841A2C841B00C7260C /* ACTypeAddViewController.swift */,
+			);
+			name = "ACTypes Controllers";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
