@@ -13,12 +13,49 @@ import Foundation
 class DataManager {
     
     struct domain {
-        let url: String = "http://10.0.0.10/ledger/admin/"
+        //let url: String = "http://10.0.0.10/ledger/admin/"
+        let url: String = "http://ledger.durlov.com/admin/"
     }
     
-    class func postDataWithCallback(url: NSString, jsonData: NSDictionary, completion: (data: NSData?, error: NSError?) -> Void){
-        let nsurl:NSURL = NSURL(string: url)!
+    class func postDataAsyncWithCallback(url: NSString, jsonData: NSDictionary, completion: (data: NSData?, error: NSError?) -> Void){
+        //let nsurl:NSURL = NSURL(string: url)!
+        let nsurl:NSURL = NSURL(string: (self.domain().url + url))!
+        var err: NSError?
         
+        var request:NSMutableURLRequest = NSMutableURLRequest(URL: nsurl)
+        request.HTTPMethod = "POST"
+        request.HTTPBody = NSJSONSerialization.dataWithJSONObject(jsonData, options: nil, error: &err)
+        //request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue()) { (response: NSURLResponse!, urlData: NSData!, reponseError: NSError!) -> Void in
+            if(urlData != nil ) {
+                if let httpResponse = response as? NSHTTPURLResponse {
+                    if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300){
+                        /*
+                        var jsonParseError: NSError? = nil
+                        let object: AnyObject = NSString(data: urlData!, encoding: NSUTF8StringEncoding)!
+                        println(object)
+                        */
+                        completion(data: urlData, error: nil)
+                    }else{
+                        var statusError = NSError(domain:url, code:httpResponse.statusCode, userInfo:[NSLocalizedDescriptionKey : "HTTP status code has unexpected value."])
+                        completion(data: nil, error: statusError)
+                    }
+                }
+            }else {
+                if let error = reponseError {
+                    completion(data: nil, error: error)
+                }
+            }
+        }
+
+    }
+    
+    class func postDataSyncWithCallback(url: NSString, jsonData: NSDictionary, completion: (data: NSData?, error: NSError?) -> Void){
+        //let nsurl:NSURL = NSURL(string: url)!
+        let nsurl:NSURL = NSURL(string: (self.domain().url + url))!
         var err: NSError?
         
         var request:NSMutableURLRequest = NSMutableURLRequest(URL: nsurl)
@@ -52,10 +89,10 @@ class DataManager {
                 completion(data: nil, error: error)
             }
         }
-
+        
     }
     
-    class func loadDataWithCallback(url: NSString, completion: (data: NSData?, error: NSError?) -> Void){
+    class func loadDataSyncWithCallback(url: NSString, completion: (data: NSData?, error: NSError?) -> Void){
         let nsurl:NSURL = NSURL(string: (self.domain().url + url))!
         
         var err: NSError?
@@ -89,6 +126,42 @@ class DataManager {
         }else {
             if let error = reponseError {
                 completion(data: nil, error: error)
+            }
+        }
+        
+    }
+    
+    class func loadDataAsyncWithCallback(url: NSString, completion: (data: NSData?, error: NSError?) -> Void){
+        let nsurl:NSURL = NSURL(string: (self.domain().url + url))!
+        
+        var err: NSError?
+        
+        var request:NSMutableURLRequest = NSMutableURLRequest(URL: nsurl)
+        request.HTTPMethod = "GET"
+        //request.HTTPBody = NSJSONSerialization.dataWithJSONObject(jsonData, options: nil, error: &err)
+        //request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        //request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        //request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue()) { (response: NSURLResponse!, urlData: NSData!, reponseError: NSError!) -> Void in
+            if(urlData != nil ) {
+                if let httpResponse = response as? NSHTTPURLResponse {
+                    if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300){
+                        /*
+                        var jsonParseError: NSError? = nil
+                        let object: AnyObject = NSString(data: urlData!, encoding: NSUTF8StringEncoding)!
+                        println(object)
+                        */
+                        completion(data: urlData, error: nil)
+                    }else{
+                        var statusError = NSError(domain:url, code:httpResponse.statusCode, userInfo:[NSLocalizedDescriptionKey : "HTTP status code has unexpected value."])
+                        completion(data: nil, error: statusError)
+                    }
+                }
+            }else {
+                if let error = reponseError {
+                    completion(data: nil, error: error)
+                }
             }
         }
         

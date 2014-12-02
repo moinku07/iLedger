@@ -220,7 +220,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             var activityIndicator = UICustomActivityView()
             activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
             
-            DataManager.postDataWithCallback("http://10.0.0.10/ledger/admin/users/login", jsonData: params) { (data, error) -> Void in
+            DataManager.postDataAsyncWithCallback("users/login", jsonData: params) { (data, error) -> Void in
                 activityIndicator.hideActivityIndicator()
                 if let posterror = error{
                     println(posterror.code)
@@ -231,8 +231,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     if json["success"] == false{
                         AlertManager.showAlert(self, title: "Login Failed!", message: "\(message)", buttonNames: ["OK"], completion: nil)
                     }else{
-                        println(json)
-                        println("login successful")
+                        //println(json)
+                        //println("login successful")
                         let vc: MainViewController = self.storyboard?.instantiateViewControllerWithIdentifier("mainviewcontroller") as MainViewController
                         self.presentViewController(vc, animated: true, completion: nil)
                         //self.navigationController?.pushViewController(vc, animated: true)

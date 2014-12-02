@@ -194,7 +194,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             var activityIndicator = UICustomActivityView()
             activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
             
-            DataManager.postDataWithCallback("http://10.0.0.10/ledger/admin/users/register", jsonData: params) { (data, error) -> Void in
+            DataManager.postDataAsyncWithCallback("users/register", jsonData: params) { (data, error) -> Void in
                 activityIndicator.hideActivityIndicator()
                 if let posterror = error{
                     println(posterror.code)

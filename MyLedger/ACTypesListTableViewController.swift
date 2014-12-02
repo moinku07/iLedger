@@ -112,14 +112,21 @@ class ACTypesListTableViewController: UITableViewController {
     // MARK: - Load Account Types List from server
     
     func loadDataFromServer(){
-        DataManager.loadDataWithCallback("accounttypes/list.json", completion: { (data, error) -> Void in
+        // activity indicator
+        var activityIndicator = UICustomActivityView()
+        activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
+        
+        DataManager.loadDataAsyncWithCallback("accounttypes/list.json", completion: { (data, error) -> Void in
+            activityIndicator.hideActivityIndicator()
             if error == nil && data != nil{
                 var err: NSError? = nil
                 var json: NSMutableArray? = NSJSONSerialization.JSONObjectWithData(data!,options: NSJSONReadingOptions.AllowFragments,error:&err) as? NSMutableArray
                 if err == nil{
                     if let data = json{
                         self.tableData = data as NSMutableArray
-                        self.tableView.reloadData()
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            self.tableView.reloadData()
+                        })
                     }
                 }
             }
