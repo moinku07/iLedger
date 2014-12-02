@@ -1,37 +1,29 @@
 //
-//  AccountTypesTableViewController.swift
+//  ACTypesListTableViewController.swift
 //  MyLedger
 //
-//  Created by Moin Uddin on 12/1/14.
+//  Created by Moin Uddin on 12/2/14.
 //  Copyright (c) 2014 Moin Uddin. All rights reserved.
 //
 
 import UIKit
 
-class AccountTypesTableViewController: UITableViewController {
+class ACTypesListTableViewController: UITableViewController {
     
-    let tableData: NSMutableArray = ["Add Account type", "See Account types"]
-    
-    var selectedRowIndexPath: NSIndexPath? = nil
+    var tableData: NSMutableArray = NSMutableArray()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationController?.navigationBar.barTintColor = UIColor.orangeColor()//UIColor(red: 102/255, green: 51/255, blue: 0, alpha: 1.0)
-        self.navigationController?.navigationBar.tintColor = UIColor.whiteColor()
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.whiteColor()]
+        self.navigationItem.title = "Account Types List"
+        
+        self.loadDataFromServer()
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        if selectedRowIndexPath != nil{
-            self.tableView.deselectRowAtIndexPath(selectedRowIndexPath!, animated: true)
-        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -50,29 +42,25 @@ class AccountTypesTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return self.tableData.count
+        return tableData.count
     }
 
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
 
-        cell.textLabel.text = self.tableData.objectAtIndex(indexPath.row) as? String
-        cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
-
+        
+        if let data = self.tableData.objectAtIndex(indexPath.row) as? NSDictionary{
+            cell.textLabel.text = data["name"] as? String
+            cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
+        }
         return cell
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        selectedRowIndexPath = indexPath
-        let rowTitle: String! = self.tableData.objectAtIndex(indexPath.row) as? String
-        if rowTitle == "Add Account type"{
-            let nextVC: ACTypeAddViewController = self.storyboard?.instantiateViewControllerWithIdentifier("ACTypeAddViewController") as ACTypeAddViewController
-            self.navigationController?.pushViewController(nextVC, animated: true)
-        }else if rowTitle == "See Account types"{
-            let nextVC: ACTypesListTableViewController = self.storyboard?.instantiateViewControllerWithIdentifier("ACTypesListController") as ACTypesListTableViewController
-            self.navigationController?.pushViewController(nextVC, animated: true)
-        }
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        let nextVC: ACTypeAddViewController = self.storyboard?.instantiateViewControllerWithIdentifier("ACTypeAddViewController") as ACTypeAddViewController
+        self.navigationController?.pushViewController(nextVC, animated: true)
     }
     
 
@@ -120,6 +108,23 @@ class AccountTypesTableViewController: UITableViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    
+    // MARK: - Load Account Types List from server
+    
+    func loadDataFromServer(){
+        DataManager.loadDataWithCallback("accounttypes/list.json", completion: { (data, error) -> Void in
+            if error == nil && data != nil{
+                var err: NSError? = nil
+                var json: NSMutableArray? = NSJSONSerialization.JSONObjectWithData(data!,options: NSJSONReadingOptions.AllowFragments,error:&err) as? NSMutableArray
+                if err == nil{
+                    if let data = json{
+                        self.tableData = data as NSMutableArray
+                        self.tableView.reloadData()
+                    }
+                }
+            }
+        })
+    }
     
     // MARK: - StatusBar Style
     

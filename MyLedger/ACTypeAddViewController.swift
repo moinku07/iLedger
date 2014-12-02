@@ -12,7 +12,7 @@ class ACTypeAddViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        println("here")
+        
         self.navigationItem.title = "Add Account Type"
     }
 
@@ -20,6 +20,8 @@ class ACTypeAddViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    // MARK: - StatusBar Style
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
         return UIStatusBarStyle.LightContent
