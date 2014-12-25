@@ -21,13 +21,17 @@ class UICustomActivityView {
     
     @param uiView - add activity indicator to this view
     */
-    func showActivityIndicator(uiView: UIView, style: UIActivityIndicatorViewStyle? = nil, shouldHaveContainer: Bool? = true) {
+    func showActivityIndicator(uiView: UIView, style: UIActivityIndicatorViewStyle? = nil, shouldHaveContainer: Bool? = true, centerPoint: CGPoint? = nil) {
+        var newCenter: CGPoint = uiView.center
+        if centerPoint != nil{
+            newCenter = centerPoint!
+        }
         container.frame = uiView.frame
-        container.center = uiView.center
+        container.center = newCenter
         container.backgroundColor = UIColorFromHex(0xffffff, alpha: 0.3)
         
         loadingView.frame = CGRectMake(0, 0, 80, 80)
-        loadingView.center = uiView.center
+        loadingView.center = newCenter
         loadingView.backgroundColor = UIColorFromHex(0x444444, alpha: 0.7)
         loadingView.clipsToBounds = true
         loadingView.layer.cornerRadius = 10

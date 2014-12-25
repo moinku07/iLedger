@@ -112,9 +112,18 @@ class ACTypesListTableViewController: UITableViewController {
     // MARK: - Load Account Types List from server
     
     func loadDataFromServer(){
+        // calculate view's center for activity indicator
+        var centerOfView: CGPoint = self.view.center
+        if UIApplication.sharedApplication().statusBarOrientation == UIInterfaceOrientation.Portrait{
+            centerOfView.y = centerOfView.y - 57/2
+        }
+        else{
+            centerOfView.y = centerOfView.y - 41.5/2
+        }
+        println(UIApplication.sharedApplication().statusBarOrientation.rawValue)
         // activity indicator
         var activityIndicator = UICustomActivityView()
-        activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
+        activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false, centerPoint: centerOfView)
         
         DataManager.loadDataAsyncWithCallback("accounttypes/list.json", completion: { (data, error) -> Void in
             activityIndicator.hideActivityIndicator()

@@ -21,6 +21,7 @@
 		CD4C78511A2C70B000C7260C /* AccountTypesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4C78501A2C70B000C7260C /* AccountTypesTableViewController.swift */; };
 		CD4C78831A2C7F6900C7260C /* ACTypesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4C78821A2C7F6900C7260C /* ACTypesViewController.swift */; };
 		CD4C78851A2C841B00C7260C /* ACTypeAddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4C78841A2C841B00C7260C /* ACTypeAddViewController.swift */; };
+		CD74ED5D1A4BF0630085309E /* ACTypeAddTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD74ED5C1A4BF0630085309E /* ACTypeAddTableViewController.swift */; };
 		CDCACFCB1A2DDBCB0071CD4F /* SideBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDCACFC91A2DDBCB0071CD4F /* SideBar.swift */; };
 		CDCACFCC1A2DDBCB0071CD4F /* SideBarTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDCACFCA1A2DDBCB0071CD4F /* SideBarTableViewController.swift */; };
 		CDE3F40A1A245FF100EBAC2D /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE3F4091A245FF100EBAC2D /* SwiftyJSON.swift */; };
@@ -58,6 +59,7 @@
 		CD4C78501A2C70B000C7260C /* AccountTypesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountTypesTableViewController.swift; sourceTree = "<group>"; };
 		CD4C78821A2C7F6900C7260C /* ACTypesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACTypesViewController.swift; sourceTree = "<group>"; };
 		CD4C78841A2C841B00C7260C /* ACTypeAddViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACTypeAddViewController.swift; sourceTree = "<group>"; };
+		CD74ED5C1A4BF0630085309E /* ACTypeAddTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACTypeAddTableViewController.swift; sourceTree = "<group>"; };
 		CDCACFC91A2DDBCB0071CD4F /* SideBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBar.swift; sourceTree = "<group>"; };
 		CDCACFCA1A2DDBCB0071CD4F /* SideBarTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarTableViewController.swift; sourceTree = "<group>"; };
 		CDE3F4091A245FF100EBAC2D /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 				CD4C78821A2C7F6900C7260C /* ACTypesViewController.swift */,
 				CD4C78501A2C70B000C7260C /* AccountTypesTableViewController.swift */,
 				CD4C78841A2C841B00C7260C /* ACTypeAddViewController.swift */,
+				CD74ED5C1A4BF0630085309E /* ACTypeAddTableViewController.swift */,
 				CDEFD31F1A2D901200A51C74 /* ACTypesListTableViewController.swift */,
 			);
 			name = "ACTypes Controllers";
@@ -285,6 +288,7 @@
 				CD044F911A2AE79400EFE5EA /* NavigationViewController.swift in Sources */,
 				CDE3F40E1A246A3400EBAC2D /* UIActivityView.swift in Sources */,
 				CD4C78511A2C70B000C7260C /* AccountTypesTableViewController.swift in Sources */,
+				CD74ED5D1A4BF0630085309E /* ACTypeAddTableViewController.swift in Sources */,
 				CD4C78851A2C841B00C7260C /* ACTypeAddViewController.swift in Sources */,
 				CD4C78831A2C7F6900C7260C /* ACTypesViewController.swift in Sources */,
 				CDCACFCC1A2DDBCB0071CD4F /* SideBarTableViewController.swift in Sources */,

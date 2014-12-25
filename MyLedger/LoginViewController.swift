@@ -257,6 +257,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     activityIndicator.hideActivityIndicator()
                 })
                 if let posterror = error{
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        AlertManager.showAlert(self, title: "Error", message: "Error code: \(posterror.code). \(posterror.localizedDescription)", buttonNames: nil)
+                    })
                     println(posterror.code)
                     println(posterror.localizedDescription)
                 }else{
