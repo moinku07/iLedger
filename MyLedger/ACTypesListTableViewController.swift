@@ -51,7 +51,7 @@ class ACTypesListTableViewController: UITableViewController {
 
         
         if let data = self.tableData.objectAtIndex(indexPath.row) as? NSDictionary{
-            cell.textLabel.text = data["name"] as? String
+            cell.textLabel?.text = data["name"] as? String
             cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
         }
         return cell

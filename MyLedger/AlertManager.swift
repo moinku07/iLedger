@@ -8,13 +8,16 @@
 
 import UIKit
 
-class AlertManager: NSObject {
-    //custom alert function
-    class func showAlert(viewController: UIViewController,title: String? = nil, message: String? = nil, buttonNames: Array<String>? = nil, completion: ((index: Int) -> Void)? = nil){
+var alertManagerCompletion : ((index: Int) -> Void)?
+
+class AlertManager: NSObject, UIAlertViewDelegate {
+    
+    convenience init(viewController: UIViewController?,title: String? = nil, message: String? = nil, buttonNames: Array<String>? = nil, completion: ((index: Int) -> Void)? = nil) {
+        self.init()
         let alertTitle1 = (title == nil || title!.isEmpty) ? "Alert" : title!;
         let alertMsg = (message == nil || message!.isEmpty) ? alertTitle1 : message!;
         
-        if(AlertManager.isIOS8() == true){
+        if(AlertManager.isIOS8() == true && viewController != nil){
             let alertController: UIAlertController = UIAlertController(title: alertTitle1, message: alertMsg, preferredStyle: UIAlertControllerStyle.Alert);
             if buttonNames == nil{
                 alertController.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.Default, handler: { (action: UIAlertAction!) -> Void in
@@ -32,9 +35,16 @@ class AlertManager: NSObject {
                 }
             }
             
-            viewController.presentViewController(alertController, animated: true, completion: nil)
+            viewController!.presentViewController(alertController, animated: true, completion: nil)
         }else{
-            let alertView: UIAlertView = UIAlertView(title: alertTitle1, message: alertMsg, delegate: nil, cancelButtonTitle: nil)
+            let alertView: UIAlertView = UIAlertView(title: alertTitle1, message: alertMsg, delegate: AlertManager.self, cancelButtonTitle: nil)
+            /*let alertView: UIAlertView = UIAlertView()
+            alertView.title = alertTitle1
+            alertView.message = alertMsg
+            alertView.delegate = AlertManager.self*/
+            
+            alertManagerCompletion = completion
+            
             if buttonNames == nil{
                 alertView.addButtonWithTitle("Okay")
             }else{
@@ -43,6 +53,17 @@ class AlertManager: NSObject {
                 }
             }
             alertView.show();
+        }
+    }
+    
+    //custom alert function
+    class func showAlert(viewController: UIViewController?,title: String? = nil, message: String? = nil, buttonNames: Array<String>? = nil, completion: ((index: Int) -> Void)? = nil){
+        AlertManager(viewController: viewController, title: title, message: message, buttonNames: buttonNames, completion: completion)
+    }
+    
+    class func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
+        if alertManagerCompletion != nil{
+            alertManagerCompletion!(index: buttonIndex)
         }
     }
     

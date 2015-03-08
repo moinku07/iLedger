@@ -11,16 +11,20 @@ import UIKit
 class MainViewController: UITabBarController, SideBarDelegate {
     
     var sideBar: SideBar!
+    
+    let menuItems: NSMutableArray = [["title": "Logout", "icon": "icon-nav-logout"]]
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.navigationController?.navigationBarHidden = false
         
-        sideBar = SideBar(sourceView: self.view, menuItems: ["Logout"])
-        sideBar.delegate = self
-        
-        sideBar.shouldDeselectSelectedRow = true
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 250 * 1000000), dispatch_get_main_queue()){
+            self.sideBar = SideBar(sourceView: self.view.window!, menuItems: self.menuItems)
+            self.sideBar.delegate = self
+            self.sideBar.shouldDeselectSelectedRow = true
+            //self.sideBar.menuItems = self.menuItems
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -28,7 +32,7 @@ class MainViewController: UITabBarController, SideBarDelegate {
         // Dispose of any resources that can be recreated.
     }
     
-    func sideBarDidSelectRowAtIndex(index: Int) {
+    func sideBarDidSelectRowAtIndex(index: Int, dict: NSDictionary) {
         if index == 0{
             var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
             prefs.setObject(nil, forKey: "username")
@@ -36,14 +40,9 @@ class MainViewController: UITabBarController, SideBarDelegate {
             prefs.synchronize()
             self.view.window?.rootViewController?.dismissViewControllerAnimated(true, completion: nil)
         }
-    }
-    
-    func onViewTap(recognizer: UITapGestureRecognizer){
-        if sideBar.isSideBarOpen{
-            sideBar.showSideBar(false)
-        }
-    }
-    
+        sideBar.showSideBar(false)
+        sideBar.removeFromSuperview()
+    }    
 
     /*
     // MARK: - Navigation

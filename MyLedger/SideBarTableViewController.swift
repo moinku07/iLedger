@@ -15,7 +15,11 @@ protocol SideBarTableViewControllerDelegate{
 class SideBarTableViewController: UITableViewController {
     
     var delegate: SideBarTableViewControllerDelegate?
-    var tableData: Array<String> = []
+    var tableData: NSMutableArray = NSMutableArray()
+    
+    override func viewDidLoad() {
+        self.tableView.scrollEnabled = false
+    }
 
     // MARK: - Table view data source
 
@@ -40,15 +44,23 @@ class SideBarTableViewController: UITableViewController {
             // Configure the cell
             
             cell?.backgroundColor = UIColor.clearColor();
-            cell?.textLabel.textColor = UIColor.darkTextColor()
+            cell?.textLabel?.textColor = UIColor.whiteColor()
             
             let selectedView: UIView = UIView(frame: CGRectMake(0, 0, cell!.frame.size.width, cell!.frame.size.height))
-            selectedView.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.3)
+            selectedView.backgroundColor = UIColor.grayColor().colorWithAlphaComponent(0.3)
             
             cell!.selectedBackgroundView = selectedView
         }
+        //cell?.backgroundColor = UIColor.redColor()
+        let cellData: NSDictionary = self.tableData.objectAtIndex(indexPath.row) as NSDictionary
         
-        cell?.textLabel.text = self.tableData[indexPath.row]
+        cell?.textLabel?.text = cellData.objectForKey("title") as? String
+        
+        if let imageName: String = cellData.objectForKey("icon") as? String{
+            if !imageName.isEmpty || imageName != ""{
+                cell?.imageView?.image = UIImage(named: imageName)
+            }
+        }
 
         return cell!
     }

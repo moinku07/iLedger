@@ -57,7 +57,7 @@ class AccountTypesTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
 
-        cell.textLabel.text = self.tableData.objectAtIndex(indexPath.row) as? String
+        cell.textLabel?.text = self.tableData.objectAtIndex(indexPath.row) as? String
         cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
 
         return cell

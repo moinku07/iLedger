@@ -8,26 +8,57 @@
 //
 
 import Foundation
-
+import UIKit
+import SystemConfiguration
 
 class DataManager {
     
     struct domain {
-        //let url: String = "http://10.0.0.10/ledger/admin/"
-        let url: String = "http://ledger.durlov.com/admin/"
+        let url: String = "http://10.0.0.10/ledger/admin/"
+        //let url: String = "http://ledger.durlov.com/admin/"
     }
     
-    class func postDataAsyncWithCallback(url: NSString, jsonData: NSDictionary, completion: (data: NSData?, error: NSError?) -> Void){
+    class func isConnectedToNetwork() -> Bool {
+        var zeroAddress = sockaddr_in(sin_len: 0, sin_family: 0, sin_port: 0, sin_addr: in_addr(s_addr: 0), sin_zero: (0, 0, 0, 0, 0, 0, 0, 0))
+        zeroAddress.sin_len = UInt8(sizeofValue(zeroAddress))
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+        
+        let defaultRouteReachability = withUnsafePointer(&zeroAddress) {
+            SCNetworkReachabilityCreateWithAddress(nil, UnsafePointer($0)).takeRetainedValue()
+        }
+        
+        var flags: SCNetworkReachabilityFlags = 0
+        if SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) == 0 {
+            return false
+        }
+        
+        let isReachable = (flags & UInt32(kSCNetworkFlagsReachable)) != 0
+        let needsConnection = (flags & UInt32(kSCNetworkFlagsConnectionRequired)) != 0
+        //println(isReachable && !needsConnection)
+        return (isReachable && !needsConnection) ? true : false
+    }
+    
+    class func postDataAsyncWithCallback(url: NSString, data: AnyObject, json: Bool? = true, completion: (data: NSData?, error: NSError?) -> Void){
+        
         //let nsurl:NSURL = NSURL(string: url)!
         let nsurl:NSURL = NSURL(string: (self.domain().url + url))!
+        //println(nsurl)
         var err: NSError?
         
         var request:NSMutableURLRequest = NSMutableURLRequest(URL: nsurl)
+        request.cachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData
         request.HTTPMethod = "POST"
-        request.HTTPBody = NSJSONSerialization.dataWithJSONObject(jsonData, options: nil, error: &err)
-        //request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        if json == true{
+            let postData: Dictionary = data as NSDictionary
+            request.HTTPBody = NSJSONSerialization.dataWithJSONObject(postData, options: nil, error: &err)
+            //request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("application/json", forHTTPHeaderField: "Accept")
+        }else{
+            let postString: NSString = data as NSString
+            request.HTTPBody = postString.dataUsingEncoding(NSUTF8StringEncoding)
+        }
         
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue()) { (response: NSURLResponse!, urlData: NSData!, reponseError: NSError!) -> Void in
             if(urlData != nil ) {
@@ -53,17 +84,26 @@ class DataManager {
 
     }
     
-    class func postDataSyncWithCallback(url: NSString, jsonData: NSDictionary, completion: (data: NSData?, error: NSError?) -> Void){
+    class func postDataSyncWithCallback(url: NSString, data: AnyObject, json: Bool? = true, completion: (data: NSData?, error: NSError?) -> Void){
+        
         //let nsurl:NSURL = NSURL(string: url)!
         let nsurl:NSURL = NSURL(string: (self.domain().url + url))!
         var err: NSError?
         
         var request:NSMutableURLRequest = NSMutableURLRequest(URL: nsurl)
+        request.cachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData
         request.HTTPMethod = "POST"
-        request.HTTPBody = NSJSONSerialization.dataWithJSONObject(jsonData, options: nil, error: &err)
-        //request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        
+        if json == true{
+            let postData: Dictionary = data as NSDictionary
+            request.HTTPBody = NSJSONSerialization.dataWithJSONObject(postData, options: nil, error: &err)
+            //request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+            request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("application/json", forHTTPHeaderField: "Accept")
+        }else{
+            let postString: NSString = data as NSString
+            request.HTTPBody = postString.dataUsingEncoding(NSUTF8StringEncoding)
+        }
         
         var reponseError: NSError?
         var response: NSURLResponse?
@@ -92,12 +132,19 @@ class DataManager {
         
     }
     
-    class func loadDataSyncWithCallback(url: NSString, completion: (data: NSData?, error: NSError?) -> Void){
-        let nsurl:NSURL = NSURL(string: (self.domain().url + url))!
+    class func loadDataSyncWithCallback(url: AnyObject, completion: (data: NSData?, error: NSError?) -> Void){
+        
+        var nsurl:NSURL = NSURL()
+        if url.isKindOfClass(NSURL){
+            nsurl = url as NSURL
+        }else{
+            nsurl = NSURL(string: (self.domain().url + String(url as NSString)))!
+        }
         
         var err: NSError?
         
         var request:NSMutableURLRequest = NSMutableURLRequest(URL: nsurl)
+        request.cachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData
         request.HTTPMethod = "GET"
         //request.HTTPBody = NSJSONSerialization.dataWithJSONObject(jsonData, options: nil, error: &err)
         //request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -119,7 +166,7 @@ class DataManager {
                     */
                     completion(data: urlData, error: nil)
                 }else{
-                    var statusError = NSError(domain:url, code:httpResponse.statusCode, userInfo:[NSLocalizedDescriptionKey : "HTTP status code has unexpected value."])
+                    var statusError = NSError(domain:nsurl.absoluteString!, code:httpResponse.statusCode, userInfo:[NSLocalizedDescriptionKey : "HTTP status code has unexpected value."])
                     completion(data: nil, error: statusError)
                 }
             }
@@ -132,11 +179,13 @@ class DataManager {
     }
     
     class func loadDataAsyncWithCallback(url: NSString, completion: (data: NSData?, error: NSError?) -> Void){
+        
         let nsurl:NSURL = NSURL(string: (self.domain().url + url))!
         
         var err: NSError?
         
         var request:NSMutableURLRequest = NSMutableURLRequest(URL: nsurl)
+        request.cachePolicy = NSURLRequestCachePolicy.ReloadIgnoringLocalAndRemoteCacheData
         request.HTTPMethod = "GET"
         //request.HTTPBody = NSJSONSerialization.dataWithJSONObject(jsonData, options: nil, error: &err)
         //request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")

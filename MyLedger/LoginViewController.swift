@@ -100,7 +100,9 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             usernameTextfield.text = userName!
             passwordTextfield.text = passWord!
             rememberSwitch.on = true
-            loginButton.sendActionsForControlEvents(UIControlEvents.TouchUpInside)
+            dispatch_async(dispatch_get_main_queue()){
+                self.loginButton.sendActionsForControlEvents(UIControlEvents.TouchUpInside)
+            }
         }else{
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 self.passwordTextfield.text = ""
@@ -252,43 +254,41 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             var activityIndicator = UICustomActivityView()
             activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
             
-            DataManager.postDataAsyncWithCallback("users/login", jsonData: params) { (data, error) -> Void in
+            DataManager.postDataAsyncWithCallback("users/login", data: params, json: true) { (data, error) -> Void in
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     activityIndicator.hideActivityIndicator()
-                })
-                if let posterror = error{
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        AlertManager.showAlert(self, title: "Error", message: "Error code: \(posterror.code). \(posterror.localizedDescription)", buttonNames: nil)
-                    })
-                    println(posterror.code)
-                    println(posterror.localizedDescription)
-                }else{
-                    let json = JSON(data: data!)
-                    let message = json["message"]
-                    if json["success"] == false{
-                        AlertManager.showAlert(self, title: "Login Failed!", message: "\(message)", buttonNames: ["OK"], completion: nil)
+                    if let posterror = error{
+                            AlertManager.showAlert(self, title: "Error", message: "Error code: \(posterror.code). \(posterror.localizedDescription)", buttonNames: nil)
+                        println(posterror.code)
+                        println(posterror.localizedDescription)
                     }else{
+                        let json = JSON(data: data!)
+                        println("--------")
                         println(json)
-                        //println("login successful")
-                        var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
-                        if self.rememberSwitch.on == true{
-                            prefs.setObject(userName, forKey: "username")
-                            prefs.setObject(passWord, forKey: "password")
-                            //prefs.setInteger(1, forKey: "rememberSwitch")
-                            prefs.synchronize()
+                        let message = json["message"]
+                        if json["success"] == false{
+                            AlertManager.showAlert(self, title: "Login Failed!", message: "\(message)", buttonNames: ["OK"], completion: nil)
                         }else{
-                            prefs.setObject(nil, forKey: "username")
-                            prefs.setObject(nil, forKey: "password")
-                            //prefs.setInteger(0, forKey: "rememberSwitch")
-                            prefs.synchronize()
+                            var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+                            if self.rememberSwitch.on == true{
+                                prefs.setObject(userName, forKey: "username")
+                                prefs.setObject(passWord, forKey: "password")
+                                //prefs.setInteger(1, forKey: "rememberSwitch")
+                                prefs.synchronize()
+                            }else{
+                                prefs.setObject(nil, forKey: "username")
+                                prefs.setObject(nil, forKey: "password")
+                                //prefs.setInteger(0, forKey: "rememberSwitch")
+                                prefs.synchronize()
+                            }
+                            
+                            let vc: MainViewController = self.storyboard?.instantiateViewControllerWithIdentifier("mainviewcontroller") as MainViewController
+                            self.presentViewController(vc, animated: true, completion: nil)
+                            //self.navigationController?.pushViewController(vc, animated: true)
+                            //self.showViewController(vc, sender: vc)
                         }
-                        
-                        let vc: MainViewController = self.storyboard?.instantiateViewControllerWithIdentifier("mainviewcontroller") as MainViewController
-                        self.presentViewController(vc, animated: true, completion: nil)
-                        //self.navigationController?.pushViewController(vc, animated: true)
-                        //self.showViewController(vc, sender: vc)
                     }
-                }
+                })
             }
         }
     }
