@@ -7,13 +7,18 @@
 //
 
 import UIKit
+import CoreData
 
 class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate {
 
-    var acTypeId: Int?
+    var isEdit: Bool = false
+    var acTypeID: Int?
+    var identifier: String?
     @IBOutlet var tableView: UITableView!
     
-    var tableData: NSMutableArray = [/*["title": "Other Cell1"], ["title": "Other Cell2"],*/["title": "Name", "type": "input", "placeHolder": "Name"],["title": "Start Date", "type": "picker", "date": NSDate()],["title": "End Date", "type": "date", "date": NSDate()]]
+    var nameTextField: UITextField?
+    
+    var tableData: NSMutableArray = [/*["title": "Other Cell1"], ["title": "Other Cell2"],*/["title": "Name", "type": "input", "placeHolder": "Name"],["title": "Type", "type": "picker"/*, "value": 2*/]/*,["title": "End Date", "type": "date", "date": NSDate()]*/]
     
     var dateFormatter: NSDateFormatter?
     var pickerCellRowHeight: CGFloat?
@@ -27,7 +32,16 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
     var datePickerRows: NSMutableArray = NSMutableArray()
     var pickerRows: NSMutableArray = NSMutableArray()
     
-    let pickerData: NSArray = [["title": "Add", "type": 1], ["title": "Sub", "type": 2]]
+    let pickerDataValues: NSArray = [1, 2]
+    let pickerDataTitles: NSArray = ["Add", "Sub"]
+    var selectedPickerValue: Int?
+    
+    let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+    var currentTimestamp: String {
+        get {
+            return "\(NSDate().timeIntervalSince1970 * 1000)"
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -108,11 +122,38 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
                 if let picker: UIPickerView = self.tableView.viewWithTag(pickerTag) as? UIPickerView{
                     picker.delegate = self
                     picker.dataSource = self
+                    picker.selectRow(pickerDataValues.indexOfObject(selectedPickerValue!), inComponent: 0, animated: false)
                 }
             }
             --modelRow
         }
-        rowData = self.tableData.objectAtIndex(modelRow) as NSDictionary
+        
+        if cellID != "uiPicker" || cellID == "date"{
+            rowData = self.tableData.objectAtIndex(modelRow) as NSDictionary
+            //println(rowData)
+            if let type: String = rowData["type"] as? String{
+                if type  == "input"{
+                    let label1: UILabel = cell.viewWithTag(1) as UILabel
+                    label1.text = rowData.objectForKey("title") as? String
+                    
+                    let input: UITextField = cell.viewWithTag(2) as UITextField
+                    input.placeholder = rowData.objectForKey("title") as? String
+                    input.text = rowData.objectForKey("value") as? String
+                    nameTextField = input
+                }else if type == "picker"{
+                    let label1: UILabel = cell.viewWithTag(1) as UILabel
+                    label1.text = rowData.objectForKey("title") as? String
+                    
+                    if let pickerValue: Int = rowData.objectForKey("value") as? Int{
+                        selectedPickerValue = pickerValue
+                        let label2: UILabel = cell.viewWithTag(2) as UILabel
+                        label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
+                    }else if selectedPickerValue == nil{
+                        selectedPickerValue = 1
+                    }
+                }
+            }
+        }
         
         return cell
     }
@@ -199,12 +240,20 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
     }
     
     func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return pickerData.count
+        return pickerDataValues.count
     }
     
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
-        let rowData: NSDictionary = pickerData.objectAtIndex(row) as NSDictionary
-        return rowData.objectForKey("title") as String
+        return pickerDataTitles.objectAtIndex(row) as String
+    }
+    
+    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        selectedPickerValue = pickerDataValues.objectAtIndex(row) as? Int
+        let indexPath: NSIndexPath = NSIndexPath(forRow: datePickerIndexPath!.row - 1, inSection: datePickerIndexPath!.section)
+        if let cell: UITableViewCell = tableView.cellForRowAtIndexPath(indexPath){
+            let label2: UILabel = cell.viewWithTag(2) as UILabel
+            label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
+        }
     }
     
     // MARK: - StatusBar Style
@@ -213,13 +262,103 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
         return UIStatusBarStyle.LightContent
     }
     
-    func onLableTap(recognizer: UITapGestureRecognizer){
-        let actionSheet: UIActionSheet = UIActionSheet(title: "", delegate: nil, cancelButtonTitle: nil, destructiveButtonTitle: nil)
-        //self.presentViewController(actionSheet, animated: true, completion: nil)
-        actionSheet.showInView(self.view)
-    }
     
     @IBAction func onSubmitTap(sender: UIButton) {
+        if nameTextField != nil && nameTextField!.text != ""{
+            var activityIndicator = UICustomActivityView()
+            activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
+            
+            let userID: NSString = prefs.objectForKey("userID") as NSString
+            let actypeid: String = acTypeID != nil ? String(acTypeID!) : ""
+            let url: String = isEdit ? "accounttypes/edit" : "accounttypes/add"
+            let postData: NSDictionary = [
+                "Accounttype": [
+                    "name": nameTextField!.text,
+                    "type": selectedPickerValue!,
+                    "user_id": userID.integerValue,
+                    "ajax" : true,
+                    "id" : actypeid
+                ]
+            ]
+            //println(postData)
+            DataManager.postDataAsyncWithCallback(url, data: postData, json: true, completion: { (data, error) -> Void in
+                dispatch_async(dispatch_get_main_queue()){
+                    let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
+                    activityIndicator.hideActivityIndicator()
+                    if error != nil{
+                        if error!.code == -1004{
+                            if self.identifier != nil{
+                                let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")!
+                                let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+                                if result.count > 0{
+                                    let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                    accounttype.name = "\(self.nameTextField!.text)"
+                                    accounttype.type = self.selectedPickerValue! as NSNumber
+                                    accounttype.synced = false
+                                    var error: NSError?
+                                    moc.save(&error)
+                                    if error == nil{
+                                        println("updated")
+                                    }else{
+                                        println(error!.localizedDescription)
+                                    }
+                                }
+                            }else{
+                                if let accounttype: Accounttypes = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounttypes), managedObjectContext: moc) as? Accounttypes{
+                                    println(NSDate)
+                                    accounttype.identifier = self.currentTimestamp
+                                    //accounttype.id = -1
+                                    accounttype.user_id = userID.integerValue
+                                    accounttype.name = "\(self.nameTextField!.text)"
+                                    accounttype.type = self.selectedPickerValue! as NSNumber
+                                    accounttype.modified = ""
+                                    accounttype.synced = false
+                                    accounttype.url = ""
+                                    accounttype.data = ""
+                                    let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
+                                    if success == false{
+                                        println("failed to save accounttype.id: \(accounttype.id)")
+                                    }else{
+                                        println("Saved to localstorage")
+                                    }
+                                }
+                            }
+                            self.navigationController?.popViewControllerAnimated(true)
+                        }else{
+                            AlertManager.showAlert(self, title: "Error", message: error!.localizedDescription, buttonNames: nil, completion: nil)
+                        }
+                    }else if data != nil{
+                        if let response: NSDictionary = NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.allZeros, error: nil) as? NSDictionary{
+                            if response.objectForKey("success") as? Bool == true{
+                                if self.identifier != nil{
+                                    let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")!
+                                    let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+                                    if result.count > 0{
+                                        let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                        accounttype.name = "\(self.nameTextField!.text)"
+                                        accounttype.type = self.selectedPickerValue! as NSNumber
+                                        accounttype.synced = true
+                                        var error: NSError?
+                                        moc.save(&error)
+                                        if error == nil{
+                                            println("updated")
+                                        }else{
+                                            println(error!.localizedDescription)
+                                        }
+                                    }
+                                }
+                                self.navigationController?.popViewControllerAnimated(true)
+                            }else{
+                                AlertManager.showAlert(self, title: "Error", message: "There was an error. Please try again.", buttonNames: nil, completion: nil)
+                            }
+                        }
+                    }
+                }
+            })
+        }else{
+            AlertManager.showAlert(self, title: "Warning", message: "Please enter account type name", buttonNames: nil, completion: nil)
+            //cartItem.addons = addon.base64EncodedStringWithOptions(NSDataBase64EncodingOptions.allZeros)
+        }
         
     }
 

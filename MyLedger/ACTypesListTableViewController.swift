@@ -7,23 +7,38 @@
 //
 
 import UIKit
+import CoreData
 
 class ACTypesListTableViewController: UITableViewController {
     
     var tableData: NSMutableArray = NSMutableArray()
+    
+    let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+    var currentTimestamp: String {
+        get {
+            return "\(NSDate().timeIntervalSince1970 * 1000)"
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.navigationItem.title = "Account Types List"
         
-        self.loadDataFromServer()
+        //self.loadDataFromServer()
+        self.loadLocalData()
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        loadLocalData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -59,7 +74,15 @@ class ACTypesListTableViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        
         let nextVC: ACTypeAddViewController = self.storyboard?.instantiateViewControllerWithIdentifier("ACTypeAddViewController") as ACTypeAddViewController
+        
+        if let cellData = self.tableData.objectAtIndex(indexPath.row) as? NSDictionary{
+            nextVC.isEdit = true
+            nextVC.acTypeID = (cellData.objectForKey("id") as NSString).integerValue
+            nextVC.identifier = cellData.objectForKey("identifier") as NSString
+            nextVC.tableData = [["title": "Name", "type": "input", "placeHolder": "Name", "value": cellData.objectForKey("name") as NSString],["title": "Type", "type": "picker", "value": (cellData.objectForKey("type") as NSString).integerValue]]
+        }
         self.navigationController?.pushViewController(nextVC, animated: true)
     }
     
@@ -120,26 +143,82 @@ class ACTypesListTableViewController: UITableViewController {
         else{
             centerOfView.y = centerOfView.y - 41.5/2
         }
-        println(UIApplication.sharedApplication().statusBarOrientation.rawValue)
+        //println(UIApplication.sharedApplication().statusBarOrientation.rawValue)
         // activity indicator
         var activityIndicator = UICustomActivityView()
         activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false, centerPoint: centerOfView)
         
         DataManager.loadDataAsyncWithCallback("accounttypes/list.json", completion: { (data, error) -> Void in
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
             activityIndicator.hideActivityIndicator()
-            if error == nil && data != nil{
-                var err: NSError? = nil
-                var json: NSMutableArray? = NSJSONSerialization.JSONObjectWithData(data!,options: NSJSONReadingOptions.AllowFragments,error:&err) as? NSMutableArray
-                if err == nil{
-                    if let data = json{
-                        self.tableData = data as NSMutableArray
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                            self.tableView.reloadData()
-                        })
+                if error == nil && data != nil{
+                    var err: NSError? = nil
+                    var json: NSMutableArray? = NSJSONSerialization.JSONObjectWithData(data!,options: NSJSONReadingOptions.AllowFragments,error:&err) as? NSMutableArray
+                    if err == nil{
+                        if json != nil && json!.count > 0{
+                            self.tableData.removeAllObjects()
+                            //self.tableData = json!
+                            //self.tableView.reloadData()
+                            let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
+                            var error: NSError?
+                            //let userID: NSNumber = self.prefs.objectForKey("userID") as NSNumber
+                            for (index, item) in enumerate(json!){
+                                //self.tableData.addObject(item)
+                                if let dict: NSDictionary = item as? NSDictionary{
+                                    if let accounttype: Accounttypes = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounttypes), managedObjectContext: moc) as? Accounttypes{
+                                        accounttype.identifier = self.currentTimestamp
+                                        accounttype.id = (dict.objectForKey("id") as NSString).integerValue
+                                        accounttype.user_id = (dict.objectForKey("user_id") as NSString).integerValue
+                                        accounttype.name = dict.objectForKey("name") as NSString
+                                        accounttype.type = (dict.objectForKey("type") as NSString).integerValue
+                                        accounttype.modified = dict.objectForKey("modified") as NSString
+                                        accounttype.synced = true
+                                        accounttype.url = ""
+                                        accounttype.data = ""
+                                        let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
+                                        if success == false{
+                                            println("failed to save accounttype.id: \(accounttype.id)")
+                                        }
+                                    }
+                                    
+                                }
+                            }
+                            self.loadLocalData()
+                        }
                     }
                 }
-            }
+            })
         })
+    }
+    
+    // MARK: - loadLocalData
+    func loadLocalData(){
+        let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
+        let sorter: NSSortDescriptor = NSSortDescriptor(key: "id", ascending: false)
+        let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: nil, andSorter: [sorter], managedObjectContext: moc, limit: nil)
+        if result.count > 0{
+            var dict: NSMutableDictionary = NSMutableDictionary()
+            tableData.removeAllObjects()
+            for (index, item) in enumerate(result){
+                if let accounttype: Accounttypes = item as? Accounttypes{
+                    dict = NSMutableDictionary()
+                    dict.setObject(accounttype.identifier, forKey: "identifier")
+                    dict.setObject(accounttype.id.stringValue, forKey: "id")
+                    dict.setObject(accounttype.user_id.stringValue, forKey: "user_id")
+                    dict.setObject(accounttype.name, forKey: "name")
+                    dict.setObject(accounttype.type.stringValue, forKey: "type")
+                    dict.setObject(accounttype.modified, forKey: "modified")
+                    dict.setObject(accounttype.synced, forKey: "synced")
+                    dict.setObject(accounttype.url, forKey: "url")
+                    dict.setObject(accounttype.data, forKey: "data")
+                    tableData.addObject(dict)
+                }
+            }
+            tableView.reloadData()
+        }else{
+            self.loadDataFromServer()
+        }
+        
     }
     
     // MARK: - StatusBar Style

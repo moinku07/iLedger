@@ -24,6 +24,8 @@
 		CD74ED5D1A4BF0630085309E /* ACTypeAddTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD74ED5C1A4BF0630085309E /* ACTypeAddTableViewController.swift */; };
 		CDCACFCB1A2DDBCB0071CD4F /* SideBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDCACFC91A2DDBCB0071CD4F /* SideBar.swift */; };
 		CDCACFCC1A2DDBCB0071CD4F /* SideBarTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDCACFCA1A2DDBCB0071CD4F /* SideBarTableViewController.swift */; };
+		CDDC0BA31AAD70CA00239B2C /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDC0BA21AAD70CA00239B2C /* CoreDataHelper.swift */; };
+		CDDC0BA51AAD7B0F00239B2C /* Accounttypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDC0BA41AAD7B0F00239B2C /* Accounttypes.swift */; };
 		CDE3F40A1A245FF100EBAC2D /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE3F4091A245FF100EBAC2D /* SwiftyJSON.swift */; };
 		CDE3F40C1A2461AE00EBAC2D /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE3F40B1A2461AE00EBAC2D /* DataManager.swift */; };
 		CDE3F40E1A246A3400EBAC2D /* UIActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE3F40D1A246A3400EBAC2D /* UIActivityView.swift */; };
@@ -62,6 +64,8 @@
 		CD74ED5C1A4BF0630085309E /* ACTypeAddTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACTypeAddTableViewController.swift; sourceTree = "<group>"; };
 		CDCACFC91A2DDBCB0071CD4F /* SideBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBar.swift; sourceTree = "<group>"; };
 		CDCACFCA1A2DDBCB0071CD4F /* SideBarTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarTableViewController.swift; sourceTree = "<group>"; };
+		CDDC0BA21AAD70CA00239B2C /* CoreDataHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
+		CDDC0BA41AAD7B0F00239B2C /* Accounttypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Accounttypes.swift; sourceTree = "<group>"; };
 		CDE3F4091A245FF100EBAC2D /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		CDE3F40B1A2461AE00EBAC2D /* DataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		CDE3F40D1A246A3400EBAC2D /* UIActivityView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIActivityView.swift; sourceTree = "<group>"; };
@@ -115,7 +119,7 @@
 				CD484DD01A204DD200702357 /* Main.storyboard */,
 				CD484DD31A204DD200702357 /* Images.xcassets */,
 				CD484DD51A204DD200702357 /* LaunchScreen.xib */,
-				CD484DCB1A204DD200702357 /* MyLedger.xcdatamodeld */,
+				CDDC0BA11AAD708800239B2C /* CoreData */,
 				CD484DC71A204DD200702357 /* Supporting Files */,
 			);
 			path = MyLedger;
@@ -146,9 +150,19 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		CDDC0BA11AAD708800239B2C /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				CD484DCB1A204DD200702357 /* MyLedger.xcdatamodeld */,
+				CDDC0BA41AAD7B0F00239B2C /* Accounttypes.swift */,
+			);
+			name = CoreData;
+			sourceTree = "<group>";
+		};
 		CDEFD31C1A2D8ECF00A51C74 /* Helper Files */ = {
 			isa = PBXGroup;
 			children = (
+				CDDC0BA21AAD70CA00239B2C /* CoreDataHelper.swift */,
 				CDCACFC91A2DDBCB0071CD4F /* SideBar.swift */,
 				CDCACFCA1A2DDBCB0071CD4F /* SideBarTableViewController.swift */,
 				CDE3F40D1A246A3400EBAC2D /* UIActivityView.swift */,
@@ -230,7 +244,6 @@
 				TargetAttributes = {
 					CD484DC31A204DD200702357 = {
 						CreatedOnToolsVersion = 6.1;
-						DevelopmentTeam = YS9ZVHSN9U;
 					};
 					CD484DDB1A204DD200702357 = {
 						CreatedOnToolsVersion = 6.1;
@@ -292,8 +305,10 @@
 				CD4C78851A2C841B00C7260C /* ACTypeAddViewController.swift in Sources */,
 				CD4C78831A2C7F6900C7260C /* ACTypesViewController.swift in Sources */,
 				CDCACFCC1A2DDBCB0071CD4F /* SideBarTableViewController.swift in Sources */,
+				CDDC0BA51AAD7B0F00239B2C /* Accounttypes.swift in Sources */,
 				CD484DCD1A204DD200702357 /* MyLedger.xcdatamodeld in Sources */,
 				CD044F8F1A2ADEF100EFE5EA /* SignUpViewController.swift in Sources */,
+				CDDC0BA31AAD70CA00239B2C /* CoreDataHelper.swift in Sources */,
 				CDCACFCB1A2DDBCB0071CD4F /* SideBar.swift in Sources */,
 				CDE3F40A1A245FF100EBAC2D /* SwiftyJSON.swift in Sources */,
 				CD484DCA1A204DD200702357 /* AppDelegate.swift in Sources */,

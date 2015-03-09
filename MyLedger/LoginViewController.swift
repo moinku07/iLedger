@@ -32,6 +32,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     var currentOrientation: Int!
     
+    var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -95,7 +97,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
         let userName: String? = prefs.objectForKey("username") as? String
         let passWord: String? = prefs.objectForKey("password") as? String
-        println(passWord)
+        //println(passWord)
         if userName != nil && passWord != nil{
             usernameTextfield.text = userName!
             passwordTextfield.text = passWord!
@@ -258,7 +260,15 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     activityIndicator.hideActivityIndicator()
                     if let posterror = error{
+                        println(self.prefs.objectForKey("userID") as? String)
+                        if posterror.code == -1004 && self.prefs.objectForKey("userID") as? String != nil{
+                            AlertManager.showAlert(self, title: "Error", message: "No internet connection. App will work in offline mode.", buttonNames: ["Okay"], completion: { (index) -> Void in
+                                let vc: MainViewController = self.storyboard?.instantiateViewControllerWithIdentifier("mainviewcontroller") as MainViewController
+                                self.presentViewController(vc, animated: true, completion: nil)
+                            })
+                        }else{
                             AlertManager.showAlert(self, title: "Error", message: "Error code: \(posterror.code). \(posterror.localizedDescription)", buttonNames: nil)
+                        }
                         println(posterror.code)
                         println(posterror.localizedDescription)
                     }else{
@@ -269,18 +279,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                         if json["success"] == false{
                             AlertManager.showAlert(self, title: "Login Failed!", message: "\(message)", buttonNames: ["OK"], completion: nil)
                         }else{
-                            var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
+                            self.prefs.setObject(json["user_id"].stringValue, forKey: "userID")
                             if self.rememberSwitch.on == true{
-                                prefs.setObject(userName, forKey: "username")
-                                prefs.setObject(passWord, forKey: "password")
-                                //prefs.setInteger(1, forKey: "rememberSwitch")
-                                prefs.synchronize()
+                                self.prefs.setObject(userName, forKey: "username")
+                                self.prefs.setObject(passWord, forKey: "password")
+                                //self.prefs.setInteger(1, forKey: "rememberSwitch")
                             }else{
-                                prefs.setObject(nil, forKey: "username")
-                                prefs.setObject(nil, forKey: "password")
+                                self.prefs.setObject(nil, forKey: "username")
+                                self.prefs.setObject(nil, forKey: "password")
                                 //prefs.setInteger(0, forKey: "rememberSwitch")
-                                prefs.synchronize()
                             }
+                            self.prefs.synchronize()
+                            
+                            println(self.prefs.objectForKey("userID") as? String)
                             
                             let vc: MainViewController = self.storyboard?.instantiateViewControllerWithIdentifier("mainviewcontroller") as MainViewController
                             self.presentViewController(vc, animated: true, completion: nil)
