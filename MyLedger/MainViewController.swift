@@ -7,13 +7,14 @@
 //
 
 import UIKit
+import CoreData
 
 class MainViewController: UITabBarController, SideBarDelegate {
     
     var sideBar: SideBar!
     
     let menuItems: NSMutableArray = [["title": "Logout", "icon": "icon-nav-logout"]]
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -25,6 +26,8 @@ class MainViewController: UITabBarController, SideBarDelegate {
             self.sideBar.shouldDeselectSelectedRow = true
             //self.sideBar.menuItems = self.menuItems
         }
+        
+        self.synchronizeAccountTypes()
     }
 
     override func didReceiveMemoryWarning() {
@@ -42,7 +45,36 @@ class MainViewController: UITabBarController, SideBarDelegate {
         }
         sideBar.showSideBar(false)
         sideBar.removeFromSuperview()
-    }    
+    }
+    
+    // MARK: - synchonizeAccountTypes
+    func synchronizeAccountTypes(){
+        //println(NSTimeZone.knownTimeZoneNames())
+        //println("currentTimeString: \(DVDateFormatter.currentTimeString)")
+        //return
+        //println("here")
+        //if DataManager.isConnectedToNetwork() == true{
+            let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
+            let predicate: NSPredicate = NSPredicate(format: "synced == 'NO'")!
+            let sorter: NSSortDescriptor = NSSortDescriptor(key: "identifier", ascending: true)
+            let results: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: nil)
+            if results.count > 0{
+                for (index, item) in enumerate(results){
+                    let accouttype: Accounttypes = item as Accounttypes
+                    println("--------------------------")
+                    println(accouttype.name)
+                    println(accouttype.type)
+                    println(accouttype.modified)
+                    //println(accouttype.url)
+                    if let id: NSNumber = accouttype.id as NSNumber?{
+                        println(id)
+                    }
+                    
+                    println("--------------------------")
+                }
+            }
+        //}
+    }
 
     /*
     // MARK: - Navigation

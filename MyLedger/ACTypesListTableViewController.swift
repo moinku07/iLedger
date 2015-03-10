@@ -26,7 +26,7 @@ class ACTypesListTableViewController: UITableViewController {
         self.navigationItem.title = "Account Types List"
         
         //self.loadDataFromServer()
-        self.loadLocalData()
+        //self.loadLocalData()
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -153,7 +153,7 @@ class ACTypesListTableViewController: UITableViewController {
             activityIndicator.hideActivityIndicator()
                 if error == nil && data != nil{
                     var err: NSError? = nil
-                    var json: NSMutableArray? = NSJSONSerialization.JSONObjectWithData(data!,options: NSJSONReadingOptions.AllowFragments,error:&err) as? NSMutableArray
+                    var json: NSArray? = NSJSONSerialization.JSONObjectWithData(data!,options: NSJSONReadingOptions.AllowFragments,error:&err) as? NSArray
                     if err == nil{
                         if json != nil && json!.count > 0{
                             self.tableData.removeAllObjects()
@@ -162,6 +162,9 @@ class ACTypesListTableViewController: UITableViewController {
                             let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
                             var error: NSError?
                             //let userID: NSNumber = self.prefs.objectForKey("userID") as NSNumber
+                            //reverse json array
+                            var reverseArray: NSMutableArray = NSMutableArray(array: json!)
+                            json = reverseArray.reverseObjectEnumerator().allObjects
                             for (index, item) in enumerate(json!){
                                 //self.tableData.addObject(item)
                                 if let dict: NSDictionary = item as? NSDictionary{
@@ -174,7 +177,6 @@ class ACTypesListTableViewController: UITableViewController {
                                         accounttype.modified = dict.objectForKey("modified") as NSString
                                         accounttype.synced = true
                                         accounttype.url = ""
-                                        accounttype.data = ""
                                         let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
                                         if success == false{
                                             println("failed to save accounttype.id: \(accounttype.id)")
@@ -183,6 +185,7 @@ class ACTypesListTableViewController: UITableViewController {
                                     
                                 }
                             }
+                            println("load server done")
                             self.loadLocalData()
                         }
                     }
@@ -194,9 +197,10 @@ class ACTypesListTableViewController: UITableViewController {
     // MARK: - loadLocalData
     func loadLocalData(){
         let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-        let sorter: NSSortDescriptor = NSSortDescriptor(key: "id", ascending: false)
+        let sorter: NSSortDescriptor = NSSortDescriptor(key: "identifier", ascending: false)
         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: nil, andSorter: [sorter], managedObjectContext: moc, limit: nil)
         if result.count > 0{
+            println("load from coredata")
             var dict: NSMutableDictionary = NSMutableDictionary()
             tableData.removeAllObjects()
             for (index, item) in enumerate(result){
@@ -208,14 +212,15 @@ class ACTypesListTableViewController: UITableViewController {
                     dict.setObject(accounttype.name, forKey: "name")
                     dict.setObject(accounttype.type.stringValue, forKey: "type")
                     dict.setObject(accounttype.modified, forKey: "modified")
+                    println(accounttype.modified)
                     dict.setObject(accounttype.synced, forKey: "synced")
                     dict.setObject(accounttype.url, forKey: "url")
-                    dict.setObject(accounttype.data, forKey: "data")
                     tableData.addObject(dict)
                 }
             }
             tableView.reloadData()
         }else{
+            println("load from server")
             self.loadDataFromServer()
         }
         

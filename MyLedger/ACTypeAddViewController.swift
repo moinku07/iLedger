@@ -37,11 +37,6 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
     var selectedPickerValue: Int?
     
     let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
-    var currentTimestamp: String {
-        get {
-            return "\(NSDate().timeIntervalSince1970 * 1000)"
-        }
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -294,32 +289,36 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
                                     let accounttype: Accounttypes = result.lastObject as Accounttypes
                                     accounttype.name = "\(self.nameTextField!.text)"
                                     accounttype.type = self.selectedPickerValue! as NSNumber
+                                    accounttype.url = url
+                                    accounttype.modified = DVDateFormatter.currentTimeString
                                     accounttype.synced = false
                                     var error: NSError?
                                     moc.save(&error)
                                     if error == nil{
-                                        println("updated")
+                                        println("only updated coredata. sync required")
                                     }else{
                                         println(error!.localizedDescription)
                                     }
                                 }
                             }else{
                                 if let accounttype: Accounttypes = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounttypes), managedObjectContext: moc) as? Accounttypes{
-                                    println(NSDate)
-                                    accounttype.identifier = self.currentTimestamp
-                                    //accounttype.id = -1
-                                    accounttype.user_id = userID.integerValue
-                                    accounttype.name = "\(self.nameTextField!.text)"
-                                    accounttype.type = self.selectedPickerValue! as NSNumber
-                                    accounttype.modified = ""
-                                    accounttype.synced = false
-                                    accounttype.url = ""
-                                    accounttype.data = ""
-                                    let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
-                                    if success == false{
-                                        println("failed to save accounttype.id: \(accounttype.id)")
+                                    if let postdata: NSData = NSJSONSerialization.dataWithJSONObject(postData, options: NSJSONWritingOptions.allZeros, error: nil){
+                                        accounttype.identifier = DVDateFormatter.currentTimestamp
+                                        accounttype.id = -1
+                                        accounttype.user_id = userID.integerValue
+                                        accounttype.name = "\(self.nameTextField!.text)"
+                                        accounttype.type = self.selectedPickerValue! as NSNumber
+                                        accounttype.modified = DVDateFormatter.currentTimeString
+                                        accounttype.url = url
+                                        accounttype.synced = false
+                                        let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
+                                        if success == false{
+                                            println("failed to save in coredata. accounttype.id: \(accounttype.id)")
+                                        }else{
+                                            println("Saved to coredata. sync required")
+                                        }
                                     }else{
-                                        println("Saved to localstorage")
+                                        AlertManager.showAlert(self, title: "Error", message: error!.localizedDescription, buttonNames: nil, completion: nil)
                                     }
                                 }
                             }
@@ -328,22 +327,49 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
                             AlertManager.showAlert(self, title: "Error", message: error!.localizedDescription, buttonNames: nil, completion: nil)
                         }
                     }else if data != nil{
+                        //println(NSString(data: data!, encoding: NSUTF8StringEncoding))
+                        //return
+                        
                         if let response: NSDictionary = NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.allZeros, error: nil) as? NSDictionary{
                             if response.objectForKey("success") as? Bool == true{
-                                if self.identifier != nil{
-                                    let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")!
-                                    let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
-                                    if result.count > 0{
-                                        let accounttype: Accounttypes = result.lastObject as Accounttypes
-                                        accounttype.name = "\(self.nameTextField!.text)"
-                                        accounttype.type = self.selectedPickerValue! as NSNumber
-                                        accounttype.synced = true
-                                        var error: NSError?
-                                        moc.save(&error)
-                                        if error == nil{
-                                            println("updated")
-                                        }else{
-                                            println(error!.localizedDescription)
+                                if let savedData: NSDictionary = response.objectForKey("data") as? NSDictionary{
+                                    if self.identifier != nil{
+                                        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")!
+                                        let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+                                        if result.count > 0{
+                                            let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                            accounttype.name = "\(self.nameTextField!.text)"
+                                            accounttype.type = self.selectedPickerValue! as NSNumber
+                                            accounttype.modified = savedData.objectForKey("modified") as String
+                                            accounttype.synced = true
+                                            var error: NSError?
+                                            moc.save(&error)
+                                            if error == nil{
+                                                println("posted and updated coredata")
+                                            }else{
+                                                println(error!.localizedDescription)
+                                            }
+                                        }
+                                    }else{
+                                        if let accounttype: Accounttypes = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounttypes), managedObjectContext: moc) as? Accounttypes{
+                                            if let postdata: NSData = NSJSONSerialization.dataWithJSONObject(postData, options: NSJSONWritingOptions.allZeros, error: nil){
+                                                accounttype.identifier = DVDateFormatter.currentTimestamp
+                                                accounttype.id = (savedData.objectForKey("id") as NSString).integerValue
+                                                accounttype.user_id = userID.integerValue
+                                                accounttype.name = "\(self.nameTextField!.text)"
+                                                accounttype.type = self.selectedPickerValue! as NSNumber
+                                                accounttype.modified = savedData.objectForKey("modified") as String
+                                                accounttype.synced = true
+                                                accounttype.url = ""
+                                                let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
+                                                if success == false{
+                                                    println("saved on server. failed to save in coredata. accounttype.id: \(accounttype.id)")
+                                                }else{
+                                                    println("Saved on both server and coredata.")
+                                                }
+                                            }else{
+                                                AlertManager.showAlert(self, title: "Error", message: error!.localizedDescription, buttonNames: nil, completion: nil)
+                                            }
                                         }
                                     }
                                 }
@@ -357,7 +383,6 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
             })
         }else{
             AlertManager.showAlert(self, title: "Warning", message: "Please enter account type name", buttonNames: nil, completion: nil)
-            //cartItem.addons = addon.base64EncodedStringWithOptions(NSDataBase64EncodingOptions.allZeros)
         }
         
     }

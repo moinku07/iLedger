@@ -21,15 +21,16 @@
 		CD4C78511A2C70B000C7260C /* AccountTypesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4C78501A2C70B000C7260C /* AccountTypesTableViewController.swift */; };
 		CD4C78831A2C7F6900C7260C /* ACTypesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4C78821A2C7F6900C7260C /* ACTypesViewController.swift */; };
 		CD4C78851A2C841B00C7260C /* ACTypeAddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4C78841A2C841B00C7260C /* ACTypeAddViewController.swift */; };
+		CD663D871AAF06590094A097 /* Accounttypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD663D861AAF06590094A097 /* Accounttypes.swift */; };
 		CD74ED5D1A4BF0630085309E /* ACTypeAddTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD74ED5C1A4BF0630085309E /* ACTypeAddTableViewController.swift */; };
 		CDCACFCB1A2DDBCB0071CD4F /* SideBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDCACFC91A2DDBCB0071CD4F /* SideBar.swift */; };
 		CDCACFCC1A2DDBCB0071CD4F /* SideBarTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDCACFCA1A2DDBCB0071CD4F /* SideBarTableViewController.swift */; };
 		CDDC0BA31AAD70CA00239B2C /* CoreDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDC0BA21AAD70CA00239B2C /* CoreDataHelper.swift */; };
-		CDDC0BA51AAD7B0F00239B2C /* Accounttypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDC0BA41AAD7B0F00239B2C /* Accounttypes.swift */; };
 		CDE3F40A1A245FF100EBAC2D /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE3F4091A245FF100EBAC2D /* SwiftyJSON.swift */; };
 		CDE3F40C1A2461AE00EBAC2D /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE3F40B1A2461AE00EBAC2D /* DataManager.swift */; };
 		CDE3F40E1A246A3400EBAC2D /* UIActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE3F40D1A246A3400EBAC2D /* UIActivityView.swift */; };
 		CDEFD3201A2D901200A51C74 /* ACTypesListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDEFD31F1A2D901200A51C74 /* ACTypesListTableViewController.swift */; };
+		CDF9BA6A1AAF01C6002D97D8 /* DVDateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDF9BA691AAF01C6002D97D8 /* DVDateFormatter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,15 +62,16 @@
 		CD4C78501A2C70B000C7260C /* AccountTypesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountTypesTableViewController.swift; sourceTree = "<group>"; };
 		CD4C78821A2C7F6900C7260C /* ACTypesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACTypesViewController.swift; sourceTree = "<group>"; };
 		CD4C78841A2C841B00C7260C /* ACTypeAddViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACTypeAddViewController.swift; sourceTree = "<group>"; };
+		CD663D861AAF06590094A097 /* Accounttypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Accounttypes.swift; sourceTree = "<group>"; };
 		CD74ED5C1A4BF0630085309E /* ACTypeAddTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACTypeAddTableViewController.swift; sourceTree = "<group>"; };
 		CDCACFC91A2DDBCB0071CD4F /* SideBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBar.swift; sourceTree = "<group>"; };
 		CDCACFCA1A2DDBCB0071CD4F /* SideBarTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBarTableViewController.swift; sourceTree = "<group>"; };
 		CDDC0BA21AAD70CA00239B2C /* CoreDataHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataHelper.swift; sourceTree = "<group>"; };
-		CDDC0BA41AAD7B0F00239B2C /* Accounttypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Accounttypes.swift; sourceTree = "<group>"; };
 		CDE3F4091A245FF100EBAC2D /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		CDE3F40B1A2461AE00EBAC2D /* DataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		CDE3F40D1A246A3400EBAC2D /* UIActivityView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIActivityView.swift; sourceTree = "<group>"; };
 		CDEFD31F1A2D901200A51C74 /* ACTypesListTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACTypesListTableViewController.swift; sourceTree = "<group>"; };
+		CDF9BA691AAF01C6002D97D8 /* DVDateFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DVDateFormatter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,7 +156,7 @@
 			isa = PBXGroup;
 			children = (
 				CD484DCB1A204DD200702357 /* MyLedger.xcdatamodeld */,
-				CDDC0BA41AAD7B0F00239B2C /* Accounttypes.swift */,
+				CD663D861AAF06590094A097 /* Accounttypes.swift */,
 			);
 			name = CoreData;
 			sourceTree = "<group>";
@@ -169,6 +171,7 @@
 				CDE3F40B1A2461AE00EBAC2D /* DataManager.swift */,
 				CD044F8C1A2AD47F00EFE5EA /* AlertManager.swift */,
 				CDE3F4091A245FF100EBAC2D /* SwiftyJSON.swift */,
+				CDF9BA691AAF01C6002D97D8 /* DVDateFormatter.swift */,
 			);
 			name = "Helper Files";
 			sourceTree = "<group>";
@@ -298,14 +301,15 @@
 				CD044F8D1A2AD47F00EFE5EA /* AlertManager.swift in Sources */,
 				CD484DED1A2066C600702357 /* LoginViewController.swift in Sources */,
 				CDE3F40C1A2461AE00EBAC2D /* DataManager.swift in Sources */,
+				CD663D871AAF06590094A097 /* Accounttypes.swift in Sources */,
 				CD044F911A2AE79400EFE5EA /* NavigationViewController.swift in Sources */,
+				CDF9BA6A1AAF01C6002D97D8 /* DVDateFormatter.swift in Sources */,
 				CDE3F40E1A246A3400EBAC2D /* UIActivityView.swift in Sources */,
 				CD4C78511A2C70B000C7260C /* AccountTypesTableViewController.swift in Sources */,
 				CD74ED5D1A4BF0630085309E /* ACTypeAddTableViewController.swift in Sources */,
 				CD4C78851A2C841B00C7260C /* ACTypeAddViewController.swift in Sources */,
 				CD4C78831A2C7F6900C7260C /* ACTypesViewController.swift in Sources */,
 				CDCACFCC1A2DDBCB0071CD4F /* SideBarTableViewController.swift in Sources */,
-				CDDC0BA51AAD7B0F00239B2C /* Accounttypes.swift in Sources */,
 				CD484DCD1A204DD200702357 /* MyLedger.xcdatamodeld in Sources */,
 				CD044F8F1A2ADEF100EFE5EA /* SignUpViewController.swift in Sources */,
 				CDDC0BA31AAD70CA00239B2C /* CoreDataHelper.swift in Sources */,

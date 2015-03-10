@@ -95,9 +95,11 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
         // check for auto Login
         var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
-        let userName: String? = prefs.objectForKey("username") as? String
-        let passWord: String? = prefs.objectForKey("password") as? String
+        var userName: String? = prefs.objectForKey("username") as? String
+        var passWord: String? = prefs.objectForKey("password") as? String
         //println(passWord)
+        userName = "Moin_ku07@yahoo.com"
+        passWord = "Durlov_ku07"
         if userName != nil && passWord != nil{
             usernameTextfield.text = userName!
             passwordTextfield.text = passWord!
