@@ -289,7 +289,7 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
                                     let accounttype: Accounttypes = result.lastObject as Accounttypes
                                     accounttype.name = "\(self.nameTextField!.text)"
                                     accounttype.type = self.selectedPickerValue! as NSNumber
-                                    accounttype.url = url
+                                    accounttype.url = accounttype.id > 0 ? url : "accounttypes/add"
                                     accounttype.modified = DVDateFormatter.currentTimeString
                                     accounttype.synced = false
                                     var error: NSError?

@@ -12,6 +12,7 @@ import CoreData
 class ACTypesListTableViewController: UITableViewController {
     
     var tableData: NSMutableArray = NSMutableArray()
+    var dataToSynch: NSMutableArray = NSMutableArray()
     
     let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
     var currentTimestamp: String {
@@ -196,9 +197,11 @@ class ACTypesListTableViewController: UITableViewController {
     
     // MARK: - loadLocalData
     func loadLocalData(){
+        let userID: NSNumber = (prefs.objectForKey("userID") as NSString).integerValue
         let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
+        let predicate: NSPredicate = NSPredicate(format: "user_id == '\(userID)'")!
         let sorter: NSSortDescriptor = NSSortDescriptor(key: "identifier", ascending: false)
-        let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: nil, andSorter: [sorter], managedObjectContext: moc, limit: nil)
+        let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: nil)
         if result.count > 0{
             println("load from coredata")
             var dict: NSMutableDictionary = NSMutableDictionary()
@@ -212,10 +215,12 @@ class ACTypesListTableViewController: UITableViewController {
                     dict.setObject(accounttype.name, forKey: "name")
                     dict.setObject(accounttype.type.stringValue, forKey: "type")
                     dict.setObject(accounttype.modified, forKey: "modified")
-                    println(accounttype.modified)
+                    //println(accounttype.modified)
                     dict.setObject(accounttype.synced, forKey: "synced")
                     dict.setObject(accounttype.url, forKey: "url")
                     tableData.addObject(dict)
+                    
+                    //if accounttype.id >
                 }
             }
             tableView.reloadData()
@@ -223,6 +228,11 @@ class ACTypesListTableViewController: UITableViewController {
             println("load from server")
             self.loadDataFromServer()
         }
+        
+    }
+    
+    // MARK: - synchronizeWithServer
+    func synchronizeWithServer(){
         
     }
     
