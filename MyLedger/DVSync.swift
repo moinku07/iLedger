@@ -38,6 +38,7 @@ class DVSync: NSObject {
                     println("_lastAccounttypeModified: \(_lastAccounttypeModified)")
                 }else{
                     _lastAccounttypeModified = "0000-00-00 00:00:00"
+                    println("_lastAccounttypeModified: \(_lastAccounttypeModified)")
                 }
             }
             //println("here1")
@@ -91,7 +92,7 @@ class DVSync: NSObject {
     
     // MARK: - accounttypePostSync
     class func accounttypePostSync(postdata: NSDictionary){
-        println(postdata)
+        //println(postdata)
         
         DataManager.postDataAsyncWithCallback("accounttypes/sync", data: postdata, json: true, completion: { (data, error) -> Void in
             dispatch_async(dispatch_get_main_queue()){

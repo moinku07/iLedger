@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate {
+class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate {
 
     var isEdit: Bool = false
     var acTypeID: Int?
@@ -134,6 +134,7 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
                     let input: UITextField = cell.viewWithTag(2) as UITextField
                     input.placeholder = rowData.objectForKey("title") as? String
                     input.text = rowData.objectForKey("value") as? String
+                    input.delegate = self
                     nameTextField = input
                 }else if type == "picker"{
                     let label1: UILabel = cell.viewWithTag(1) as UILabel
@@ -385,6 +386,12 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
             AlertManager.showAlert(self, title: "Warning", message: "Please enter account type name", buttonNames: nil, completion: nil)
         }
         
+    }
+    
+    // MARK: - UITextFieldDelegate
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return false
     }
 
     /*
