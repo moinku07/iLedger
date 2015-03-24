@@ -2,7 +2,7 @@
 //  Accounttypes.swift
 //  MyLedger
 //
-//  Created by Moin Uddin on 3/10/15.
+//  Created by Moin Uddin on 3/17/15.
 //  Copyright (c) 2015 Moin Uddin. All rights reserved.
 //
 
@@ -20,5 +20,6 @@ class Accounttypes: NSManagedObject {
     @NSManaged var type: NSNumber
     @NSManaged var url: String
     @NSManaged var user_id: NSNumber
+    @NSManaged var isdeleted: NSNumber
 
 }
