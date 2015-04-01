@@ -16,6 +16,7 @@ class MainViewController: UITabBarController, SideBarDelegate {
     let menuItems: NSMutableArray = [["title": "Logout", "icon": "icon-nav-logout"]]
     
     var accounttypesSyncTimer: NSTimer!
+    var accountsSyncTimer: NSTimer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +31,10 @@ class MainViewController: UITabBarController, SideBarDelegate {
         }
         
         self.synchronizeAccountTypes()
-        accounttypesSyncTimer = NSTimer.scheduledTimerWithTimeInterval(60.0, target: self, selector: Selector("synchronizeAccountTypes"), userInfo: nil, repeats: true)
+        accounttypesSyncTimer = NSTimer.scheduledTimerWithTimeInterval(60.0 * 5, target: self, selector: Selector("synchronizeAccountTypes"), userInfo: nil, repeats: true)
+        
+        self.synchronizeAccounts()
+        accountsSyncTimer = NSTimer.scheduledTimerWithTimeInterval(60.0, target: self, selector: Selector("synchronizeAccounts"), userInfo: nil, repeats: true)
     }
 
     override func didReceiveMemoryWarning() {
@@ -53,6 +57,11 @@ class MainViewController: UITabBarController, SideBarDelegate {
     // MARK: - synchronizeAccountTypes
     func synchronizeAccountTypes(){
         DVSync.synchronizeAccountTypes()
+    }
+    
+    // MARK: - synchronizeAccounts
+    func synchronizeAccounts(){
+        DVSync.synchronizeAccounts()
     }
     
     /*
