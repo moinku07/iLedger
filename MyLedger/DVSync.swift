@@ -337,7 +337,7 @@ class DVSync: NSObject {
                     let dict: NSDictionary = [
                         "accounttype_id": account.accounttype_id,
                         "amount": account.amount,
-                        "details": account.details,
+                        "description": account.details,
                         "identifier": account.identifier,
                         "modified": account.modified,
                         "user_id": account.user_id,
@@ -349,7 +349,7 @@ class DVSync: NSObject {
                     let dict: NSDictionary = [
                         "accounttype_id": account.accounttype_id,
                         "amount": account.amount,
-                        "details": account.details,
+                        "description": account.details,
                         "identifier": account.identifier,
                         "modified": account.modified,
                         "user_id": account.user_id,
@@ -371,10 +371,10 @@ class DVSync: NSObject {
         println(postdata)
         DataManager.postDataAsyncWithCallback("accounts/sync", data: postdata, json: true, completion: { (data, error) -> Void in
             dispatch_async(dispatch_get_main_queue()){
-                println("accounttypes/sync")
+                println("accounts/sync")
                 //println(data)
                 if error == nil && data != nil{
-                    //println(NSString(data: data!, encoding: NSUTF8StringEncoding))
+                    println(NSString(data: data!, encoding: NSUTF8StringEncoding))
                     if let response: NSDictionary = NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.allZeros, error: nil) as? NSDictionary{
                         if response.objectForKey("success") as? Bool == true{
                             if let savedData: NSArray = response.objectForKey("data") as? NSArray{
@@ -435,13 +435,13 @@ class DVSync: NSObject {
                             }
                         }
                     }
-                    DVSync.fetchServerAccounttypeData()
+                    DVSync.fetchServerAccountData()
                 }else if error != nil{
-                    DVSync.fetchServerAccounttypeData()
+                    DVSync.fetchServerAccountData()
                     println("post error")
                     println(error!.localizedDescription)
                 }else{
-                    DVSync.fetchServerAccounttypeData()
+                    DVSync.fetchServerAccountData()
                 }
             }
         })

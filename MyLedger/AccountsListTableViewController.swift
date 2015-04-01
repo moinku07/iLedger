@@ -68,13 +68,14 @@ class AccountsListTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
-        let nextVC: ACTypeAddViewController = self.storyboard?.instantiateViewControllerWithIdentifier("ACTypeAddViewController") as ACTypeAddViewController
+        let nextVC: AccountAddViewController = self.storyboard?.instantiateViewControllerWithIdentifier("AccountAddViewController") as AccountAddViewController
         
         if let cellData = self.tableData.objectAtIndex(indexPath.row) as? NSDictionary{
             nextVC.isEdit = true
             nextVC.acTypeID = (cellData.objectForKey("id") as NSString).integerValue
             nextVC.identifier = cellData.objectForKey("identifier") as NSString
-            nextVC.tableData = [["title": "Name", "type": "input", "placeHolder": "Name", "value": cellData.objectForKey("name") as NSString],["title": "Type", "type": "picker", "value": (cellData.objectForKey("type") as NSString).integerValue]]
+            nextVC.tableData = [["title": "Type", "type": "picker", "value": (cellData.objectForKey("accounttype_id") as NSString).integerValue],["title": "Description", "type": "textview", "value": cellData.objectForKey("details") as NSString],["title": "Amount", "type": "input", "value": cellData.objectForKey("amount") as NSString]]
+            //nextVC.tableData = [["title": "Name", "type": "input", "placeHolder": "Name", "value": cellData.objectForKey("name") as NSString],["title": "Type", "type": "picker", "value": (cellData.objectForKey("type") as NSString).integerValue]]
         }
         self.navigationController?.pushViewController(nextVC, animated: true)
     }

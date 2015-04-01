@@ -36,8 +36,8 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     var datePickerRows: NSMutableArray = NSMutableArray()
     var pickerRows: NSMutableArray = NSMutableArray()
     
-    let pickerDataValues: NSArray = [1, 2]
-    let pickerDataTitles: NSArray = ["Add", "Sub"]
+    var pickerDataValues: NSMutableArray = [1, 2]
+    var pickerDataTitles: NSMutableArray = ["Add", "Sub"]
     var selectedPickerValue: Int?
     
     let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
@@ -59,6 +59,35 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
         //self.tableView.rowHeight = 44
         pickerCellRowHeight = 216.0
         //println("self.tableView.rowHeight: \(self.tableView.rowHeight)")
+        
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        let userID: NSNumber = (prefs.objectForKey("userID") as NSString).integerValue
+        let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
+        let predicate: NSPredicate = NSPredicate(format: "user_id == '\(userID)' AND isdeleted = NO")!
+        //let sorter: NSSortDescriptor = NSSortDescriptor(key: "identifier", ascending: false)
+        let sorter: NSSortDescriptor = NSSortDescriptor(key: "name", ascending: true)
+        let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: nil)
+        if result.count > 0{
+            println("load from coredata. count: \(result.count)")
+            var dict: NSMutableDictionary = NSMutableDictionary()
+            pickerDataValues.removeAllObjects()
+            pickerDataTitles.removeAllObjects()
+            for (index, item) in enumerate(result){
+                if let accounttype: Accounttypes = item as? Accounttypes{
+                    pickerDataValues.addObject(accounttype.id.integerValue)
+                    pickerDataTitles.addObject(accounttype.name)
+                }
+            }
+        }
+        
+        //println(pickerDataValues)
+        //println(pickerDataTitles)
+        
+        println(tableData)
     }
 
     override func didReceiveMemoryWarning() {
@@ -83,7 +112,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         var height: CGFloat = (self.indexPathHasPicker(indexPath) ? self.pickerCellRowHeight! : self.tableView.rowHeight)
         height = (self.indexPathHasTextView(indexPath) ? self.textviewCellRowHeight : height)
-        println(self.indexPathHasTextView(indexPath) ? self.textviewCellRowHeight : height)
+        //println(self.indexPathHasTextView(indexPath) ? self.textviewCellRowHeight : height)
         return height
     }
     
@@ -157,6 +186,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                     let input: UITextView = cell.viewWithTag(2) as UITextView
                     //input.text = rowData.objectForKey("title") as? String
                     input.text = rowData.objectForKey("value") as? String
+                    println(rowData.objectForKey("value"))
                     
                     input.delegate = self
                     nameTextView = input
@@ -165,14 +195,16 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                 }else if type == "picker"{
                     let label1: UILabel = cell.viewWithTag(1) as UILabel
                     label1.text = rowData.objectForKey("title") as? String
-                    /*
+                    
                     if let pickerValue: Int = rowData.objectForKey("value") as? Int{
                         selectedPickerValue = pickerValue
                         let label2: UILabel = cell.viewWithTag(2) as UILabel
                         label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
                     }else if selectedPickerValue == nil{
-                        selectedPickerValue = 1
-                    }*/
+                        selectedPickerValue = pickerDataValues.objectAtIndex(1) as? Int
+                        let label2: UILabel = cell.viewWithTag(2) as UILabel
+                        label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
+                    }
                 }
             }
         }
@@ -312,6 +344,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                 "Account": [
                     "description": nameTextView!.text,
                     "amount": nameTextField!.text,
+                    "accounttype_id": selectedPickerValue!,
                     "user_id": userID.integerValue,
                     "ajax" : true,
                     "id" : actypeid
@@ -326,14 +359,15 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                         if error!.code == -1004{
                             if self.identifier != nil{
                                 let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")!
-                                let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+                                let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                 if result.count > 0{
-                                    let accounttype: Accounttypes = result.lastObject as Accounttypes
-                                    accounttype.name = "\(self.nameTextField!.text)"
-                                    accounttype.type = self.selectedPickerValue! as NSNumber
-                                    accounttype.url = accounttype.id > 0 ? url : "accounttypes/add"
-                                    accounttype.modified = DVDateFormatter.currentTimeString
-                                    accounttype.synced = false
+                                    let account: Accounts = result.lastObject as Accounts
+                                    account.details = "\(self.nameTextView!.text)"
+                                    account.accounttype_id = self.selectedPickerValue! as NSNumber
+                                    account.amount = NSDecimalNumber(string: self.nameTextField!.text)
+                                    account.url = account.id > 0 ? url : "accounts/add"
+                                    account.modified = DVDateFormatter.currentTimeString
+                                    account.synced = false
                                     var error: NSError?
                                     moc.save(&error)
                                     if error == nil{
@@ -343,19 +377,20 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                     }
                                 }
                             }else{
-                                if let accounttype: Accounttypes = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounttypes), managedObjectContext: moc) as? Accounttypes{
+                                if let account: Accounts = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounts), managedObjectContext: moc) as? Accounts{
                                     if let postdata: NSData = NSJSONSerialization.dataWithJSONObject(postData, options: NSJSONWritingOptions.allZeros, error: nil){
-                                        accounttype.identifier = DVDateFormatter.currentTimestamp
-                                        accounttype.id = -1
-                                        accounttype.user_id = userID.integerValue
-                                        accounttype.name = "\(self.nameTextField!.text)"
-                                        accounttype.type = self.selectedPickerValue! as NSNumber
-                                        accounttype.modified = DVDateFormatter.currentTimeString
-                                        accounttype.url = url
-                                        accounttype.synced = false
+                                        account.identifier = DVDateFormatter.currentTimestamp
+                                        account.id = -1
+                                        account.user_id = userID.integerValue
+                                        account.details = "\(self.nameTextView!.text)"
+                                        account.accounttype_id = self.selectedPickerValue! as NSNumber
+                                        account.amount = NSDecimalNumber(string: self.nameTextField!.text)
+                                        account.modified = DVDateFormatter.currentTimeString
+                                        account.url = url
+                                        account.synced = false
                                         let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
                                         if success == false{
-                                            println("failed to save in coredata. accounttype.id: \(accounttype.id)")
+                                            println("failed to save in coredata. account.id: \(account.id)")
                                         }else{
                                             println("Saved to coredata. sync required")
                                         }
@@ -369,7 +404,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                             AlertManager.showAlert(self, title: "Error", message: error!.localizedDescription, buttonNames: nil, completion: nil)
                         }
                     }else if data != nil{
-                        //println(NSString(data: data!, encoding: NSUTF8StringEncoding))
+                        println(NSString(data: data!, encoding: NSUTF8StringEncoding))
                         //return
                         
                         if let response: NSDictionary = NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.allZeros, error: nil) as? NSDictionary{
@@ -377,13 +412,14 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                 if let savedData: NSDictionary = response.objectForKey("data") as? NSDictionary{
                                     if self.identifier != nil{
                                         let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")!
-                                        let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+                                        let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                         if result.count > 0{
-                                            let accounttype: Accounttypes = result.lastObject as Accounttypes
-                                            accounttype.name = "\(self.nameTextField!.text)"
-                                            accounttype.type = self.selectedPickerValue! as NSNumber
-                                            accounttype.modified = savedData.objectForKey("modified") as String
-                                            accounttype.synced = true
+                                            let account: Accounts = result.lastObject as Accounts
+                                            account.details = "\(self.nameTextView!.text)"
+                                            account.accounttype_id = self.selectedPickerValue! as NSNumber
+                                            account.amount = NSDecimalNumber(string: self.nameTextField!.text)
+                                            account.modified = savedData.objectForKey("modified") as String
+                                            account.synced = true
                                             var error: NSError?
                                             moc.save(&error)
                                             if error == nil{
@@ -393,19 +429,20 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                             }
                                         }
                                     }else{
-                                        if let accounttype: Accounttypes = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounttypes), managedObjectContext: moc) as? Accounttypes{
+                                        if let account: Accounts = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounts), managedObjectContext: moc) as? Accounts{
                                             if let postdata: NSData = NSJSONSerialization.dataWithJSONObject(postData, options: NSJSONWritingOptions.allZeros, error: nil){
-                                                accounttype.identifier = DVDateFormatter.currentTimestamp
-                                                accounttype.id = (savedData.objectForKey("id") as NSString).integerValue
-                                                accounttype.user_id = userID.integerValue
-                                                accounttype.name = "\(self.nameTextField!.text)"
-                                                accounttype.type = self.selectedPickerValue! as NSNumber
-                                                accounttype.modified = savedData.objectForKey("modified") as String
-                                                accounttype.synced = true
-                                                accounttype.url = ""
+                                                account.identifier = DVDateFormatter.currentTimestamp
+                                                account.id = (savedData.objectForKey("id") as NSString).integerValue
+                                                account.user_id = userID.integerValue
+                                                account.details = "\(self.nameTextView!.text)"
+                                                account.accounttype_id = self.selectedPickerValue! as NSNumber
+                                                account.amount = NSDecimalNumber(string: self.nameTextField!.text)
+                                                account.modified = savedData.objectForKey("modified") as String
+                                                account.synced = true
+                                                account.url = ""
                                                 let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
                                                 if success == false{
-                                                    println("saved on server. failed to save in coredata. accounttype.id: \(accounttype.id)")
+                                                    println("saved on server. failed to save in coredata. account.id: \(account.id)")
                                                 }else{
                                                     println("Saved on both server and coredata.")
                                                 }
@@ -457,11 +494,11 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
         }
         
         if let cell: UITableViewCell = textField.superview?.superview as? UITableViewCell{
-            println(self.tableView.indexPathForCell(cell))
+            //println(self.tableView.indexPathForCell(cell))
             self.selectedIndexPath = self.tableView.indexPathForCell(cell)
         }
         if self.selectedIndexPath != nil{
-            println(self.selectedIndexPath)
+            //println(self.selectedIndexPath)
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1000 * Int64(NSEC_PER_MSEC)), dispatch_get_main_queue(), { () -> Void in
                 self.tableView.scrollToRowAtIndexPath(self.selectedIndexPath!, atScrollPosition: UITableViewScrollPosition.Bottom, animated: true)
             })
