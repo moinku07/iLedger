@@ -124,7 +124,7 @@ class AccountsListTableViewController: UITableViewController {
                 activityIndicator.hideActivityIndicator()
                 //println(NSString(data: data!, encoding: NSUTF8StringEncoding))
                 if error != nil{
-                    if error!.code == -1004{
+                    if error!.code == -1004 || error!.code == -1009{
                         let predicate: NSPredicate = NSPredicate(format: "identifier == '\(identifier)'")!
                         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                         if result.count > 0{

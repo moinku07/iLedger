@@ -282,7 +282,7 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
                     let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
                     activityIndicator.hideActivityIndicator()
                     if error != nil{
-                        if error!.code == -1004{
+                        if error!.code == -1004 || error!.code == -1009{
                             if self.identifier != nil{
                                 let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")!
                                 let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)

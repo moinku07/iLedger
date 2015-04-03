@@ -263,7 +263,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                     activityIndicator.hideActivityIndicator()
                     if let posterror = error{
                         println(self.prefs.objectForKey("userID") as? String)
-                        if posterror.code == -1004 && self.prefs.objectForKey("userID") as? String != nil{
+                        if (posterror.code == -1004 || posterror.code == -1009) && self.prefs.objectForKey("userID") as? String != nil{
                             AlertManager.showAlert(self, title: "Error", message: "No internet connection. App will work in offline mode.", buttonNames: ["Okay"], completion: { (index) -> Void in
                                 let vc: MainViewController = self.storyboard?.instantiateViewControllerWithIdentifier("mainviewcontroller") as MainViewController
                                 self.presentViewController(vc, animated: true, completion: nil)

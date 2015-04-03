@@ -126,7 +126,7 @@ class ACTypesListTableViewController: UITableViewController {
                 let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
                 activityIndicator.hideActivityIndicator()
                 if error != nil{
-                    if error!.code == -1004{
+                    if error!.code == -1004 || error!.code == -1009{
                         let predicate: NSPredicate = NSPredicate(format: "identifier == '\(identifier)'")!
                         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                         if result.count > 0{

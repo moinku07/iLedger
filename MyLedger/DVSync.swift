@@ -577,6 +577,7 @@ class DVSync: NSObject {
                         }
                     }
                 }else if error != nil{
+                    println(error!.code)
                     println("post error")
                     println(error!.localizedDescription)
                 }
