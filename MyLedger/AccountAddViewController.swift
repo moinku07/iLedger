@@ -374,7 +374,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                     account.accounttype_id = self.selectedPickerValue! as NSNumber
                                     account.amount = NSDecimalNumber(string: self.nameTextField!.text)
                                     account.url = account.id > 0 ? url : "accounts/add"
-                                    account.modified = DVDateFormatter.currentTimeString
+                                    account.modified = DVDateFormatter.currentDate
                                     account.synced = false
                                     var error: NSError?
                                     moc.save(&error)
@@ -393,7 +393,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                         account.details = "\(self.nameTextView!.text)"
                                         account.accounttype_id = self.selectedPickerValue! as NSNumber
                                         account.amount = NSDecimalNumber(string: self.nameTextField!.text)
-                                        account.modified = DVDateFormatter.currentTimeString
+                                        account.modified = DVDateFormatter.currentDate
                                         account.url = url
                                         account.synced = false
                                         let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
@@ -426,7 +426,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                             account.details = "\(self.nameTextView!.text)"
                                             account.accounttype_id = self.selectedPickerValue! as NSNumber
                                             account.amount = NSDecimalNumber(string: self.nameTextField!.text)
-                                            account.modified = savedData.objectForKey("modified") as String
+                                            account.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as String, format: nil)
                                             account.synced = true
                                             var error: NSError?
                                             moc.save(&error)
@@ -445,7 +445,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                                 account.details = "\(self.nameTextView!.text)"
                                                 account.accounttype_id = self.selectedPickerValue! as NSNumber
                                                 account.amount = NSDecimalNumber(string: self.nameTextField!.text)
-                                                account.modified = savedData.objectForKey("modified") as String
+                                                account.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as String, format: nil)
                                                 account.synced = true
                                                 account.url = ""
                                                 let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)

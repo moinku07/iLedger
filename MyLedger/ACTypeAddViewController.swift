@@ -291,7 +291,7 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
                                     accounttype.name = "\(self.nameTextField!.text)"
                                     accounttype.type = self.selectedPickerValue! as NSNumber
                                     accounttype.url = accounttype.id > 0 ? url : "accounttypes/add"
-                                    accounttype.modified = DVDateFormatter.currentTimeString
+                                    accounttype.modified = DVDateFormatter.currentDate
                                     accounttype.synced = false
                                     var error: NSError?
                                     moc.save(&error)
@@ -309,7 +309,7 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
                                         accounttype.user_id = userID.integerValue
                                         accounttype.name = "\(self.nameTextField!.text)"
                                         accounttype.type = self.selectedPickerValue! as NSNumber
-                                        accounttype.modified = DVDateFormatter.currentTimeString
+                                        accounttype.modified = DVDateFormatter.currentDate
                                         accounttype.url = url
                                         accounttype.synced = false
                                         let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
@@ -341,7 +341,7 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
                                             let accounttype: Accounttypes = result.lastObject as Accounttypes
                                             accounttype.name = "\(self.nameTextField!.text)"
                                             accounttype.type = self.selectedPickerValue! as NSNumber
-                                            accounttype.modified = savedData.objectForKey("modified") as String
+                                            accounttype.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as String, format: nil)
                                             accounttype.synced = true
                                             var error: NSError?
                                             moc.save(&error)
@@ -359,7 +359,7 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
                                                 accounttype.user_id = userID.integerValue
                                                 accounttype.name = "\(self.nameTextField!.text)"
                                                 accounttype.type = self.selectedPickerValue! as NSNumber
-                                                accounttype.modified = savedData.objectForKey("modified") as String
+                                                accounttype.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as String, format: nil)
                                                 accounttype.synced = true
                                                 accounttype.url = ""
                                                 let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)

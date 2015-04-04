@@ -330,6 +330,11 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
     
     @IBAction func onSubmitTap(sender: UIButton) {
         let vc: AccountSummaryViewController = self.storyboard?.instantiateViewControllerWithIdentifier("AccountSummaryViewController") as AccountSummaryViewController
+        let dict1: NSDictionary = tableData.objectAtIndex(0) as NSDictionary
+        let dict2: NSDictionary = tableData.objectAtIndex(1) as NSDictionary
+        vc.startDate = dict1.objectForKey("date") as? NSDate
+        vc.endDate = dict2.objectForKey("date") as? NSDate
+        vc.accounttype_id = selectedPickerValue
         self.navigationController?.pushViewController(vc, animated: true)
     }
     

@@ -130,7 +130,7 @@ class AccountsListTableViewController: UITableViewController {
                         if result.count > 0{
                             let account: Accounts = result.lastObject as Accounts
                             account.isdeleted = true
-                            account.modified = DVDateFormatter.currentTimeString
+                            account.modified = DVDateFormatter.currentDate
                             account.synced = false
                             var error: NSError?
                             moc.save(&error)
@@ -159,7 +159,7 @@ class AccountsListTableViewController: UITableViewController {
                                     //println("here")
                                     let account: Accounts = result.lastObject as Accounts
                                     account.isdeleted = true
-                                    account.modified = savedData.objectForKey("modified") as String
+                                    account.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as String, format: nil)
                                     account.synced = true
                                     var error: NSError?
                                     moc.save(&error)
@@ -284,7 +284,7 @@ class AccountsListTableViewController: UITableViewController {
                                         //end
                                         
                                         account.details = dict.objectForKey("description") as NSString
-                                        account.modified = dict.objectForKey("modified") as NSString
+                                        account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
                                         account.synced = true
                                         
                                         if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
@@ -338,7 +338,7 @@ class AccountsListTableViewController: UITableViewController {
                     dict.setObject(account.url, forKey: "url")
                     tableData.addObject(dict)
                     
-                    println(account.accounttype.type)
+                    //println(account.accounttype.type)
                     
                     //if accounttype.id >
                 }

@@ -132,7 +132,7 @@ class ACTypesListTableViewController: UITableViewController {
                         if result.count > 0{
                             let accounttype: Accounttypes = result.lastObject as Accounttypes
                             accounttype.isdeleted = true
-                            accounttype.modified = DVDateFormatter.currentTimeString
+                            accounttype.modified = DVDateFormatter.currentDate
                             accounttype.synced = false
                             var error: NSError?
                             moc.save(&error)
@@ -161,7 +161,7 @@ class ACTypesListTableViewController: UITableViewController {
                                     //println("here")
                                     let accounttype: Accounttypes = result.lastObject as Accounttypes
                                     accounttype.isdeleted = true
-                                    accounttype.modified = savedData.objectForKey("modified") as String
+                                    accounttype.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as String, format: nil)
                                     accounttype.synced = true
                                     var error: NSError?
                                     moc.save(&error)
@@ -252,7 +252,7 @@ class ACTypesListTableViewController: UITableViewController {
                                         accounttype.user_id = (dict.objectForKey("user_id") as NSString).integerValue
                                         accounttype.name = dict.objectForKey("name") as NSString
                                         accounttype.type = (dict.objectForKey("type") as NSString).integerValue
-                                        accounttype.modified = dict.objectForKey("modified") as NSString
+                                        accounttype.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
                                         accounttype.synced = true
                                         if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
                                             accounttype.isdeleted = isdeleted

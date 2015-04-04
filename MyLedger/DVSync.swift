@@ -39,7 +39,7 @@ class DVSync: NSObject {
                 let results: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: 1)
                 if results.count > 0{
                     let accounttype: Accounttypes = results.lastObject as Accounttypes
-                    _lastAccounttypeModified = accounttype.modified
+                    _lastAccounttypeModified = DVDateFormatter.getTimeString(accounttype.modified, format: nil)
                     println("_lastAccounttypeModified: \(_lastAccounttypeModified)")
                 }else{
                     _lastAccounttypeModified = "0000-00-00 00:00:00"
@@ -70,7 +70,7 @@ class DVSync: NSObject {
                         "identifier": accounttype.identifier,
                         "name": accounttype.name,
                         "type": accounttype.type,
-                        "modified": accounttype.modified,
+                        "modified": DVDateFormatter.getTimeString(accounttype.modified, format: nil),
                         "user_id": accounttype.user_id,
                         "id" : accounttype.id,
                         "isdeleted": accounttype.isdeleted
@@ -81,7 +81,7 @@ class DVSync: NSObject {
                         "identifier": accounttype.identifier,
                         "name": accounttype.name,
                         "type": accounttype.type,
-                        "modified": accounttype.modified,
+                        "modified": DVDateFormatter.getTimeString(accounttype.modified, format: nil),
                         "user_id": accounttype.user_id,
                         "id" : "",
                         "isdeleted": accounttype.isdeleted
@@ -138,7 +138,7 @@ class DVSync: NSObject {
                                                 accounttype.user_id = user_id.integerValue
                                             }
                                             accounttype.name = dict.objectForKey("name") as NSString
-                                            accounttype.modified = dict.objectForKey("modified") as NSString
+                                            accounttype.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
                                             accounttype.synced = true
                                             var error: NSError?
                                             moc.save(&error)
@@ -212,7 +212,7 @@ class DVSync: NSObject {
                                                 accounttype.user_id = user_id.integerValue
                                             }
                                             accounttype.name = dict.objectForKey("name") as NSString
-                                            accounttype.modified = dict.objectForKey("modified") as NSString
+                                            accounttype.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
                                             accounttype.synced = true
                                             if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
                                                 accounttype.isdeleted = isdeleted
@@ -221,7 +221,7 @@ class DVSync: NSObject {
                                             moc.save(&error)
                                             if error == nil{
                                                 added++
-                                                last_synced = accounttype.modified
+                                                last_synced = DVDateFormatter.getTimeString(accounttype.modified, format: nil)
                                                 println("updated ID: \(ID)")
                                             }else{
                                                 println(error!.localizedDescription)
@@ -248,7 +248,7 @@ class DVSync: NSObject {
                                                     accounttype.user_id = user_id.integerValue
                                                 }
                                                 accounttype.name = dict.objectForKey("name") as NSString
-                                                accounttype.modified = dict.objectForKey("modified") as NSString
+                                                accounttype.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
                                                 accounttype.synced = true
                                                 if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
                                                     accounttype.isdeleted = isdeleted
@@ -259,7 +259,7 @@ class DVSync: NSObject {
                                                     println("failed to save accounttype.id: \(accounttype.id)")
                                                 }else{
                                                     added++
-                                                    last_synced = accounttype.modified
+                                                    last_synced = DVDateFormatter.getTimeString(accounttype.modified, format: nil)
                                                     println("saved identifier: \(accounttype.identifier), name: \(accounttype.name)")
                                                 }
                                             }
@@ -307,7 +307,7 @@ class DVSync: NSObject {
                 let results: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: 1)
                 if results.count > 0{
                     let account: Accounts = results.lastObject as Accounts
-                    _lastAccountModified = account.modified
+                    _lastAccountModified = DVDateFormatter.getTimeString(account.modified, format: nil)
                     println("_lastAccountModified: \(_lastAccountModified)")
                 }else{
                     _lastAccountModified = "0"
@@ -339,7 +339,7 @@ class DVSync: NSObject {
                         "amount": account.amount,
                         "description": account.details,
                         "identifier": account.identifier,
-                        "modified": account.modified,
+                        "modified": DVDateFormatter.getTimeString(account.modified, format: nil),
                         "user_id": account.user_id,
                         "id" : account.id,
                         "isdeleted": account.isdeleted
@@ -351,7 +351,7 @@ class DVSync: NSObject {
                         "amount": account.amount,
                         "description": account.details,
                         "identifier": account.identifier,
-                        "modified": account.modified,
+                        "modified": DVDateFormatter.getTimeString(account.modified, format: nil),
                         "user_id": account.user_id,
                         "id" : "",
                         "isdeleted": account.isdeleted
@@ -414,7 +414,7 @@ class DVSync: NSObject {
                                                 account.accounttype_id = accounttype_id.integerValue
                                             }
                                             account.details = dict.objectForKey("description") as NSString
-                                            account.modified = dict.objectForKey("modified") as NSString
+                                            account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
                                             account.synced = true
                                             if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
                                                 account.isdeleted = isdeleted
@@ -511,7 +511,7 @@ class DVSync: NSObject {
                                             //end
                                             
                                             account.details = dict.objectForKey("description") as NSString
-                                            account.modified = dict.objectForKey("modified") as NSString
+                                            account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
                                             account.synced = true
                                             if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
                                                 account.isdeleted = isdeleted
@@ -520,7 +520,7 @@ class DVSync: NSObject {
                                             moc.save(&error)
                                             if error == nil{
                                                 added++
-                                                last_synced = account.modified
+                                                last_synced = DVDateFormatter.getTimeString(account.modified, format: nil)
                                                 println("updated ID: \(ID)")
                                             }else{
                                                 println(error!.localizedDescription)
@@ -564,7 +564,7 @@ class DVSync: NSObject {
                                                 //end
                                                 
                                                 account.details = dict.objectForKey("description") as NSString
-                                                account.modified = dict.objectForKey("modified") as NSString
+                                                account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
                                                 account.synced = true
                                                 
                                                 if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
@@ -577,7 +577,7 @@ class DVSync: NSObject {
                                                     println("failed to save accounttype.id: \(account.id)")
                                                 }else{
                                                     added++
-                                                    last_synced = account.modified
+                                                    last_synced = DVDateFormatter.getTimeString(account.modified, format: nil)
                                                     println("saved identifier: \(account.identifier)")
                                                 }
                                             }
@@ -670,7 +670,8 @@ class DVSync: NSObject {
                                 //end
                                 
                                 account.details = dict.objectForKey("description") as NSString
-                                account.modified = dict.objectForKey("modified") as NSString
+                                account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
+                                println(account.modified)
                                 account.synced = true
                                 
                                 if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
@@ -683,8 +684,8 @@ class DVSync: NSObject {
                                     println("failed to save accounttype.id: \(account.id)")
                                 }else{
                                     added++
-                                    last_synced = account.modified
-                                    println("saved identifier: \(account.identifier)")
+                                    last_synced = DVDateFormatter.getTimeString(account.modified, format: nil)
+                                    //println("saved identifier: \(account.identifier)")
                                 }
                             }
                         }

@@ -7,7 +7,7 @@
         <attribute name="id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="isdeleted" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
-        <attribute name="modified" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="modified" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="synced" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="user_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
@@ -17,7 +17,7 @@
         <attribute name="id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="isdeleted" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
-        <attribute name="modified" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="modified" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="synced" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
@@ -26,7 +26,7 @@
         <relationship name="account" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Accounts" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Accounts" positionX="-63" positionY="54" width="128" height="208"/>
-        <element name="Accounttypes" positionX="-722" positionY="66" width="128" height="193"/>
+        <element name="Accounts" positionX="-63" positionY="54" width="128" height="210"/>
+        <element name="Accounttypes" positionX="-722" positionY="66" width="128" height="195"/>
     </elements>
 </model>
