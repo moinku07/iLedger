@@ -75,6 +75,8 @@ class AccountsTableViewController: UITableViewController {
             let nextVC: AccountsListTableViewController = self.storyboard?.instantiateViewControllerWithIdentifier("AccountsListTableViewController") as AccountsListTableViewController
             self.navigationController?.pushViewController(nextVC, animated: true)
         }else if rowTitle == "Account Summary"{
+            let nextVC: AccountDatePickerViewController = self.storyboard?.instantiateViewControllerWithIdentifier("AccountDatePickerViewController") as AccountDatePickerViewController
+            self.navigationController?.pushViewController(nextVC, animated: true)
         }
     }
 

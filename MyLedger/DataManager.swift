@@ -14,8 +14,8 @@ import SystemConfiguration
 class DataManager {
     
     struct domain {
-        let url: String = "http://10.0.0.10/ledger/admin/"
-        //let url: String = "http://ledger.durlov.com/admin/"
+        //let url: String = "http://10.0.0.10/ledger/admin/"
+        let url: String = "http://ledger.durlov.com/admin/"
     }
     
     class func isConnectedToNetwork() -> Bool {

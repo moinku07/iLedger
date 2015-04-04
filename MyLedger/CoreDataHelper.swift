@@ -69,7 +69,7 @@ class CoreDataHelper: NSObject {
         }
     }
     
-    class func fetchEntities(className: NSString, withPredicate predicate: NSPredicate?, andSorter sorter: NSArray?, managedObjectContext: NSManagedObjectContext, limit: Int? = nil) -> NSArray{
+    class func fetchEntities(className: NSString, withPredicate predicate: NSPredicate?, andSorter sorter: NSArray?, managedObjectContext: NSManagedObjectContext, limit: Int? = nil, expressions: NSArray? = nil) -> NSArray{
         let fetchRequest: NSFetchRequest = NSFetchRequest();
         if limit != nil{
             fetchRequest.fetchLimit = limit!
@@ -84,14 +84,21 @@ class CoreDataHelper: NSObject {
             fetchRequest.sortDescriptors = sorter!
         }
         
+        if expressions != nil{
+            fetchRequest.propertiesToFetch = expressions!
+            fetchRequest.resultType = NSFetchRequestResultType.DictionaryResultType
+        }
+        
         fetchRequest.returnsObjectsAsFaults = false;
         var error: NSError? = nil;
-        let items: NSArray = managedObjectContext.executeFetchRequest(fetchRequest, error: &error)! as NSArray;
+        if let items: NSArray = managedObjectContext.executeFetchRequest(fetchRequest, error: &error){
+            return items;
+        }
         if error != nil{
             println("Fetch Error: \(error?.localizedDescription)");
             return [];
         }
-        return items;
+        return []
     }
    
 }

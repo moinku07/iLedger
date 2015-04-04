@@ -106,7 +106,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
             var numRows: Int = tableData.count
             return ++numRows
         }
-        return tableData.count
+        return self.datePickerIndexPath == nil ? tableData.count : tableData.count + 1
     }
     
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
@@ -154,54 +154,62 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
         //
         var modelRow: Int = indexPath.row
         if self.datePickerIndexPath != nil && self.datePickerIndexPath?.row <= indexPath.row{
+            //println("datePickerIndexPath.row: \(datePickerIndexPath!.row)")
             if cellID == "uiPicker"{
                 if let picker: UIPickerView = self.tableView.viewWithTag(pickerTag) as? UIPickerView{
                     picker.delegate = self
                     picker.dataSource = self
-                    //picker.selectRow(pickerDataValues.indexOfObject(selectedPickerValue!), inComponent: 0, animated: false)
+                    picker.selectRow(pickerDataValues.indexOfObject(selectedPickerValue!), inComponent: 0, animated: false)
                 }
             }
             --modelRow
         }
         
-        if cellID != "uiPicker" || cellID == "date"{
+        if cellID != "uiPicker" || cellID == "date" || self.datePickerIndexPath?.compare(indexPath) != NSComparisonResult.OrderedSame{
+            //println("indexPath.row: \(indexPath.row)")
+            //println("modelRow: \(modelRow)")
             rowData = self.tableData.objectAtIndex(modelRow) as NSDictionary
             //println(rowData)
             if let type: String = rowData["type"] as? String{
                 //println(rowData)
                 if type  == "input"{
-                    let label1: UILabel = cell.viewWithTag(1) as UILabel
-                    label1.text = rowData.objectForKey("title") as? String
+                    if let label1: UILabel = cell.viewWithTag(1) as? UILabel{
+                        label1.text = rowData.objectForKey("title") as? String
+                    }
                     
-                    let input: UITextField = cell.viewWithTag(2) as UITextField
-                    input.placeholder = rowData.objectForKey("title") as? String
-                    input.text = rowData.objectForKey("value") as? String
-                    input.delegate = self
-                    input.keyboardType = UIKeyboardType.DecimalPad
-                    nameTextField = input
+                    if let input: UITextField = cell.viewWithTag(2) as? UITextField{
+                        input.placeholder = rowData.objectForKey("title") as? String
+                        input.text = rowData.objectForKey("value") as? String
+                        input.delegate = self
+                        input.keyboardType = UIKeyboardType.DecimalPad
+                        nameTextField = input
+                    }
                 }else if type  == "textview"{
-                    let label1: UILabel = cell.viewWithTag(1) as UILabel
-                    label1.text = rowData.objectForKey("title") as? String
+                    if let label1: UILabel = cell.viewWithTag(1) as? UILabel{
+                        label1.text = rowData.objectForKey("title") as? String
+                    }
                     
-                    let input: UITextView = cell.viewWithTag(2) as UITextView
-                    //input.text = rowData.objectForKey("title") as? String
-                    input.text = rowData.objectForKey("value") as? String
-                    println(rowData.objectForKey("value"))
-                    
-                    input.delegate = self
-                    nameTextView = input
-                    
-                    textviewIndexPath = indexPath
+                    if let input: UITextView = cell.viewWithTag(2) as? UITextView{
+                        //input.text = rowData.objectForKey("title") as? String
+                        input.text = rowData.objectForKey("value") as? String
+                        println(rowData.objectForKey("value"))
+                        
+                        input.delegate = self
+                        nameTextView = input
+                        
+                        textviewIndexPath = indexPath
+                    }
                 }else if type == "picker"{
-                    let label1: UILabel = cell.viewWithTag(1) as UILabel
-                    label1.text = rowData.objectForKey("title") as? String
+                    if let label1: UILabel = cell.viewWithTag(1) as? UILabel{
+                        label1.text = rowData.objectForKey("title") as? String
+                    }
                     
                     if let pickerValue: Int = rowData.objectForKey("value") as? Int{
                         selectedPickerValue = pickerValue
                         let label2: UILabel = cell.viewWithTag(2) as UILabel
                         label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
                     }else if selectedPickerValue == nil{
-                        selectedPickerValue = pickerDataValues.objectAtIndex(1) as? Int
+                        selectedPickerValue = pickerDataValues.objectAtIndex(0) as? Int
                         let label2: UILabel = cell.viewWithTag(2) as UILabel
                         label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
                     }
@@ -472,7 +480,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
         return false
     }
     
-    func textFieldDidBeginEditing(textField: UITextField) {
+    func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
         // Create a button bar for the number pad
         let keyboardDoneButtonView = UIToolbar()
         keyboardDoneButtonView.sizeToFit()
@@ -488,20 +496,29 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
         keyboardDoneButtonView.setItems(toolbarButtons, animated: true)
         textField.inputAccessoryView = keyboardDoneButtonView
         
+        nameTextField = textField
+        
+        return true
+    }
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
         originalTableVeiwContentSize = tableView.contentSize
         if originalTableVeiwContentSize.height + 300 >= self.tableView.frame.size.height{
+            println("originalTableVeiwContentSize")
             self.tableView.contentSize = CGSizeMake(self.originalTableVeiwContentSize.width, self.originalTableVeiwContentSize.height + 300)
         }
         
         if let cell: UITableViewCell = textField.superview?.superview as? UITableViewCell{
-            //println(self.tableView.indexPathForCell(cell))
+            println(self.tableView.indexPathForCell(cell))
             self.selectedIndexPath = self.tableView.indexPathForCell(cell)
         }
         if self.selectedIndexPath != nil{
-            //println(self.selectedIndexPath)
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1000 * Int64(NSEC_PER_MSEC)), dispatch_get_main_queue(), { () -> Void in
-                self.tableView.scrollToRowAtIndexPath(self.selectedIndexPath!, atScrollPosition: UITableViewScrollPosition.Bottom, animated: true)
-            })
+            println("before scroll")
+            println(self.selectedIndexPath)
+            //dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5000 * Int64(NSEC_PER_MSEC)), dispatch_get_main_queue(), { () -> Void in
+                self.tableView.scrollToRowAtIndexPath(self.selectedIndexPath!, atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+                println("after scroll")
+            //})
         }
     }
     

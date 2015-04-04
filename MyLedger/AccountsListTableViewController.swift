@@ -274,6 +274,15 @@ class AccountsListTableViewController: UITableViewController {
                                             account.accounttype_id = accounttype_id.integerValue
                                         }
                                         
+                                        // accounttype for account
+                                        let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")!
+                                        let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+                                        if result.count > 0{
+                                            let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                            account.accounttype = accounttype
+                                        }
+                                        //end
+                                        
                                         account.details = dict.objectForKey("description") as NSString
                                         account.modified = dict.objectForKey("modified") as NSString
                                         account.synced = true
@@ -328,6 +337,8 @@ class AccountsListTableViewController: UITableViewController {
                     dict.setObject(account.synced, forKey: "synced")
                     dict.setObject(account.url, forKey: "url")
                     tableData.addObject(dict)
+                    
+                    println(account.accounttype.type)
                     
                     //if accounttype.id >
                 }
