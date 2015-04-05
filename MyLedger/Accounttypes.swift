@@ -22,5 +22,14 @@ class Accounttypes: NSManagedObject {
     @NSManaged var url: String
     @NSManaged var user_id: NSNumber
     @NSManaged var account: NSSet
+    
+    // new in v2
+    @NSManaged var created: NSDate
+    
+    override func awakeFromInsert() {
+        super.awakeFromInsert()
+        
+        self.created = NSDate()
+    }
 
 }

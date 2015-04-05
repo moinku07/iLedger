@@ -404,6 +404,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                         account.accounttype_id = self.selectedPickerValue! as NSNumber
                                         account.amount = NSDecimalNumber(string: self.nameTextField!.text)
                                         account.modified = DVDateFormatter.currentDate
+                                        account.created = DVDateFormatter.currentDate
                                         account.url = url
                                         account.synced = false
                                         

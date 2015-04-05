@@ -310,6 +310,7 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
                                         accounttype.name = "\(self.nameTextField!.text)"
                                         accounttype.type = self.selectedPickerValue! as NSNumber
                                         accounttype.modified = DVDateFormatter.currentDate
+                                        accounttype.created = DVDateFormatter.currentDate
                                         accounttype.url = url
                                         accounttype.synced = false
                                         let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)

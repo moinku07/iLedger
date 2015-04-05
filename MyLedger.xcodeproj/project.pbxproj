@@ -73,6 +73,8 @@
 		CD4C78821A2C7F6900C7260C /* ACTypesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACTypesViewController.swift; sourceTree = "<group>"; };
 		CD4C78841A2C841B00C7260C /* ACTypeAddViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACTypeAddViewController.swift; sourceTree = "<group>"; };
 		CD6A71D31AC693440031A306 /* AccountsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountsTableViewController.swift; sourceTree = "<group>"; };
+		CD7B70781AD0F37000E16E21 /* MyLedgerV2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyLedgerV2.xcdatamodel; sourceTree = "<group>"; };
+		CD7B70791AD0F88300E16E21 /* MyLedgerV3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyLedgerV3.xcdatamodel; sourceTree = "<group>"; };
 		CDA4A5DA1AC7FADF00E3C834 /* AccountAddViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountAddViewController.swift; sourceTree = "<group>"; };
 		CDB286361AB598C900DE4A43 /* DVSync.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DVSync.swift; sourceTree = "<group>"; };
 		CDCACFC91A2DDBCB0071CD4F /* SideBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideBar.swift; sourceTree = "<group>"; };
@@ -568,9 +570,11 @@
 		CD484DCB1A204DD200702357 /* MyLedger.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				CD7B70791AD0F88300E16E21 /* MyLedgerV3.xcdatamodel */,
+				CD7B70781AD0F37000E16E21 /* MyLedgerV2.xcdatamodel */,
 				CD484DCC1A204DD200702357 /* MyLedger.xcdatamodel */,
 			);
-			currentVersion = CD484DCC1A204DD200702357 /* MyLedger.xcdatamodel */;
+			currentVersion = CD7B70791AD0F88300E16E21 /* MyLedgerV3.xcdatamodel */;
 			path = MyLedger.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

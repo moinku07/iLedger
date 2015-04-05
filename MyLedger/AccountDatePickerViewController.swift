@@ -169,7 +169,9 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
                     if let label1: UILabel = cell.viewWithTag(1) as? UILabel{
                         label1.text = rowData.objectForKey("title") as? String
                     }
-                    
+                    if let label2: UILabel = cell.viewWithTag(2) as? UILabel{
+                        label2.text = "Select Account type"
+                    }
                     selectedPickerValue = nil
                 }else if type == "date"{
                     if let label1: UILabel = cell.viewWithTag(1) as? UILabel{
@@ -206,6 +208,26 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
         let hasPicker: Bool = (self.hasInlineDatePicker() && self.datePickerIndexPath!.row == indexPath.row)
         //println("indexPathHasPicker: \(hasPicker)")
         return hasPicker
+    }
+    
+    /*! Updates the UIDatePicker's value to match with the date of the cell above it.
+    */
+    func updateDatePicker(){
+        if self.datePickerIndexPath != nil{
+            let associatedDatePickerCell: UITableViewCell = self.tableView.cellForRowAtIndexPath(self.datePickerIndexPath!) as UITableViewCell!
+            let targetedDatePicker: UIDatePicker? = associatedDatePickerCell.viewWithTag(datePickerTag) as? UIDatePicker
+            if targetedDatePicker != nil{
+                // we found a UIDatePicker in this cell, so update it's date value
+                //
+                let itemData: NSDictionary = self.tableData.objectAtIndex(self.datePickerIndexPath!.row - 1) as NSDictionary
+                if let date: NSDate = itemData.valueForKey("date") as? NSDate{
+                    //println("datePickerDate: \(date)")
+                    targetedDatePicker?.setDate(itemData.valueForKey("date") as NSDate, animated: false)
+                }else{
+                    targetedDatePicker?.setDate(NSDate(), animated: false)
+                }
+            }
+        }
     }
     
     func displayInlinePickerForRowAtIndexPath(indexPath: NSIndexPath){
@@ -253,6 +275,9 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
         
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         self.tableView.endUpdates()
+        
+        // inform our date picker of the current date to match the current cell
+        self.updateDatePicker()
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
