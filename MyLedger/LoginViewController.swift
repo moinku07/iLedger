@@ -98,8 +98,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         var userName: String? = prefs.objectForKey("username") as? String
         var passWord: String? = prefs.objectForKey("password") as? String
         //println(passWord)
-        userName = "Moin_ku07@yahoo.com"
-        passWord = "Durlov_ku07"
+        //userName = "Moin_ku07@yahoo.com"
+        //passWord = "Durlov_ku07"
         if userName != nil && passWord != nil{
             usernameTextfield.text = userName!
             passwordTextfield.text = passWord!

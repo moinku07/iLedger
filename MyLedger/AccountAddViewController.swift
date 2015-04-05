@@ -376,6 +376,16 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                     account.url = account.id > 0 ? url : "accounts/add"
                                     account.modified = DVDateFormatter.currentDate
                                     account.synced = false
+                                    
+                                    // accounttype for account
+                                    let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")!
+                                    let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+                                    if result.count > 0{
+                                        let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                        account.accounttype = accounttype
+                                    }
+                                    //end
+                                    
                                     var error: NSError?
                                     moc.save(&error)
                                     if error == nil{
@@ -396,6 +406,16 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                         account.modified = DVDateFormatter.currentDate
                                         account.url = url
                                         account.synced = false
+                                        
+                                        // accounttype for account
+                                        let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")!
+                                        let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+                                        if result.count > 0{
+                                            let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                            account.accounttype = accounttype
+                                        }
+                                        //end
+                                        
                                         let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
                                         if success == false{
                                             println("failed to save in coredata. account.id: \(account.id)")
@@ -428,6 +448,16 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                             account.amount = NSDecimalNumber(string: self.nameTextField!.text)
                                             account.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as String, format: nil)
                                             account.synced = true
+                                            
+                                            // accounttype for account
+                                            let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")!
+                                            let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+                                            if result.count > 0{
+                                                let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                                account.accounttype = accounttype
+                                            }
+                                            //end
+                                            
                                             var error: NSError?
                                             moc.save(&error)
                                             if error == nil{
@@ -448,6 +478,16 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                                 account.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as String, format: nil)
                                                 account.synced = true
                                                 account.url = ""
+                                                
+                                                // accounttype for account
+                                                let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")!
+                                                let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+                                                if result.count > 0{
+                                                    let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                                    account.accounttype = accounttype
+                                                }
+                                                //end
+                                                
                                                 let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
                                                 if success == false{
                                                     println("saved on server. failed to save in coredata. account.id: \(account.id)")
