@@ -278,6 +278,7 @@
 				TargetAttributes = {
 					CD484DC31A204DD200702357 = {
 						CreatedOnToolsVersion = 6.1;
+						DevelopmentTeam = YS9ZVHSN9U;
 					};
 					CD484DDB1A204DD200702357 = {
 						CreatedOnToolsVersion = 6.1;

@@ -12,7 +12,7 @@
         <attribute name="synced" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="user_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="accounttype" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Accounttypes" syncable="YES"/>
+        <relationship name="accounttype" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Accounttypes" inverseName="account" inverseEntity="Accounttypes" syncable="YES"/>
     </entity>
     <entity name="Accounttypes" representedClassName="Accounttypes" syncable="YES">
         <attribute name="created" optional="YES" attributeType="Date" syncable="YES"/>
@@ -25,10 +25,10 @@
         <attribute name="type" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="user_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="account" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Accounts" syncable="YES"/>
+        <relationship name="account" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Accounts" inverseName="accounttype" inverseEntity="Accounts" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Accounts" positionX="-63" positionY="54" width="128" height="225"/>
-        <element name="Accounttypes" positionX="-722" positionY="66" width="128" height="210"/>
+        <element name="Accounts" positionX="-63" positionY="54" width="128" height="30"/>
+        <element name="Accounttypes" positionX="-722" positionY="66" width="128" height="30"/>
     </elements>
 </model>
