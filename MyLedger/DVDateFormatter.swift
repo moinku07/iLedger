@@ -56,13 +56,13 @@ class DVDateFormatter: NSObject {
         let nDate: NSDate = date != nil ? date! : NSDate()
         
         var calendar: NSCalendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+        //println(calendar.timeZone)
         calendar.timeZone = NSTimeZone(name: "Asia/Dhaka")!
         calendar.locale = NSLocale(localeIdentifier: "en_US")
         
         var dateComponents: NSDateComponents = calendar.components(
-            NSCalendarUnit.YearCalendarUnit | NSCalendarUnit.MonthCalendarUnit | NSCalendarUnit.DayCalendarUnit | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond, fromDate: nDate)
+            (NSCalendarUnit.CalendarUnitYear | NSCalendarUnit.CalendarUnitMonth | NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond), fromDate: nDate)
         dateComponents.timeZone = NSTimeZone(name: "Asia/Dhaka")
-        //dateComponents.locale = NSLocale(localeIdentifier: "en_US")
         
         if years != nil{
             dateComponents.year = years!
@@ -86,6 +86,104 @@ class DVDateFormatter: NSObject {
         let newDate: NSDate = calendar.dateFromComponents(dateComponents)!
         
         return newDate
+    }
+    
+    class func getDateByAdding(date: NSDate? = nil, years: Int? = nil, months: Int? = nil, days: Int? = nil, hours: Int? = nil, minutes: Int? = nil, seconds: Int? = nil) -> NSDate{
+        
+        let nDate: NSDate = date != nil ? date! : NSDate()
+        
+        var calendar: NSCalendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+        //println(calendar.timeZone)
+        calendar.timeZone = NSTimeZone(name: "Asia/Dhaka")!
+        calendar.locale = NSLocale(localeIdentifier: "en_US")
+        
+        var dateComponents: NSDateComponents = NSDateComponents()
+        dateComponents.timeZone = NSTimeZone(name: "Asia/Dhaka")
+        
+        if years != nil{
+            dateComponents.year = years!
+        }
+        if months != nil{
+            dateComponents.month = months!
+        }
+        if days != nil{
+            dateComponents.day = days!
+        }
+        if hours != nil{
+            dateComponents.hour = hours!
+        }
+        if minutes != nil{
+            dateComponents.minute = minutes!
+        }
+        if seconds != nil{
+            dateComponents.second = seconds!
+        }
+        
+        let newDate: NSDate = calendar.dateByAddingComponents(dateComponents, toDate: nDate, options: NSCalendarOptions.allZeros)!
+        
+        return newDate
+    }
+    
+    class func getWeekStartEndDate(date: NSDate? = nil) -> (NSDate, NSDate){
+        let nDate: NSDate = date != nil ? date! : NSDate()
+        var calendar: NSCalendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+        let weekdayComponents: NSDateComponents = calendar.components(
+            (NSCalendarUnit.CalendarUnitWeekday | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond), fromDate: nDate)
+        
+        let componentsToSubtract: NSDateComponents = NSDateComponents()
+        componentsToSubtract.day = 0 - weekdayComponents.weekday + 1
+        componentsToSubtract.hour = 0 - weekdayComponents.hour
+        componentsToSubtract.minute = 0 - weekdayComponents.minute
+        componentsToSubtract.second = 0 - weekdayComponents.second
+        
+        let beginningOfWeek: NSDate = calendar.dateByAddingComponents(componentsToSubtract, toDate: nDate, options: NSCalendarOptions.allZeros)!
+        
+        let componentsToAdd: NSDateComponents = NSDateComponents()
+        componentsToAdd.day = 7
+        let endOfWeek: NSDate = calendar.dateByAddingComponents(componentsToAdd, toDate: beginningOfWeek, options: NSCalendarOptions.allZeros)!
+        
+        //println(beginningOfWeek)
+        //println(endOfWeek)
+        
+        return (beginningOfWeek, endOfWeek)
+    }
+    
+    class func getMonthStartEndDate(date: NSDate? = nil) -> (NSDate, NSDate){
+        let nDate: NSDate = date != nil ? date! : NSDate()
+        var calendar: NSCalendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
+        let weekdayComponents: NSDateComponents = calendar.components(
+            (NSCalendarUnit.CalendarUnitYear | NSCalendarUnit.CalendarUnitMonth | NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond), fromDate: nDate)
+        
+        let componentsToSubtract: NSDateComponents = NSDateComponents()
+        componentsToSubtract.day = 0 - weekdayComponents.day + 1
+        componentsToSubtract.hour = 0 - weekdayComponents.hour
+        componentsToSubtract.minute = 0 - weekdayComponents.minute
+        componentsToSubtract.second = 0 - weekdayComponents.second
+        
+        let beginningOfMonth: NSDate = calendar.dateByAddingComponents(componentsToSubtract, toDate: nDate, options: NSCalendarOptions.allZeros)!
+        
+        var dayToAdd: Int = 0
+        switch weekdayComponents.month{
+        case 1,3,5,7,8,10,12:
+            dayToAdd = 31
+        case 2:
+            dayToAdd = 28
+            if weekdayComponents.year % 4 == 0{
+                dayToAdd = 29
+            }
+        default:
+            dayToAdd = 30
+        }
+        
+        let componentsToAdd: NSDateComponents = NSDateComponents()
+        componentsToAdd.day = dayToAdd - 1
+        
+        let endOfWeek: NSDate = calendar.dateByAddingComponents(componentsToAdd, toDate: beginningOfMonth, options: NSCalendarOptions.allZeros)!
+        
+        //println(beginningOfMonth)
+        //println(endOfWeek)
+        
+        return (beginningOfMonth, endOfWeek)
     }
     
     class func getTimeStamp(timestring: String) -> NSTimeInterval{

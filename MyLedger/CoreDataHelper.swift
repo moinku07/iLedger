@@ -25,7 +25,7 @@ class CoreDataHelper: NSObject {
     class func managedObjectContext(dataBaseFilename: String? = nil) -> NSManagedObjectContext{
         var error: NSError? = nil;
         
-        NSFileManager.defaultManager().createDirectoryAtPath(CoreDataHelper.directoryForDatabaseFilename(), withIntermediateDirectories: true, attributes: nil, error: &error);
+        NSFileManager.defaultManager().createDirectoryAtPath(CoreDataHelper.directoryForDatabaseFilename() as String, withIntermediateDirectories: true, attributes: nil, error: &error);
         
         if error != nil{
             println("Error: \(error?.localizedDescription)");
@@ -33,7 +33,7 @@ class CoreDataHelper: NSObject {
         let path: NSString = "\(CoreDataHelper.directoryForDatabaseFilename())/\(CoreDataHelper.dataBaseFilename(name: dataBaseFilename))";
         //println("path: \(path)");
         
-        let url: NSURL = NSURL(fileURLWithPath: path)!;
+        let url: NSURL = NSURL(fileURLWithPath: path as String)!;
         
         let managedModel: NSManagedObjectModel = NSManagedObjectModel.mergedModelFromBundles(nil)!;
         
@@ -57,7 +57,7 @@ class CoreDataHelper: NSObject {
     }
     
     class func insertManagedObject(className: NSString, managedObjectContext: NSManagedObjectContext) -> AnyObject{
-        let managedObject: NSManagedObject = NSEntityDescription.insertNewObjectForEntityForName(className, inManagedObjectContext: managedObjectContext) as NSManagedObject;
+        let managedObject: NSManagedObject = NSEntityDescription.insertNewObjectForEntityForName(className as String, inManagedObjectContext: managedObjectContext) as! NSManagedObject;
         return managedObject;
     }
     
@@ -76,18 +76,18 @@ class CoreDataHelper: NSObject {
         if limit != nil{
             fetchRequest.fetchLimit = limit!
         }
-        let entityDescription: NSEntityDescription = NSEntityDescription.entityForName(className, inManagedObjectContext: managedObjectContext)!;
+        let entityDescription: NSEntityDescription = NSEntityDescription.entityForName(className as String, inManagedObjectContext: managedObjectContext)!;
         fetchRequest.entity = entityDescription;
         
         if (predicate != nil){
             fetchRequest.predicate = predicate!
         }
         if sorter != nil{
-            fetchRequest.sortDescriptors = sorter!
+            fetchRequest.sortDescriptors = sorter! as [AnyObject]
         }
         
         if expressions != nil{
-            fetchRequest.propertiesToFetch = expressions!
+            fetchRequest.propertiesToFetch = expressions! as [AnyObject]
             fetchRequest.resultType = NSFetchRequestResultType.DictionaryResultType
         }
         
@@ -101,6 +101,34 @@ class CoreDataHelper: NSObject {
             return [];
         }
         return []
+    }
+    
+    class func fetchEntitiesByGroup(className: NSString, managedObjectContext: NSManagedObjectContext, predicate: NSPredicate?, sorter: NSArray? = nil, groupBy: NSArray? = nil) -> NSArray{
+        let fetchRequest: NSFetchRequest = NSFetchRequest()
+        let entityDescription: NSEntityDescription = NSEntityDescription.entityForName(className as String, inManagedObjectContext: managedObjectContext)!
+        
+        fetchRequest.entity = entityDescription
+        
+        if predicate != nil{
+            fetchRequest.predicate = predicate!
+        }
+        
+        if sorter != nil{
+            fetchRequest.sortDescriptors = sorter! as [AnyObject]
+        }
+        
+        if groupBy != nil{
+            fetchRequest.propertiesToGroupBy = groupBy! as [AnyObject]
+            fetchRequest.resultType = .DictionaryResultType
+        }
+        
+        fetchRequest.returnsObjectsAsFaults = false
+        
+        var error: NSError?
+        
+        let items: NSArray = managedObjectContext.executeFetchRequest(fetchRequest, error: &error)!
+        
+        return items
     }
    
 }

@@ -31,10 +31,10 @@ class MainViewController: UITabBarController, SideBarDelegate {
         }
         
         self.synchronizeAccountTypes()
-        accounttypesSyncTimer = NSTimer.scheduledTimerWithTimeInterval(60.0 * 5, target: self, selector: Selector("synchronizeAccountTypes"), userInfo: nil, repeats: true)
+        accounttypesSyncTimer = NSTimer.scheduledTimerWithTimeInterval(60.0 * 15, target: self, selector: Selector("synchronizeAccountTypes"), userInfo: nil, repeats: true)
         
         self.synchronizeAccounts()
-        accountsSyncTimer = NSTimer.scheduledTimerWithTimeInterval(60.0, target: self, selector: Selector("synchronizeAccounts"), userInfo: nil, repeats: true)
+        accountsSyncTimer = NSTimer.scheduledTimerWithTimeInterval(60.0 * 5, target: self, selector: Selector("synchronizeAccounts"), userInfo: nil, repeats: true)
     }
 
     override func didReceiveMemoryWarning() {

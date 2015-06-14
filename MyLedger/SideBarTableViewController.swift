@@ -52,7 +52,7 @@ class SideBarTableViewController: UITableViewController {
             cell!.selectedBackgroundView = selectedView
         }
         //cell?.backgroundColor = UIColor.redColor()
-        let cellData: NSDictionary = self.tableData.objectAtIndex(indexPath.row) as NSDictionary
+        let cellData: NSDictionary = self.tableData.objectAtIndex(indexPath.row) as! NSDictionary
         
         cell?.textLabel?.text = cellData.objectForKey("title") as? String
         

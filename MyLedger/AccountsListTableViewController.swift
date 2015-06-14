@@ -55,7 +55,7 @@ class AccountsListTableViewController: UITableViewController {
 
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell
         
         
         if let data = self.tableData.objectAtIndex(indexPath.row) as? NSDictionary{
@@ -68,13 +68,13 @@ class AccountsListTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
-        let nextVC: AccountAddViewController = self.storyboard?.instantiateViewControllerWithIdentifier("AccountAddViewController") as AccountAddViewController
+        let nextVC: AccountAddViewController = self.storyboard?.instantiateViewControllerWithIdentifier("AccountAddViewController") as! AccountAddViewController
         
         if let cellData = self.tableData.objectAtIndex(indexPath.row) as? NSDictionary{
             nextVC.isEdit = true
-            nextVC.acTypeID = (cellData.objectForKey("id") as NSString).integerValue
-            nextVC.identifier = cellData.objectForKey("identifier") as NSString
-            nextVC.tableData = [["title": "Type", "type": "picker", "value": (cellData.objectForKey("accounttype_id") as NSString).integerValue],["title": "Description", "type": "textview", "value": cellData.objectForKey("details") as NSString],["title": "Amount", "type": "input", "value": cellData.objectForKey("amount") as NSString]]
+            nextVC.acTypeID = (cellData.objectForKey("id") as! NSString).integerValue
+            nextVC.identifier = cellData.objectForKey("identifier") as! NSString as String
+            nextVC.tableData = [["title": "Type", "type": "picker", "value": (cellData.objectForKey("accounttype_id") as! NSString).integerValue],["title": "Description", "type": "textview", "value": cellData.objectForKey("details") as! NSString],["title": "Amount", "type": "input", "value": cellData.objectForKey("amount") as! NSString]]
             //nextVC.tableData = [["title": "Name", "type": "input", "placeHolder": "Name", "value": cellData.objectForKey("name") as NSString],["title": "Type", "type": "picker", "value": (cellData.objectForKey("type") as NSString).integerValue]]
         }
         self.navigationController?.pushViewController(nextVC, animated: true)
@@ -101,9 +101,9 @@ class AccountsListTableViewController: UITableViewController {
     }
     
     func deleteRowAt(indexPath: NSIndexPath){
-        let dict: NSDictionary = tableData.objectAtIndex(indexPath.row) as NSDictionary
-        let ID: NSString = dict.objectForKey("id") as NSString
-        let identifier: NSString = dict.objectForKey("identifier") as NSString
+        let dict: NSDictionary = tableData.objectAtIndex(indexPath.row) as! NSDictionary
+        let ID: NSString = dict.objectForKey("id") as! NSString
+        let identifier: NSString = dict.objectForKey("identifier") as! NSString
         // calculate view's center for activity indicator
         var centerOfView: CGPoint = self.view.center
         if UIApplication.sharedApplication().statusBarOrientation == UIInterfaceOrientation.Portrait{
@@ -125,10 +125,10 @@ class AccountsListTableViewController: UITableViewController {
                 //println(NSString(data: data!, encoding: NSUTF8StringEncoding))
                 if error != nil{
                     if error!.code == -1004 || error!.code == -1009{
-                        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(identifier)'")!
+                        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(identifier)'")
                         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                         if result.count > 0{
-                            let account: Accounts = result.lastObject as Accounts
+                            let account: Accounts = result.lastObject as! Accounts
                             account.isdeleted = true
                             account.modified = DVDateFormatter.currentDate
                             account.synced = false
@@ -153,13 +153,13 @@ class AccountsListTableViewController: UITableViewController {
                         if response.objectForKey("success") as? Bool == true{
                             if let savedData: NSDictionary = response.objectForKey("data") as? NSDictionary{
                                 //println(identifier)
-                                let predicate: NSPredicate = NSPredicate(format: "identifier == '\(identifier)'")!
+                                let predicate: NSPredicate = NSPredicate(format: "identifier == '\(identifier)'")
                                 let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                 if result.count > 0{
                                     //println("here")
-                                    let account: Accounts = result.lastObject as Accounts
+                                    let account: Accounts = result.lastObject as! Accounts
                                     account.isdeleted = true
-                                    account.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as String, format: nil)
+                                    account.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as! String, format: nil)
                                     account.synced = true
                                     var error: NSError?
                                     moc.save(&error)
@@ -258,7 +258,7 @@ class AccountsListTableViewController: UITableViewController {
                                             account.amount = amount
                                         }
                                         if let amount: NSString = dict.objectForKey("amount") as? NSString{
-                                            account.amount = NSDecimalNumber(string: amount)
+                                            account.amount = NSDecimalNumber(string: amount as String)
                                         }
                                         if let user_id: NSNumber = dict.objectForKey("user_id") as? NSNumber{
                                             account.user_id = user_id
@@ -275,16 +275,16 @@ class AccountsListTableViewController: UITableViewController {
                                         }
                                         
                                         // accounttype for account
-                                        let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")!
+                                        let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")
                                         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                         if result.count > 0{
-                                            let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                            let accounttype: Accounttypes = result.lastObject as! Accounttypes
                                             account.accounttype = accounttype
                                         }
                                         //end
                                         
-                                        account.details = dict.objectForKey("description") as NSString
-                                        account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
+                                        account.details = dict.objectForKey("description") as! NSString as String
+                                        account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as! NSString as String, format: nil)
                                         account.synced = true
                                         
                                         if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
@@ -314,9 +314,9 @@ class AccountsListTableViewController: UITableViewController {
     
     // MARK: - loadLocalData
     func loadLocalData(){
-        let userID: NSNumber = (prefs.objectForKey("userID") as NSString).integerValue
+        let userID: NSNumber = (prefs.objectForKey("userID") as! NSString).integerValue
         let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-        let predicate: NSPredicate = NSPredicate(format: "user_id == '\(userID)' AND isdeleted = NO")!
+        let predicate: NSPredicate = NSPredicate(format: "user_id == '\(userID)' AND isdeleted = NO")
         let sorter: NSSortDescriptor = NSSortDescriptor(key: "identifier", ascending: false)
         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: nil)
         if result.count > 0{

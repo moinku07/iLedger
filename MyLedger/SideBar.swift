@@ -20,7 +20,7 @@ class SideBar: NSObject, SideBarTableViewControllerDelegate {
     let sideBarTableViewTopInset: CGFloat = 64.0
     let sideBarContainerView: UIView = UIView()
     let sideBarTableViewController: SideBarTableViewController = SideBarTableViewController()
-    let originView: UIView!
+    var originView: UIView!
     var animator: UIDynamicAnimator!
     var delegate: SideBarDelegate?
     var isSideBarOpen: Bool = false
@@ -172,7 +172,7 @@ class SideBar: NSObject, SideBarTableViewControllerDelegate {
         if shouldCloseOnSelection{
             showSideBar(!isSideBarOpen)
         }
-        delegate?.sideBarDidSelectRowAtIndex(indexPath.row, dict: self.menuItems?.objectAtIndex(indexPath.row) as NSDictionary)
+        delegate?.sideBarDidSelectRowAtIndex(indexPath.row, dict: self.menuItems?.objectAtIndex(indexPath.row) as! NSDictionary)
         if shouldDeselectSelectedRow{
             sideBarTableViewController.tableView.deselectRowAtIndexPath(indexPath, animated: true)
         }

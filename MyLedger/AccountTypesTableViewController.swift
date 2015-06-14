@@ -55,7 +55,7 @@ class AccountTypesTableViewController: UITableViewController {
 
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell
 
         cell.textLabel?.text = self.tableData.objectAtIndex(indexPath.row) as? String
         cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
@@ -67,11 +67,11 @@ class AccountTypesTableViewController: UITableViewController {
         selectedRowIndexPath = indexPath
         let rowTitle: String! = self.tableData.objectAtIndex(indexPath.row) as? String
         if rowTitle == "Add Account type"{
-            let nextVC: ACTypeAddViewController = self.storyboard?.instantiateViewControllerWithIdentifier("ACTypeAddViewController") as ACTypeAddViewController
+            let nextVC: ACTypeAddViewController = self.storyboard?.instantiateViewControllerWithIdentifier("ACTypeAddViewController") as! ACTypeAddViewController
             //let nextVC: ACTypeAddTableViewController = self.storyboard?.instantiateViewControllerWithIdentifier("ACTypeAddViewController") as ACTypeAddTableViewController
             self.navigationController?.pushViewController(nextVC, animated: true)
         }else if rowTitle == "See Account types"{
-            let nextVC: ACTypesListTableViewController = self.storyboard?.instantiateViewControllerWithIdentifier("ACTypesListController") as ACTypesListTableViewController
+            let nextVC: ACTypesListTableViewController = self.storyboard?.instantiateViewControllerWithIdentifier("ACTypesListController") as! ACTypesListTableViewController
             self.navigationController?.pushViewController(nextVC, animated: true)
         }
     }

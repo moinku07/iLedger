@@ -26,7 +26,8 @@ class AccountSummaryViewController: UIViewController {
         self.navigationItem.title = "Summary"
         
         if startDate == nil{
-            startDate = DVDateFormatter.getDate(date: nil, years: nil, months: nil, days: -7, hours: 0, minutes: 0, seconds: 0)
+            let date: NSDate = DVDateFormatter.getDate(date: nil, years: nil, months: nil, days: nil, hours: 0, minutes: 0, seconds: 0)
+            startDate = DVDateFormatter.getDateByAdding(date: date, years: nil, months: nil, days: -7, hours: 0, minutes: 0, seconds: 0)
         }else{
             startDate = DVDateFormatter.getDate(date: startDate!, years: nil, months: nil, days: nil, hours: 0, minutes: 0, seconds: 0)
         }
@@ -51,7 +52,7 @@ class AccountSummaryViewController: UIViewController {
     func getPreviousCredit() -> Double{
         var credit: Double = 0.0
         var debit: Double = 0.0
-        let userID: Int = (prefs.objectForKey("userID") as NSString).integerValue
+        let userID: Int = (prefs.objectForKey("userID") as! NSString).integerValue
         
         let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
         
@@ -61,12 +62,15 @@ class AccountSummaryViewController: UIViewController {
         expression.expression = NSExpression(forKeyPath: "@sum.amount")
         expression.expressionResultType = NSAttributeType.DecimalAttributeType
         
-        var predicate: NSPredicate = NSPredicate(format: "(modified < %@) AND accounttype.type = 1 AND (user_id = %d) AND isdeleted = FALSE", startDate!, userID)!
+        var predicate: NSPredicate = NSPredicate(format: "(modified < %@) AND accounttype.type = 1 AND (user_id = %d) AND isdeleted = FALSE", startDate!, userID)
+        //println(predicate)
+        //println(startDate!)
+        //println(userID)
         var result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: nil, expressions: [expression])
         
         if result.count > 0{
-            let resultdict: NSDictionary = result.lastObject as NSDictionary
-            credit = resultdict.objectForKey("sumOfAmmount") as Double
+            let resultdict: NSDictionary = result.lastObject as! NSDictionary
+            credit = resultdict.objectForKey("sumOfAmmount") as! Double
         }
         
         //println(credit)
@@ -77,12 +81,15 @@ class AccountSummaryViewController: UIViewController {
         expression.expression = NSExpression(forKeyPath: "@sum.amount")
         expression.expressionResultType = NSAttributeType.DecimalAttributeType
         
-        predicate = NSPredicate(format: "(modified < %@) AND accounttype.type = 2 AND (user_id = %d) AND isdeleted = FALSE", startDate!, userID)!
+        predicate = NSPredicate(format: "(modified < %@) AND accounttype.type = 2 AND (user_id = %d) AND isdeleted = FALSE", startDate!, userID)
+        //println(predicate)
+        //println(startDate!)
+        //println(userID)
         result = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: nil, expressions: [expression])
         
         if result.count > 0{
-            let resultdict: NSDictionary = result.lastObject as NSDictionary
-            debit = resultdict.objectForKey("sumOfAmmount") as Double
+            let resultdict: NSDictionary = result.lastObject as! NSDictionary
+            debit = resultdict.objectForKey("sumOfAmmount") as! Double
         }
         
         //println(debit)
@@ -95,14 +102,14 @@ class AccountSummaryViewController: UIViewController {
         let prevTotal: Double = self.getPreviousCredit()
         println(prevTotal)
         
-        let userID: Int = (prefs.objectForKey("userID") as NSString).integerValue
+        let userID: Int = (prefs.objectForKey("userID") as! NSString).integerValue
         
         let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
         
-        var predicate: NSPredicate = NSPredicate(format: "(modified >= %@) AND (modified <= %@) AND (user_id = %d) AND isdeleted = FALSE", startDate!, endDate!,userID)!
+        var predicate: NSPredicate = NSPredicate(format: "(modified >= %@) AND (modified <= %@) AND (user_id = %d) AND isdeleted = FALSE", startDate!, endDate!,userID)
         
         if accounttype_id != nil{
-            predicate = NSPredicate(format: "(modified >= %@) AND (modified <= %@) AND (user_id = %d) AND (accounttype_id = %d) AND isdeleted = FALSE", startDate!, endDate!,userID, accounttype_id!)!
+            predicate = NSPredicate(format: "(modified >= %@) AND (modified <= %@) AND (user_id = %d) AND (accounttype_id = %d) AND isdeleted = FALSE", startDate!, endDate!,userID, accounttype_id!)
         }
         
         var result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: nil, expressions: nil)
@@ -117,7 +124,7 @@ class AccountSummaryViewController: UIViewController {
         
         if result.count > 0{
             for item in result{
-                let account: Accounts = item as Accounts
+                let account: Accounts = item as! Accounts
                 table += "<tr>"
                 table += "<td>\(DVDateFormatter.getTimeString(account.modified, format: nil))</td>"
                 table += "<td>\(account.accounttype.name)</td>";

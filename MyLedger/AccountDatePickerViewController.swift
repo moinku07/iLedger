@@ -56,9 +56,9 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        let userID: NSNumber = (prefs.objectForKey("userID") as NSString).integerValue
+        let userID: NSNumber = (prefs.objectForKey("userID") as! NSString).integerValue
         let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-        let predicate: NSPredicate = NSPredicate(format: "user_id == '\(userID)' AND isdeleted = NO")!
+        let predicate: NSPredicate = NSPredicate(format: "user_id == '\(userID)' AND isdeleted = NO")
         //let sorter: NSSortDescriptor = NSSortDescriptor(key: "identifier", ascending: false)
         let sorter: NSSortDescriptor = NSSortDescriptor(key: "name", ascending: true)
         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: nil)
@@ -108,12 +108,12 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
         var rowData: NSDictionary = NSDictionary()
         
         if indexPath.row < self.tableData.count{
-            rowData = self.tableData.objectAtIndex(indexPath.row) as NSDictionary
+            rowData = self.tableData.objectAtIndex(indexPath.row) as! NSDictionary
         }
         
         var cellID: NSString = "otherCell"
         if self.indexPathHasPicker(indexPath){
-            let prevRowData: NSDictionary = self.tableData.objectAtIndex(indexPath.row - 1) as NSDictionary
+            let prevRowData: NSDictionary = self.tableData.objectAtIndex(indexPath.row - 1) as! NSDictionary
             if let type: String = prevRowData["type"] as? String{
                 if type == "date"{
                     cellID = "datePicker"
@@ -133,7 +133,7 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
             }
         }
         
-        let cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(cellID as String, forIndexPath: indexPath) as! UITableViewCell
         
         // if we have a date picker open whose cell is above the cell we want to update,
         // then we have one more cell than the model allows
@@ -153,14 +153,14 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
         }
         
         if cellID != "uiPicker" || cellID != "datePicker"{
-            rowData = self.tableData.objectAtIndex(modelRow) as NSDictionary
+            rowData = self.tableData.objectAtIndex(modelRow) as! NSDictionary
             //println(rowData)
             if let type: String = rowData["type"] as? String{
                 if type  == "input"{
-                    let label1: UILabel = cell.viewWithTag(1) as UILabel
+                    let label1: UILabel = cell.viewWithTag(1) as! UILabel
                     label1.text = rowData.objectForKey("title") as? String
                     
-                    let input: UITextField = cell.viewWithTag(2) as UITextField
+                    let input: UITextField = cell.viewWithTag(2) as! UITextField
                     input.placeholder = rowData.objectForKey("title") as? String
                     input.text = rowData.objectForKey("value") as? String
                     input.delegate = self
@@ -219,10 +219,10 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
             if targetedDatePicker != nil{
                 // we found a UIDatePicker in this cell, so update it's date value
                 //
-                let itemData: NSDictionary = self.tableData.objectAtIndex(self.datePickerIndexPath!.row - 1) as NSDictionary
+                let itemData: NSDictionary = self.tableData.objectAtIndex(self.datePickerIndexPath!.row - 1) as! NSDictionary
                 if let date: NSDate = itemData.valueForKey("date") as? NSDate{
                     //println("datePickerDate: \(date)")
-                    targetedDatePicker?.setDate(itemData.valueForKey("date") as NSDate, animated: false)
+                    targetedDatePicker?.setDate(itemData.valueForKey("date") as! NSDate, animated: false)
                 }else{
                     targetedDatePicker?.setDate(NSDate(), animated: false)
                 }
@@ -301,14 +301,14 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
     }
     
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
-        return pickerDataTitles.objectAtIndex(row) as String
+        return pickerDataTitles.objectAtIndex(row) as! String
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         selectedPickerValue = pickerDataValues.objectAtIndex(row) as? Int
         let indexPath: NSIndexPath = NSIndexPath(forRow: datePickerIndexPath!.row - 1, inSection: datePickerIndexPath!.section)
         if let cell: UITableViewCell = tableView.cellForRowAtIndexPath(indexPath){
-            let label2: UILabel = cell.viewWithTag(2) as UILabel
+            let label2: UILabel = cell.viewWithTag(2) as! UILabel
             label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
         }
     }
@@ -326,7 +326,7 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
             let targetedDatePicker: UIDatePicker = sender
             
             // update our data model
-            var itemData: NSMutableDictionary = NSMutableDictionary(dictionary: self.tableData.objectAtIndex(targetedCellIndexPath!.row) as NSDictionary)
+            var itemData: NSMutableDictionary = NSMutableDictionary(dictionary: self.tableData.objectAtIndex(targetedCellIndexPath!.row) as! NSDictionary)
             var dict: NSMutableDictionary = NSMutableDictionary(dictionary: itemData)
             dict.setValue(targetedDatePicker.date, forKey: "date")
             self.tableData.replaceObjectAtIndex(targetedCellIndexPath!.row, withObject: dict)
@@ -354,9 +354,9 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
     
     
     @IBAction func onSubmitTap(sender: UIButton) {
-        let vc: AccountSummaryViewController = self.storyboard?.instantiateViewControllerWithIdentifier("AccountSummaryViewController") as AccountSummaryViewController
-        let dict1: NSDictionary = tableData.objectAtIndex(0) as NSDictionary
-        let dict2: NSDictionary = tableData.objectAtIndex(1) as NSDictionary
+        let vc: AccountSummaryViewController = self.storyboard?.instantiateViewControllerWithIdentifier("AccountSummaryViewController") as! AccountSummaryViewController
+        let dict1: NSDictionary = tableData.objectAtIndex(0) as! NSDictionary
+        let dict2: NSDictionary = tableData.objectAtIndex(1) as! NSDictionary
         vc.startDate = dict1.objectForKey("date") as? NSDate
         vc.endDate = dict2.objectForKey("date") as? NSDate
         vc.accounttype_id = selectedPickerValue

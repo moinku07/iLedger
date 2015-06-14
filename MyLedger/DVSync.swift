@@ -34,11 +34,11 @@ class DVSync: NSObject {
                 println("_lastAccounttypeModified: \(_lastAccounttypeModified)")
             }else{
                 let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-                let predicate: NSPredicate = NSPredicate(format: "synced == YES")!
+                let predicate: NSPredicate = NSPredicate(format: "synced == YES")
                 let sorter: NSSortDescriptor = NSSortDescriptor(key: "modified", ascending: false)
                 let results: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: 1)
                 if results.count > 0{
-                    let accounttype: Accounttypes = results.lastObject as Accounttypes
+                    let accounttype: Accounttypes = results.lastObject as! Accounttypes
                     _lastAccounttypeModified = DVDateFormatter.getTimeString(accounttype.modified, format: nil)
                     println("_lastAccounttypeModified: \(_lastAccounttypeModified)")
                 }else{
@@ -54,7 +54,7 @@ class DVSync: NSObject {
     // MARK: - postLocalData
     class func postLocalAccounttypeData(){
         let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-        let predicate: NSPredicate = NSPredicate(format: "synced == NO")!
+        let predicate: NSPredicate = NSPredicate(format: "synced == NO")
         let sorter: NSSortDescriptor = NSSortDescriptor(key: "identifier", ascending: true)
         let results: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: nil)
         
@@ -62,7 +62,7 @@ class DVSync: NSObject {
         if results.count > 0{
             _isSyncAccountTypes = true
             for (index, item) in enumerate(results){
-                let accounttype: Accounttypes = item as Accounttypes
+                let accounttype: Accounttypes = item as! Accounttypes
                 //println(accounttype.synced)
                 //continue
                 if accounttype.id > 0{
@@ -113,14 +113,14 @@ class DVSync: NSObject {
                                 if savedData.count > 0{
                                     for item in savedData{
                                         //println("here")
-                                        let dict: NSDictionary = item as NSDictionary
-                                        let identifier: NSString = dict.objectForKey("identifier") as NSString
+                                        let dict: NSDictionary = item as! NSDictionary
+                                        let identifier: NSString = dict.objectForKey("identifier") as! NSString
                                         println("identifier: \(identifier)")
                                         let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-                                        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(identifier)'")!
+                                        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(identifier)'")
                                         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                         if result.count > 0{
-                                            let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                            let accounttype: Accounttypes = result.lastObject as! Accounttypes
                                             if let id: NSNumber = dict.objectForKey("id") as? NSNumber{
                                                 accounttype.id = id
                                             }
@@ -139,9 +139,9 @@ class DVSync: NSObject {
                                             if let user_id: NSString = dict.objectForKey("user_id") as? NSString{
                                                 accounttype.user_id = user_id.integerValue
                                             }
-                                            accounttype.name = dict.objectForKey("name") as NSString
-                                            accounttype.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
-                                            accounttype.created = DVDateFormatter.getDate(dict.objectForKey("created") as NSString, format: nil)
+                                            accounttype.name = dict.objectForKey("name") as! NSString as String
+                                            accounttype.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as! NSString as String, format: nil)
+                                            accounttype.created = DVDateFormatter.getDate(dict.objectForKey("created") as! NSString as String, format: nil)
                                             accounttype.synced = true
                                             var error: NSError?
                                             moc.save(&error)
@@ -188,7 +188,7 @@ class DVSync: NSObject {
                                     var last_synced: NSString?
                                     for item in json{
                                         //println("here")
-                                        let dict: NSDictionary = item as NSDictionary
+                                        let dict: NSDictionary = item as! NSDictionary
                                         var ID: NSNumber!
                                         if let id: NSNumber = dict.objectForKey("id") as? NSNumber{
                                             ID = id
@@ -197,10 +197,10 @@ class DVSync: NSObject {
                                             ID = id.integerValue
                                         }
                                         let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-                                        let predicate: NSPredicate = NSPredicate(format: "id == \(ID)")!
+                                        let predicate: NSPredicate = NSPredicate(format: "id == \(ID)")
                                         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                         if result.count > 0{
-                                            let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                            let accounttype: Accounttypes = result.lastObject as! Accounttypes
                                             accounttype.id = ID
                                             if let type: NSNumber = dict.objectForKey("type") as? NSNumber{
                                                 accounttype.type = type
@@ -214,9 +214,9 @@ class DVSync: NSObject {
                                             if let user_id: NSString = dict.objectForKey("user_id") as? NSString{
                                                 accounttype.user_id = user_id.integerValue
                                             }
-                                            accounttype.name = dict.objectForKey("name") as NSString
-                                            accounttype.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
-                                            accounttype.created = DVDateFormatter.getDate(dict.objectForKey("created") as NSString, format: nil)
+                                            accounttype.name = dict.objectForKey("name") as! NSString as String
+                                            accounttype.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as! NSString as String, format: nil)
+                                            accounttype.created = DVDateFormatter.getDate(dict.objectForKey("created") as! NSString as String, format: nil)
                                             accounttype.synced = true
                                             if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
                                                 accounttype.isdeleted = isdeleted
@@ -251,9 +251,9 @@ class DVSync: NSObject {
                                                 if let user_id: NSString = dict.objectForKey("user_id") as? NSString{
                                                     accounttype.user_id = user_id.integerValue
                                                 }
-                                                accounttype.name = dict.objectForKey("name") as NSString
-                                                accounttype.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
-                                                accounttype.created = DVDateFormatter.getDate(dict.objectForKey("created") as NSString, format: nil)
+                                                accounttype.name = dict.objectForKey("name") as! NSString as String
+                                                accounttype.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as! NSString as String, format: nil)
+                                                accounttype.created = DVDateFormatter.getDate(dict.objectForKey("created") as! NSString as String, format: nil)
                                                 accounttype.synced = true
                                                 if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
                                                     accounttype.isdeleted = isdeleted
@@ -307,11 +307,11 @@ class DVSync: NSObject {
                 println("_lastAccountModified: \(_lastAccountModified)")
             }else{
                 let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-                let predicate: NSPredicate = NSPredicate(format: "synced == YES")!
+                let predicate: NSPredicate = NSPredicate(format: "synced == YES")
                 let sorter: NSSortDescriptor = NSSortDescriptor(key: "modified", ascending: false)
                 let results: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: 1)
                 if results.count > 0{
-                    let account: Accounts = results.lastObject as Accounts
+                    let account: Accounts = results.lastObject as! Accounts
                     _lastAccountModified = DVDateFormatter.getTimeString(account.modified, format: nil)
                     println("_lastAccountModified: \(_lastAccountModified)")
                 }else{
@@ -327,7 +327,7 @@ class DVSync: NSObject {
     // MARK: - postLocalData
     class func postLocalAccounts(){
         let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-        let predicate: NSPredicate = NSPredicate(format: "synced == NO")!
+        let predicate: NSPredicate = NSPredicate(format: "synced == NO")
         let sorter: NSSortDescriptor = NSSortDescriptor(key: "identifier", ascending: true)
         let results: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: nil)
         
@@ -335,7 +335,7 @@ class DVSync: NSObject {
         if results.count > 0{
             _isSyncAccounts = true
             for (index, item) in enumerate(results){
-                let account: Accounts = item as Accounts
+                let account: Accounts = item as! Accounts
                 //println(account.synced)
                 //continue
                 if account.id > 0{
@@ -388,14 +388,14 @@ class DVSync: NSObject {
                                 if savedData.count > 0{
                                     for item in savedData{
                                         //println("here")
-                                        let dict: NSDictionary = item as NSDictionary
-                                        let identifier: NSString = dict.objectForKey("identifier") as NSString
+                                        let dict: NSDictionary = item as! NSDictionary
+                                        let identifier: NSString = dict.objectForKey("identifier") as! NSString
                                         println("identifier: \(identifier)")
                                         let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-                                        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(identifier)'")!
+                                        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(identifier)'")
                                         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                         if result.count > 0{
-                                            let account: Accounts = result.lastObject as Accounts
+                                            let account: Accounts = result.lastObject as! Accounts
                                             if let id: NSNumber = dict.objectForKey("id") as? NSNumber{
                                                 account.id = id
                                             }
@@ -406,7 +406,7 @@ class DVSync: NSObject {
                                                 account.amount = amount
                                             }
                                             if let amount: NSString = dict.objectForKey("amount") as? NSString{
-                                                account.amount = NSDecimalNumber(string: amount)
+                                                account.amount = NSDecimalNumber(string: amount as String)
                                             }
                                             if let user_id: NSNumber = dict.objectForKey("user_id") as? NSNumber{
                                                 account.user_id = user_id
@@ -420,9 +420,9 @@ class DVSync: NSObject {
                                             if let accounttype_id: NSString = dict.objectForKey("accounttype_id") as? NSString{
                                                 account.accounttype_id = accounttype_id.integerValue
                                             }
-                                            account.details = dict.objectForKey("description") as NSString
-                                            account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
-                                            account.created = DVDateFormatter.getDate(dict.objectForKey("created") as NSString, format: nil)
+                                            account.details = dict.objectForKey("description") as! NSString as String
+                                            account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as! NSString as String, format: nil)
+                                            account.created = DVDateFormatter.getDate(dict.objectForKey("created") as! NSString as String, format: nil)
                                             account.synced = true
                                             if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
                                                 account.isdeleted = isdeleted
@@ -446,7 +446,7 @@ class DVSync: NSObject {
                     DVSync.fetchServerAccountData()
                 }else if error != nil{
                     DVSync.fetchServerAccountData()
-                    println("post error")
+                    println("accounts/sync post error")
                     println(error!.localizedDescription)
                 }else{
                     DVSync.fetchServerAccountData()
@@ -476,7 +476,7 @@ class DVSync: NSObject {
                                     var last_synced: NSString?
                                     for item in json{
                                         //println("here")
-                                        let dict: NSDictionary = item as NSDictionary
+                                        let dict: NSDictionary = item as! NSDictionary
                                         var ID: NSNumber!
                                         if let id: NSNumber = dict.objectForKey("id") as? NSNumber{
                                             ID = id
@@ -485,16 +485,16 @@ class DVSync: NSObject {
                                             ID = id.integerValue
                                         }
                                         let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-                                        let predicate: NSPredicate = NSPredicate(format: "id == \(ID)")!
+                                        let predicate: NSPredicate = NSPredicate(format: "id == \(ID)")
                                         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                         if result.count > 0{
-                                            let account: Accounts = result.lastObject as Accounts
+                                            let account: Accounts = result.lastObject as! Accounts
                                             account.id = ID
                                             if let amount: NSDecimalNumber = dict.objectForKey("amount") as? NSDecimalNumber{
                                                 account.amount = amount
                                             }
                                             if let amount: NSString = dict.objectForKey("amount") as? NSString{
-                                                account.amount = NSDecimalNumber(string: amount)
+                                                account.amount = NSDecimalNumber(string: amount as String)
                                             }
                                             if let user_id: NSNumber = dict.objectForKey("user_id") as? NSNumber{
                                                 account.user_id = user_id
@@ -510,17 +510,17 @@ class DVSync: NSObject {
                                             }
                                             
                                             // accounttype for account
-                                            let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")!
+                                            let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")
                                             let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                             if result.count > 0{
-                                                let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                                let accounttype: Accounttypes = result.lastObject as! Accounttypes
                                                 account.accounttype = accounttype
                                             }
                                             //end
                                             
-                                            account.details = dict.objectForKey("description") as NSString
-                                            account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
-                                            account.created = DVDateFormatter.getDate(dict.objectForKey("created") as NSString, format: nil)
+                                            account.details = dict.objectForKey("description") as! NSString as String
+                                            account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as! NSString as String, format: nil)
+                                            account.created = DVDateFormatter.getDate(dict.objectForKey("created") as! NSString as String, format: nil)
                                             account.synced = true
                                             if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
                                                 account.isdeleted = isdeleted
@@ -547,7 +547,7 @@ class DVSync: NSObject {
                                                     account.amount = amount
                                                 }
                                                 if let amount: NSString = dict.objectForKey("amount") as? NSString{
-                                                    account.amount = NSDecimalNumber(string: amount)
+                                                    account.amount = NSDecimalNumber(string: amount as String)
                                                 }
                                                 if let user_id: NSNumber = dict.objectForKey("user_id") as? NSNumber{
                                                     account.user_id = user_id
@@ -564,17 +564,17 @@ class DVSync: NSObject {
                                                 }
                                                 
                                                 // accounttype for account
-                                                let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")!
+                                                let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")
                                                 let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                                 if result.count > 0{
-                                                    let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                                    let accounttype: Accounttypes = result.lastObject as! Accounttypes
                                                     account.accounttype = accounttype
                                                 }
                                                 //end
                                                 
-                                                account.details = dict.objectForKey("description") as NSString
-                                                account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
-                                                account.created = DVDateFormatter.getDate(dict.objectForKey("created") as NSString, format: nil)
+                                                account.details = dict.objectForKey("description") as! NSString as String
+                                                account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as! NSString as String, format: nil)
+                                                account.created = DVDateFormatter.getDate(dict.objectForKey("created") as! NSString as String, format: nil)
                                                 account.synced = true
                                                 
                                                 if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
@@ -633,7 +633,7 @@ class DVSync: NSObject {
                         var last_synced: NSString?
                         for item in json{
                             //println("here")
-                            let dict: NSDictionary = item as NSDictionary
+                            let dict: NSDictionary = item as! NSDictionary
                             var ID: NSNumber!
                             if let id: NSNumber = dict.objectForKey("id") as? NSNumber{
                                 ID = id
@@ -654,7 +654,7 @@ class DVSync: NSObject {
                                     account.amount = amount
                                 }
                                 if let amount: NSString = dict.objectForKey("amount") as? NSString{
-                                    account.amount = NSDecimalNumber(string: amount)
+                                    account.amount = NSDecimalNumber(string: amount as String)
                                 }
                                 if let user_id: NSNumber = dict.objectForKey("user_id") as? NSNumber{
                                     account.user_id = user_id
@@ -671,17 +671,17 @@ class DVSync: NSObject {
                                 }
                                 
                                 // accounttype for account
-                                let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")!
+                                let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")
                                 let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                 if result.count > 0{
-                                    let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                    let accounttype: Accounttypes = result.lastObject as! Accounttypes
                                     account.accounttype = accounttype
                                 }
                                 //end
                                 
-                                account.details = dict.objectForKey("description") as NSString
-                                account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as NSString, format: nil)
-                                account.created = DVDateFormatter.getDate(dict.objectForKey("created") as NSString, format: nil)
+                                account.details = dict.objectForKey("description") as! NSString as String
+                                account.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as! NSString as String, format: nil)
+                                account.created = DVDateFormatter.getDate(dict.objectForKey("created") as! NSString as String, format: nil)
                                 account.synced = true
                                 
                                 if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{

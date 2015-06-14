@@ -56,7 +56,7 @@ class AccountsTableViewController: UITableViewController {
 
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as! UITableViewCell
         
         cell.textLabel?.text = self.tableData.objectAtIndex(indexPath.row) as? String
         cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
@@ -68,14 +68,14 @@ class AccountsTableViewController: UITableViewController {
         selectedRowIndexPath = indexPath
         let rowTitle: String! = self.tableData.objectAtIndex(indexPath.row) as? String
         if rowTitle == "Add Account"{
-            let nextVC: AccountAddViewController = self.storyboard?.instantiateViewControllerWithIdentifier("AccountAddViewController") as AccountAddViewController
+            let nextVC: AccountAddViewController = self.storyboard?.instantiateViewControllerWithIdentifier("AccountAddViewController") as! AccountAddViewController
             //let nextVC: ACTypeAddTableViewController = self.storyboard?.instantiateViewControllerWithIdentifier("ACTypeAddViewController") as ACTypeAddTableViewController
             self.navigationController?.pushViewController(nextVC, animated: true)
         }else if rowTitle == "See Accounts"{
-            let nextVC: AccountsListTableViewController = self.storyboard?.instantiateViewControllerWithIdentifier("AccountsListTableViewController") as AccountsListTableViewController
+            let nextVC: AccountsListTableViewController = self.storyboard?.instantiateViewControllerWithIdentifier("AccountsListTableViewController") as! AccountsListTableViewController
             self.navigationController?.pushViewController(nextVC, animated: true)
         }else if rowTitle == "Account Summary"{
-            let nextVC: AccountDatePickerViewController = self.storyboard?.instantiateViewControllerWithIdentifier("AccountDatePickerViewController") as AccountDatePickerViewController
+            let nextVC: AccountDatePickerViewController = self.storyboard?.instantiateViewControllerWithIdentifier("AccountDatePickerViewController") as! AccountDatePickerViewController
             self.navigationController?.pushViewController(nextVC, animated: true)
         }
     }

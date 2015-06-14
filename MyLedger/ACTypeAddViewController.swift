@@ -81,12 +81,12 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
         var rowData: NSDictionary = NSDictionary()
         
         if indexPath.row < self.tableData.count{
-            rowData = self.tableData.objectAtIndex(indexPath.row) as NSDictionary
+            rowData = self.tableData.objectAtIndex(indexPath.row) as! NSDictionary
         }
         
         var cellID: NSString = "otherCell"
         if self.indexPathHasPicker(indexPath){
-            let prevRowData: NSDictionary = self.tableData.objectAtIndex(indexPath.row - 1) as NSDictionary
+            let prevRowData: NSDictionary = self.tableData.objectAtIndex(indexPath.row - 1) as! NSDictionary
             if let type: String = prevRowData["type"] as? String{
                 if type == "date"{
                     cellID = "datePicker"
@@ -106,7 +106,7 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
             }
         }
         
-        let cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(cellID as String, forIndexPath: indexPath) as! UITableViewCell
         
         // if we have a date picker open whose cell is above the cell we want to update,
         // then we have one more cell than the model allows
@@ -124,25 +124,25 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
         }
         
         if cellID != "uiPicker" || cellID == "date"{
-            rowData = self.tableData.objectAtIndex(modelRow) as NSDictionary
+            rowData = self.tableData.objectAtIndex(modelRow) as! NSDictionary
             //println(rowData)
             if let type: String = rowData["type"] as? String{
                 if type  == "input"{
-                    let label1: UILabel = cell.viewWithTag(1) as UILabel
+                    let label1: UILabel = cell.viewWithTag(1) as! UILabel
                     label1.text = rowData.objectForKey("title") as? String
                     
-                    let input: UITextField = cell.viewWithTag(2) as UITextField
+                    let input: UITextField = cell.viewWithTag(2) as! UITextField
                     input.placeholder = rowData.objectForKey("title") as? String
                     input.text = rowData.objectForKey("value") as? String
                     input.delegate = self
                     nameTextField = input
                 }else if type == "picker"{
-                    let label1: UILabel = cell.viewWithTag(1) as UILabel
+                    let label1: UILabel = cell.viewWithTag(1) as! UILabel
                     label1.text = rowData.objectForKey("title") as? String
                     
                     if let pickerValue: Int = rowData.objectForKey("value") as? Int{
                         selectedPickerValue = pickerValue
-                        let label2: UILabel = cell.viewWithTag(2) as UILabel
+                        let label2: UILabel = cell.viewWithTag(2) as! UILabel
                         label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
                     }else if selectedPickerValue == nil{
                         selectedPickerValue = 1
@@ -240,14 +240,14 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
     }
     
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
-        return pickerDataTitles.objectAtIndex(row) as String
+        return pickerDataTitles.objectAtIndex(row) as! String
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         selectedPickerValue = pickerDataValues.objectAtIndex(row) as? Int
         let indexPath: NSIndexPath = NSIndexPath(forRow: datePickerIndexPath!.row - 1, inSection: datePickerIndexPath!.section)
         if let cell: UITableViewCell = tableView.cellForRowAtIndexPath(indexPath){
-            let label2: UILabel = cell.viewWithTag(2) as UILabel
+            let label2: UILabel = cell.viewWithTag(2) as! UILabel
             label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
         }
     }
@@ -264,7 +264,7 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
             var activityIndicator = UICustomActivityView()
             activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
             
-            let userID: NSString = prefs.objectForKey("userID") as NSString
+            let userID: NSString = prefs.objectForKey("userID") as! NSString
             let actypeid: String = acTypeID != nil ? String(acTypeID!) : ""
             let url: String = isEdit ? "accounttypes/edit" : "accounttypes/add"
             let postData: NSDictionary = [
@@ -284,10 +284,10 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
                     if error != nil{
                         if error!.code == -1004 || error!.code == -1009{
                             if self.identifier != nil{
-                                let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")!
+                                let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")
                                 let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                 if result.count > 0{
-                                    let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                    let accounttype: Accounttypes = result.lastObject as! Accounttypes
                                     accounttype.name = "\(self.nameTextField!.text)"
                                     accounttype.type = self.selectedPickerValue! as NSNumber
                                     accounttype.url = accounttype.id > 0 ? url : "accounttypes/add"
@@ -336,13 +336,13 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
                             if response.objectForKey("success") as? Bool == true{
                                 if let savedData: NSDictionary = response.objectForKey("data") as? NSDictionary{
                                     if self.identifier != nil{
-                                        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")!
+                                        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")
                                         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                         if result.count > 0{
-                                            let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                            let accounttype: Accounttypes = result.lastObject as! Accounttypes
                                             accounttype.name = "\(self.nameTextField!.text)"
                                             accounttype.type = self.selectedPickerValue! as NSNumber
-                                            accounttype.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as String, format: nil)
+                                            accounttype.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as! String, format: nil)
                                             accounttype.synced = true
                                             var error: NSError?
                                             moc.save(&error)
@@ -356,11 +356,11 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
                                         if let accounttype: Accounttypes = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounttypes), managedObjectContext: moc) as? Accounttypes{
                                             if let postdata: NSData = NSJSONSerialization.dataWithJSONObject(postData, options: NSJSONWritingOptions.allZeros, error: nil){
                                                 accounttype.identifier = DVDateFormatter.currentTimestamp
-                                                accounttype.id = (savedData.objectForKey("id") as NSString).integerValue
+                                                accounttype.id = (savedData.objectForKey("id") as! NSString).integerValue
                                                 accounttype.user_id = userID.integerValue
                                                 accounttype.name = "\(self.nameTextField!.text)"
                                                 accounttype.type = self.selectedPickerValue! as NSNumber
-                                                accounttype.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as String, format: nil)
+                                                accounttype.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as! String, format: nil)
                                                 accounttype.synced = true
                                                 accounttype.url = ""
                                                 let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)

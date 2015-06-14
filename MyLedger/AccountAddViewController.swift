@@ -65,9 +65,9 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        let userID: NSNumber = (prefs.objectForKey("userID") as NSString).integerValue
+        let userID: NSNumber = (prefs.objectForKey("userID") as! NSString).integerValue
         let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-        let predicate: NSPredicate = NSPredicate(format: "user_id == '\(userID)' AND isdeleted = NO")!
+        let predicate: NSPredicate = NSPredicate(format: "user_id == '\(userID)' AND isdeleted = NO")
         //let sorter: NSSortDescriptor = NSSortDescriptor(key: "identifier", ascending: false)
         let sorter: NSSortDescriptor = NSSortDescriptor(key: "name", ascending: true)
         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: nil)
@@ -120,12 +120,12 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
         var rowData: NSDictionary = NSDictionary()
         
         if indexPath.row < self.tableData.count{
-            rowData = self.tableData.objectAtIndex(indexPath.row) as NSDictionary
+            rowData = self.tableData.objectAtIndex(indexPath.row) as! NSDictionary
         }
         
         var cellID: NSString = "otherCell"
         if self.indexPathHasPicker(indexPath){
-            let prevRowData: NSDictionary = self.tableData.objectAtIndex(indexPath.row - 1) as NSDictionary
+            let prevRowData: NSDictionary = self.tableData.objectAtIndex(indexPath.row - 1) as! NSDictionary
             if let type: String = prevRowData["type"] as? String{
                 if type == "date"{
                     cellID = "datePicker"
@@ -147,7 +147,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
             }
         }
         
-        let cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(cellID as String, forIndexPath: indexPath) as! UITableViewCell
         
         // if we have a date picker open whose cell is above the cell we want to update,
         // then we have one more cell than the model allows
@@ -168,7 +168,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
         if cellID != "uiPicker" || cellID == "date" || self.datePickerIndexPath?.compare(indexPath) != NSComparisonResult.OrderedSame{
             //println("indexPath.row: \(indexPath.row)")
             //println("modelRow: \(modelRow)")
-            rowData = self.tableData.objectAtIndex(modelRow) as NSDictionary
+            rowData = self.tableData.objectAtIndex(modelRow) as! NSDictionary
             //println(rowData)
             if let type: String = rowData["type"] as? String{
                 //println(rowData)
@@ -206,11 +206,11 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                     
                     if let pickerValue: Int = rowData.objectForKey("value") as? Int{
                         selectedPickerValue = pickerValue
-                        let label2: UILabel = cell.viewWithTag(2) as UILabel
+                        let label2: UILabel = cell.viewWithTag(2) as! UILabel
                         label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
                     }else if selectedPickerValue == nil{
                         selectedPickerValue = pickerDataValues.objectAtIndex(0) as? Int
-                        let label2: UILabel = cell.viewWithTag(2) as UILabel
+                        let label2: UILabel = cell.viewWithTag(2) as! UILabel
                         label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
                     }
                 }
@@ -321,14 +321,14 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String! {
-        return pickerDataTitles.objectAtIndex(row) as String
+        return pickerDataTitles.objectAtIndex(row) as! String
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         selectedPickerValue = pickerDataValues.objectAtIndex(row) as? Int
         let indexPath: NSIndexPath = NSIndexPath(forRow: datePickerIndexPath!.row - 1, inSection: datePickerIndexPath!.section)
         if let cell: UITableViewCell = tableView.cellForRowAtIndexPath(indexPath){
-            let label2: UILabel = cell.viewWithTag(2) as UILabel
+            let label2: UILabel = cell.viewWithTag(2) as! UILabel
             label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
         }
     }
@@ -345,7 +345,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
             var activityIndicator = UICustomActivityView()
             activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
             
-            let userID: NSString = prefs.objectForKey("userID") as NSString
+            let userID: NSString = prefs.objectForKey("userID") as! NSString
             let actypeid: String = acTypeID != nil ? String(acTypeID!) : ""
             let url: String = isEdit ? "accounts/edit" : "accounts/add"
             let postData: NSDictionary = [
@@ -366,10 +366,10 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                     if error != nil{
                         if error!.code == -1004 || error!.code == -1009{
                             if self.identifier != nil{
-                                let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")!
+                                let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")
                                 let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                 if result.count > 0{
-                                    let account: Accounts = result.lastObject as Accounts
+                                    let account: Accounts = result.lastObject as! Accounts
                                     account.details = "\(self.nameTextView!.text)"
                                     account.accounttype_id = self.selectedPickerValue! as NSNumber
                                     account.amount = NSDecimalNumber(string: self.nameTextField!.text)
@@ -378,10 +378,10 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                     account.synced = false
                                     
                                     // accounttype for account
-                                    let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")!
+                                    let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")
                                     let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                     if result.count > 0{
-                                        let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                        let accounttype: Accounttypes = result.lastObject as! Accounttypes
                                         account.accounttype = accounttype
                                     }
                                     //end
@@ -409,10 +409,10 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                         account.synced = false
                                         
                                         // accounttype for account
-                                        let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")!
+                                        let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")
                                         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                         if result.count > 0{
-                                            let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                            let accounttype: Accounttypes = result.lastObject as! Accounttypes
                                             account.accounttype = accounttype
                                         }
                                         //end
@@ -440,21 +440,21 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                             if response.objectForKey("success") as? Bool == true{
                                 if let savedData: NSDictionary = response.objectForKey("data") as? NSDictionary{
                                     if self.identifier != nil{
-                                        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")!
+                                        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")
                                         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                         if result.count > 0{
-                                            let account: Accounts = result.lastObject as Accounts
+                                            let account: Accounts = result.lastObject as! Accounts
                                             account.details = "\(self.nameTextView!.text)"
                                             account.accounttype_id = self.selectedPickerValue! as NSNumber
                                             account.amount = NSDecimalNumber(string: self.nameTextField!.text)
-                                            account.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as String, format: nil)
+                                            account.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as! String, format: nil)
                                             account.synced = true
                                             
                                             // accounttype for account
-                                            let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")!
+                                            let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")
                                             let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                             if result.count > 0{
-                                                let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                                let accounttype: Accounttypes = result.lastObject as! Accounttypes
                                                 account.accounttype = accounttype
                                             }
                                             //end
@@ -471,20 +471,20 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                                         if let account: Accounts = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounts), managedObjectContext: moc) as? Accounts{
                                             if let postdata: NSData = NSJSONSerialization.dataWithJSONObject(postData, options: NSJSONWritingOptions.allZeros, error: nil){
                                                 account.identifier = DVDateFormatter.currentTimestamp
-                                                account.id = (savedData.objectForKey("id") as NSString).integerValue
+                                                account.id = (savedData.objectForKey("id") as! NSString).integerValue
                                                 account.user_id = userID.integerValue
                                                 account.details = "\(self.nameTextView!.text)"
                                                 account.accounttype_id = self.selectedPickerValue! as NSNumber
                                                 account.amount = NSDecimalNumber(string: self.nameTextField!.text)
-                                                account.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as String, format: nil)
+                                                account.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as! String, format: nil)
                                                 account.synced = true
                                                 account.url = ""
                                                 
                                                 // accounttype for account
-                                                let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")!
+                                                let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")
                                                 let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
                                                 if result.count > 0{
-                                                    let accounttype: Accounttypes = result.lastObject as Accounttypes
+                                                    let accounttype: Accounttypes = result.lastObject as! Accounttypes
                                                     account.accounttype = accounttype
                                                 }
                                                 //end

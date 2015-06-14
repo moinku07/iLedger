@@ -27,7 +27,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     
     var viewsDict: NSMutableDictionary!
     
-    var isEditing:Bool = false
+    var _isEditing:Bool = false
     var preYPoint: CGFloat = 0.0
     
     var currentOrientation: Int!
@@ -84,8 +84,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         loginButton.addSubview(loginButtonImageView)
         loginButtonImageView.setTranslatesAutoresizingMaskIntoConstraints(false)
         viewsDict = ["loginButtonImageView": loginButtonImageView, "loginButton": loginButton]
-        loginButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:[loginButton]-(<=0)-[loginButtonImageView(28)]", options: NSLayoutFormatOptions.AlignAllCenterY, metrics: nil, views: viewsDict))
-        loginButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[loginButton]-(<=0)-[loginButtonImageView(21.5)]", options: NSLayoutFormatOptions.AlignAllCenterX, metrics: nil, views: viewsDict))
+        loginButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:[loginButton]-(<=0)-[loginButtonImageView(28)]", options: NSLayoutFormatOptions.AlignAllCenterY, metrics: nil, views: viewsDict as NSDictionary as [NSObject : AnyObject]))
+        loginButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[loginButton]-(<=0)-[loginButtonImageView(21.5)]", options: NSLayoutFormatOptions.AlignAllCenterX, metrics: nil, views: viewsDict as NSDictionary as [NSObject : AnyObject]))
         //loginButton.setBackgroundImage(<#image: UIImage?#>, forState: <#UIControlState#>)
         
     }
@@ -153,8 +153,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     func onContainerViewTap(sender: UIView){
         passwordTextfield.resignFirstResponder()
         usernameTextfield.resignFirstResponder()
-        if self.isEditing == true{
-            self.isEditing = false
+        if self._isEditing == true{
+            self._isEditing = false
             self.scrollView.setContentOffset(CGPointZero, animated: true)
             let delay: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, 300 * Int64(NSEC_PER_MSEC))
             let dispatchAfter: Void = dispatch_after(delay, dispatch_get_main_queue()) { () -> Void in
@@ -187,7 +187,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             // check if textField is editing and set new contentSize so user can scroll all inputs
             if yPoint > preYPoint{
                 preYPoint = yPoint
-                isEditing = true
+                _isEditing = true
                 
                 let newContentSize: CGSize = CGSizeMake(scrollViewDefaultContentSize.width, scrollViewDefaultContentSize.height + yPoint)
                 self.scrollView.contentSize = newContentSize
@@ -206,8 +206,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             }
             
             // check if textField is editing and set new contentSize so user can scroll all inputs
-            if isEditing == false{
-                isEditing = true
+            if _isEditing == false{
+                _isEditing = true
                 
                 let newContentSize: CGSize = CGSizeMake(scrollViewDefaultContentSize.width, scrollViewDefaultContentSize.height + 120)
                 self.scrollView.contentSize = newContentSize
@@ -218,7 +218,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         let nextTag: Int = textField.tag + 1
         
-        if let nextResponder: UIResponder = textField.superview?.viewWithTag(nextTag)?{
+        if let nextResponder: UIResponder = textField.superview?.viewWithTag(nextTag){
             nextResponder.becomeFirstResponder()
         }else{
             textField.resignFirstResponder()
@@ -265,7 +265,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                         println(self.prefs.objectForKey("userID") as? String)
                         if (posterror.code == -1004 || posterror.code == -1009) && self.prefs.objectForKey("userID") as? String != nil{
                             AlertManager.showAlert(self, title: "Error", message: "No internet connection. App will work in offline mode.", buttonNames: ["Okay"], completion: { (index) -> Void in
-                                let vc: MainViewController = self.storyboard?.instantiateViewControllerWithIdentifier("mainviewcontroller") as MainViewController
+                                let vc: MainViewController = self.storyboard?.instantiateViewControllerWithIdentifier("mainviewcontroller") as! MainViewController
                                 self.presentViewController(vc, animated: true, completion: nil)
                             })
                         }else{
@@ -295,7 +295,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
                             
                             println(self.prefs.objectForKey("userID") as? String)
                             
-                            let vc: MainViewController = self.storyboard?.instantiateViewControllerWithIdentifier("mainviewcontroller") as MainViewController
+                            let vc: MainViewController = self.storyboard?.instantiateViewControllerWithIdentifier("mainviewcontroller") as! MainViewController
                             self.presentViewController(vc, animated: true, completion: nil)
                             //self.navigationController?.pushViewController(vc, animated: true)
                             //self.showViewController(vc, sender: vc)

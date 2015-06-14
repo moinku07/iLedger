@@ -27,7 +27,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     
     var viewsDict: NSMutableDictionary!
     
-    var isEditing:Bool = false
+    var _isEditing:Bool = false
     
     var textFields: Array<UITextField>!
 
@@ -68,8 +68,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         signupButton.addSubview(loginButtonImageView)
         loginButtonImageView.setTranslatesAutoresizingMaskIntoConstraints(false)
         viewsDict = ["loginButtonImageView": loginButtonImageView, "loginButton": signupButton]
-        signupButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:[loginButton]-(<=0)-[loginButtonImageView(28)]", options: NSLayoutFormatOptions.AlignAllCenterY, metrics: nil, views: viewsDict))
-        signupButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[loginButton]-(<=0)-[loginButtonImageView(21.5)]", options: NSLayoutFormatOptions.AlignAllCenterX, metrics: nil, views: viewsDict))
+        signupButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:[loginButton]-(<=0)-[loginButtonImageView(28)]", options: NSLayoutFormatOptions.AlignAllCenterY, metrics: nil, views: viewsDict as NSDictionary as [NSObject : AnyObject]))
+        signupButton.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[loginButton]-(<=0)-[loginButtonImageView(21.5)]", options: NSLayoutFormatOptions.AlignAllCenterX, metrics: nil, views: viewsDict as NSDictionary as [NSObject : AnyObject]))
         //loginButton.setBackgroundImage(<#image: UIImage?#>, forState: <#UIControlState#>)
 
     }
@@ -110,8 +110,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
             textField.resignFirstResponder()
         }
         
-        if self.isEditing == true{
-            self.isEditing = false
+        if self._isEditing == true{
+            self._isEditing = false
             self.scrollView.setContentOffset(CGPointZero, animated: true)
             let delay: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, 300 * Int64(NSEC_PER_MSEC))
             let dispatchAfter: Void = dispatch_after(delay, dispatch_get_main_queue()) { () -> Void in
@@ -137,8 +137,8 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         }
         
         // check if textField is editing and set new contentSize so user can scroll all inputs
-        if isEditing == false{
-            isEditing = true
+        if _isEditing == false{
+            _isEditing = true
             
             let newContentSize: CGSize = CGSizeMake(scrollViewDefaultContentSize.width, scrollViewDefaultContentSize.height + (280 - yPoint))
             self.scrollView.contentSize = newContentSize
@@ -148,7 +148,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         let nextTag: Int = textField.tag + 1
         
-        if let nextResponder: UIResponder = textField.superview?.viewWithTag(nextTag)?{
+        if let nextResponder: UIResponder = textField.superview?.viewWithTag(nextTag){
             nextResponder.becomeFirstResponder()
         }else{
             textField.resignFirstResponder()
@@ -207,7 +207,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
                     }else{
                         let message = json["message"]
                         AlertManager.showAlert(self, title: "Success", message: "\(message)", buttonNames: nil, completion:{ (index: Int) -> Void in
-                            if let vc = self.view.window?.rootViewController?{
+                            if let vc = self.view.window?.rootViewController{
                                 vc.dismissViewControllerAnimated(true, completion: nil)
                             }
                         })

@@ -14,7 +14,7 @@ import SystemConfiguration
 class DataManager {
     
     struct domain {
-        //let url: String = "http://10.0.0.10/ledger/admin/"
+        //let url: String = "http://10.0.0.200/ledger/admin/"
         let url: String = "http://ledger.durlov.com/admin/"
     }
     
@@ -41,7 +41,7 @@ class DataManager {
     class func postDataAsyncWithCallback(url: NSString, data: AnyObject, json: Bool? = true, completion: (data: NSData?, error: NSError?) -> Void){
         
         //let nsurl:NSURL = NSURL(string: url)!
-        let nsurl:NSURL = NSURL(string: (self.domain().url + url))!
+        let nsurl:NSURL = NSURL(string: (self.domain().url + (url as String)))!
         //println(nsurl)
         var err: NSError?
         
@@ -50,13 +50,13 @@ class DataManager {
         request.HTTPMethod = "POST"
         
         if json == true{
-            let postData: Dictionary = data as NSDictionary
+            let postData: NSDictionary = data as! NSDictionary
             request.HTTPBody = NSJSONSerialization.dataWithJSONObject(postData, options: nil, error: &err)
             //request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request.setValue("application/json", forHTTPHeaderField: "Accept")
         }else{
-            let postString: NSString = data as NSString
+            let postString: NSString = data as! NSString
             request.HTTPBody = postString.dataUsingEncoding(NSUTF8StringEncoding)
         }
         
@@ -71,7 +71,7 @@ class DataManager {
                         */
                         completion(data: urlData, error: nil)
                     }else{
-                        var statusError = NSError(domain:url, code:httpResponse.statusCode, userInfo:[NSLocalizedDescriptionKey : "HTTP status code has unexpected value."])
+                        var statusError = NSError(domain:url as String, code:httpResponse.statusCode, userInfo:[NSLocalizedDescriptionKey : "HTTP status code has unexpected value."])
                         completion(data: nil, error: statusError)
                     }
                 }
@@ -87,7 +87,7 @@ class DataManager {
     class func postDataSyncWithCallback(url: NSString, data: AnyObject, json: Bool? = true, completion: (data: NSData?, error: NSError?) -> Void){
         
         //let nsurl:NSURL = NSURL(string: url)!
-        let nsurl:NSURL = NSURL(string: (self.domain().url + url))!
+        let nsurl:NSURL = NSURL(string: (self.domain().url + (url as String)))!
         var err: NSError?
         
         var request:NSMutableURLRequest = NSMutableURLRequest(URL: nsurl)
@@ -95,13 +95,13 @@ class DataManager {
         request.HTTPMethod = "POST"
         
         if json == true{
-            let postData: Dictionary = data as NSDictionary
+            let postData: NSDictionary = data as! NSDictionary
             request.HTTPBody = NSJSONSerialization.dataWithJSONObject(postData, options: nil, error: &err)
             //request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
             request.addValue("application/json", forHTTPHeaderField: "Content-Type")
             request.setValue("application/json", forHTTPHeaderField: "Accept")
         }else{
-            let postString: NSString = data as NSString
+            let postString: NSString = data as! NSString
             request.HTTPBody = postString.dataUsingEncoding(NSUTF8StringEncoding)
         }
         
@@ -120,7 +120,7 @@ class DataManager {
                     */
                     completion(data: urlData, error: nil)
                 }else{
-                    var statusError = NSError(domain:url, code:httpResponse.statusCode, userInfo:[NSLocalizedDescriptionKey : "HTTP status code has unexpected value."])
+                    var statusError = NSError(domain:url as String, code:httpResponse.statusCode, userInfo:[NSLocalizedDescriptionKey : "HTTP status code has unexpected value."])
                     completion(data: nil, error: statusError)
                 }
             }
@@ -136,9 +136,9 @@ class DataManager {
         
         var nsurl:NSURL = NSURL()
         if url.isKindOfClass(NSURL){
-            nsurl = url as NSURL
+            nsurl = url as! NSURL
         }else{
-            nsurl = NSURL(string: (self.domain().url + String(url as NSString)))!
+            nsurl = NSURL(string: (self.domain().url + String(url as! NSString)))!
         }
         
         var err: NSError?
@@ -180,7 +180,7 @@ class DataManager {
     
     class func loadDataAsyncWithCallback(url: NSString, completion: (data: NSData?, error: NSError?) -> Void){
         
-        let nsurl:NSURL = NSURL(string: (self.domain().url + url))!
+        let nsurl:NSURL = NSURL(string: (self.domain().url + (url as String)))!
         
         var err: NSError?
         
@@ -203,7 +203,7 @@ class DataManager {
                         */
                         completion(data: urlData, error: nil)
                     }else{
-                        var statusError = NSError(domain:url, code:httpResponse.statusCode, userInfo:[NSLocalizedDescriptionKey : "HTTP status code has unexpected value."])
+                        var statusError = NSError(domain:url as String, code:httpResponse.statusCode, userInfo:[NSLocalizedDescriptionKey : "HTTP status code has unexpected value."])
                         completion(data: nil, error: statusError)
                     }
                 }
