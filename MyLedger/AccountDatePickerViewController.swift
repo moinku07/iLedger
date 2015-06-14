@@ -36,6 +36,8 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
     
     let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
     
+    var moc: NSManagedObjectContext!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -56,9 +58,55 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        let userID: NSNumber = (prefs.objectForKey("userID") as! NSString).integerValue
-        let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-        let predicate: NSPredicate = NSPredicate(format: "user_id == '\(userID)' AND isdeleted = NO")
+        moc = CoreDataHelper.managedObjectContext(dataBaseFilename: "MyLedger")
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("persistentStoreDidChange"), name: NSPersistentStoreCoordinatorStoresDidChangeNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("persistentStoreWillChange:"), name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: moc.persistentStoreCoordinator)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("retrieveICloudChanges:"), name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: moc.persistentStoreCoordinator)
+        
+        loadAccountTypes()
+        
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreCoordinatorStoresDidChangeNotification, object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: moc.persistentStoreCoordinator)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: moc.persistentStoreCoordinator)
+    }
+    
+    func persistentStoreDidChange(){
+        println("persistentStoreDidChange")
+        loadAccountTypes()
+    }
+    
+    func persistentStoreWillChange(notification: NSNotification){
+        println("persistentStoreWillChange")
+        moc.performBlock { () -> Void in
+            if self.moc.hasChanges{
+                var error: NSError? = nil
+                self.moc.save(&error)
+                if error != nil{
+                    println("Save error: \(error)")
+                }else{
+                    //drop any managed object references
+                    self.moc.reset()
+                }
+            }
+        }
+    }
+    
+    func retrieveICloudChanges(notification: NSNotification){
+        println("retrieveICloudChanges")
+        moc.performBlock { () -> Void in
+            self.moc.mergeChangesFromContextDidSaveNotification(notification)
+            self.loadAccountTypes()
+        }
+    }
+    
+    func loadAccountTypes(){
+        let predicate: NSPredicate = NSPredicate(format: "isdeleted = NO")
         //let sorter: NSSortDescriptor = NSSortDescriptor(key: "identifier", ascending: false)
         let sorter: NSSortDescriptor = NSSortDescriptor(key: "name", ascending: true)
         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: nil)
@@ -78,7 +126,8 @@ class AccountDatePickerViewController: UIViewController, UITableViewDataSource, 
         //println(pickerDataValues)
         //println(pickerDataTitles)
         
-        println(tableData)
+        //println(tableData)
+        tableView.reloadData()
     }
     
     override func didReceiveMemoryWarning() {

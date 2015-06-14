@@ -17,6 +17,8 @@ class AccountSummaryViewController: UIViewController {
     var startDate: NSDate?
     var endDate: NSDate?
     let prefs: NSUserDefaults = NSUserDefaults.standardUserDefaults()
+    
+    var moc: NSManagedObjectContext!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,8 +41,55 @@ class AccountSummaryViewController: UIViewController {
         
         println(startDate)
         println(endDate)
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        moc = CoreDataHelper.managedObjectContext(dataBaseFilename: "MyLedger")
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("persistentStoreDidChange"), name: NSPersistentStoreCoordinatorStoresDidChangeNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("persistentStoreWillChange:"), name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: moc.persistentStoreCoordinator)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("retrieveICloudChanges:"), name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: moc.persistentStoreCoordinator)
         
         self.createSummaryTable()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreCoordinatorStoresDidChangeNotification, object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: moc.persistentStoreCoordinator)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: moc.persistentStoreCoordinator)
+    }
+    
+    func persistentStoreDidChange(){
+        println("persistentStoreDidChange")
+        self.createSummaryTable()
+    }
+    
+    func persistentStoreWillChange(notification: NSNotification){
+        println("persistentStoreWillChange")
+        moc.performBlock { () -> Void in
+            if self.moc.hasChanges{
+                var error: NSError? = nil
+                self.moc.save(&error)
+                if error != nil{
+                    println("Save error: \(error)")
+                }else{
+                    //drop any managed object references
+                    self.moc.reset()
+                }
+            }
+        }
+    }
+    
+    func retrieveICloudChanges(notification: NSNotification){
+        println("retrieveICloudChanges")
+        moc.performBlock { () -> Void in
+            self.moc.mergeChangesFromContextDidSaveNotification(notification)
+            self.createSummaryTable()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -52,9 +101,6 @@ class AccountSummaryViewController: UIViewController {
     func getPreviousCredit() -> Double{
         var credit: Double = 0.0
         var debit: Double = 0.0
-        let userID: Int = (prefs.objectForKey("userID") as! NSString).integerValue
-        
-        let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
         
         var expression: NSExpressionDescription = NSExpressionDescription()
         expression.name = "sumOfAmmount"
@@ -62,7 +108,7 @@ class AccountSummaryViewController: UIViewController {
         expression.expression = NSExpression(forKeyPath: "@sum.amount")
         expression.expressionResultType = NSAttributeType.DecimalAttributeType
         
-        var predicate: NSPredicate = NSPredicate(format: "(modified < %@) AND accounttype.type = 1 AND (user_id = %d) AND isdeleted = FALSE", startDate!, userID)
+        var predicate: NSPredicate = NSPredicate(format: "(modified < %@) AND accounttype.type = 1 AND isdeleted = FALSE", startDate!)
         //println(predicate)
         //println(startDate!)
         //println(userID)
@@ -81,7 +127,7 @@ class AccountSummaryViewController: UIViewController {
         expression.expression = NSExpression(forKeyPath: "@sum.amount")
         expression.expressionResultType = NSAttributeType.DecimalAttributeType
         
-        predicate = NSPredicate(format: "(modified < %@) AND accounttype.type = 2 AND (user_id = %d) AND isdeleted = FALSE", startDate!, userID)
+        predicate = NSPredicate(format: "(modified < %@) AND accounttype.type = 2 AND isdeleted = FALSE", startDate!)
         //println(predicate)
         //println(startDate!)
         //println(userID)
@@ -102,14 +148,10 @@ class AccountSummaryViewController: UIViewController {
         let prevTotal: Double = self.getPreviousCredit()
         println(prevTotal)
         
-        let userID: Int = (prefs.objectForKey("userID") as! NSString).integerValue
-        
-        let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-        
-        var predicate: NSPredicate = NSPredicate(format: "(modified >= %@) AND (modified <= %@) AND (user_id = %d) AND isdeleted = FALSE", startDate!, endDate!,userID)
+        var predicate: NSPredicate = NSPredicate(format: "(modified >= %@) AND (modified <= %@) AND isdeleted = FALSE", startDate!, endDate!)
         
         if accounttype_id != nil{
-            predicate = NSPredicate(format: "(modified >= %@) AND (modified <= %@) AND (user_id = %d) AND (accounttype_id = %d) AND isdeleted = FALSE", startDate!, endDate!,userID, accounttype_id!)
+            predicate = NSPredicate(format: "(modified >= %@) AND (modified <= %@) AND (accounttype_id = %d) AND isdeleted = FALSE", startDate!, endDate!, accounttype_id!)
         }
         
         var result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: nil, expressions: nil)
@@ -117,9 +159,9 @@ class AccountSummaryViewController: UIViewController {
         var balance: Double = 0,
         income: Double = 0,
         expense: Double = 0,
-        table: String = "<table border=\"1\" cellspacing=\"0\"><tr style = \"height:40px;\"><th>Date</th><th>Accounttype</th><th>Description</th><th>Income</th><th>Expense</th><th>Balance</th></tr>"
+        table: String = "<table style=\"margin: 20px auto;\" border=\"1\" cellspacing=\"0\"><tr style = \"height:40px;\"><th>Date</th><th>Accounttype</th><th>Description</th><th>Income</th><th>Expense</th><th>Balance</th></tr>"
         
-        table += "<tr ><td colspan=\"5\" style=\"padding:5px\">Opening Balance</td><td>\(prevTotal)</td></tr>"
+        table += "<tr ><td colspan=\"5\" style=\"padding:5px\">Opening Balance</td><td style=\"text-align:right\">\(prevTotal)</td></tr>"
         balance = prevTotal
         
         if result.count > 0{
@@ -147,7 +189,9 @@ class AccountSummaryViewController: UIViewController {
         table += "<tr style = \"height:40px;\"><td colspan=\"3\" style=\"text-align:right;padding-right: 10px;\">Total</td><td style=\"text-align:right\">\(income)</td><td style=\"text-align:right\">\(expense)</td><td style=\"text-align:right\">\(balance)</td></tr>"
         table += "</table>"
         
-        var html: String = "<!doctype html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi\" /><title>Summary</title><style type=\"text/css\">table tr:nth-child(even){background:#f9f9f9}</style></head><body><div style=\"margin:20px; display:inline-block\">" + table + "</div></body></html>"
+        var html: String = "<!doctype html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi\" /><title>Summary</title><style type=\"text/css\">table tr:nth-child(even){background:#f9f9f9}</style></head><body><div>" + table + "</div></body></html>"
+        
+        //println(html)
         
         self.webview.loadHTMLString(table, baseURL: nil)
     }

@@ -38,6 +38,8 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
     
     let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
     
+    var moc: NSManagedObjectContext!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -52,6 +54,53 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
         
         pickerCellRowHeight = 216.0
         //println("self.tableView.rowHeight: \(self.tableView.rowHeight)")
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        moc = CoreDataHelper.managedObjectContext(dataBaseFilename: "MyLedger")
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("persistentStoreDidChange"), name: NSPersistentStoreCoordinatorStoresDidChangeNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("persistentStoreWillChange:"), name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: moc.persistentStoreCoordinator)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("retrieveICloudChanges:"), name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: moc.persistentStoreCoordinator)
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreCoordinatorStoresDidChangeNotification, object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: moc.persistentStoreCoordinator)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: moc.persistentStoreCoordinator)
+    }
+    
+    func persistentStoreDidChange(){
+        println("persistentStoreDidChange")
+        self.tableView.reloadData()
+    }
+    
+    func persistentStoreWillChange(notification: NSNotification){
+        println("persistentStoreWillChange")
+        moc.performBlock { () -> Void in
+            if self.moc.hasChanges{
+                var error: NSError? = nil
+                self.moc.save(&error)
+                if error != nil{
+                    println("Save error: \(error)")
+                }else{
+                    //drop any managed object references
+                    self.moc.reset()
+                }
+            }
+        }
+    }
+    
+    func retrieveICloudChanges(notification: NSNotification){
+        println("retrieveICloudChanges")
+        moc.performBlock { () -> Void in
+            self.moc.mergeChangesFromContextDidSaveNotification(notification)
+            self.tableView.reloadData()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -261,128 +310,48 @@ class ACTypeAddViewController: UIViewController, UITableViewDataSource, UITableV
     
     @IBAction func onSubmitTap(sender: UIButton) {
         if nameTextField != nil && nameTextField!.text != ""{
-            var activityIndicator = UICustomActivityView()
-            activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
-            
-            let userID: NSString = prefs.objectForKey("userID") as! NSString
-            let actypeid: String = acTypeID != nil ? String(acTypeID!) : ""
-            let url: String = isEdit ? "accounttypes/edit" : "accounttypes/add"
-            let postData: NSDictionary = [
-                "Accounttype": [
-                    "name": nameTextField!.text,
-                    "type": selectedPickerValue!,
-                    "user_id": userID.integerValue,
-                    "ajax" : true,
-                    "id" : actypeid
-                ]
-            ]
-            //println(postData)
-            DataManager.postDataAsyncWithCallback(url, data: postData, json: true, completion: { (data, error) -> Void in
-                dispatch_async(dispatch_get_main_queue()){
-                    let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-                    activityIndicator.hideActivityIndicator()
-                    if error != nil{
-                        if error!.code == -1004 || error!.code == -1009{
-                            if self.identifier != nil{
-                                let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")
-                                let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
-                                if result.count > 0{
-                                    let accounttype: Accounttypes = result.lastObject as! Accounttypes
-                                    accounttype.name = "\(self.nameTextField!.text)"
-                                    accounttype.type = self.selectedPickerValue! as NSNumber
-                                    accounttype.url = accounttype.id > 0 ? url : "accounttypes/add"
-                                    accounttype.modified = DVDateFormatter.currentDate
-                                    accounttype.synced = false
-                                    var error: NSError?
-                                    moc.save(&error)
-                                    if error == nil{
-                                        println("only updated coredata. sync required")
-                                    }else{
-                                        println(error!.localizedDescription)
-                                    }
-                                }
-                            }else{
-                                if let accounttype: Accounttypes = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounttypes), managedObjectContext: moc) as? Accounttypes{
-                                    if let postdata: NSData = NSJSONSerialization.dataWithJSONObject(postData, options: NSJSONWritingOptions.allZeros, error: nil){
-                                        accounttype.identifier = DVDateFormatter.currentTimestamp
-                                        accounttype.id = -1
-                                        accounttype.user_id = userID.integerValue
-                                        accounttype.name = "\(self.nameTextField!.text)"
-                                        accounttype.type = self.selectedPickerValue! as NSNumber
-                                        accounttype.modified = DVDateFormatter.currentDate
-                                        accounttype.created = DVDateFormatter.currentDate
-                                        accounttype.url = url
-                                        accounttype.synced = false
-                                        let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
-                                        if success == false{
-                                            println("failed to save in coredata. accounttype.id: \(accounttype.id)")
-                                        }else{
-                                            println("Saved to coredata. sync required")
-                                        }
-                                    }else{
-                                        AlertManager.showAlert(self, title: "Error", message: error!.localizedDescription, buttonNames: nil, completion: nil)
-                                    }
-                                }
-                            }
-                            self.navigationController?.popViewControllerAnimated(true)
-                        }else{
-                            AlertManager.showAlert(self, title: "Error", message: error!.localizedDescription, buttonNames: nil, completion: nil)
-                        }
-                    }else if data != nil{
-                        //println(NSString(data: data!, encoding: NSUTF8StringEncoding))
-                        //return
-                        
-                        if let response: NSDictionary = NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.allZeros, error: nil) as? NSDictionary{
-                            if response.objectForKey("success") as? Bool == true{
-                                if let savedData: NSDictionary = response.objectForKey("data") as? NSDictionary{
-                                    if self.identifier != nil{
-                                        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")
-                                        let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
-                                        if result.count > 0{
-                                            let accounttype: Accounttypes = result.lastObject as! Accounttypes
-                                            accounttype.name = "\(self.nameTextField!.text)"
-                                            accounttype.type = self.selectedPickerValue! as NSNumber
-                                            accounttype.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as! String, format: nil)
-                                            accounttype.synced = true
-                                            var error: NSError?
-                                            moc.save(&error)
-                                            if error == nil{
-                                                println("posted and updated coredata")
-                                            }else{
-                                                println(error!.localizedDescription)
-                                            }
-                                        }
-                                    }else{
-                                        if let accounttype: Accounttypes = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounttypes), managedObjectContext: moc) as? Accounttypes{
-                                            if let postdata: NSData = NSJSONSerialization.dataWithJSONObject(postData, options: NSJSONWritingOptions.allZeros, error: nil){
-                                                accounttype.identifier = DVDateFormatter.currentTimestamp
-                                                accounttype.id = (savedData.objectForKey("id") as! NSString).integerValue
-                                                accounttype.user_id = userID.integerValue
-                                                accounttype.name = "\(self.nameTextField!.text)"
-                                                accounttype.type = self.selectedPickerValue! as NSNumber
-                                                accounttype.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as! String, format: nil)
-                                                accounttype.synced = true
-                                                accounttype.url = ""
-                                                let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
-                                                if success == false{
-                                                    println("saved on server. failed to save in coredata. accounttype.id: \(accounttype.id)")
-                                                }else{
-                                                    println("Saved on both server and coredata.")
-                                                }
-                                            }else{
-                                                AlertManager.showAlert(self, title: "Error", message: error!.localizedDescription, buttonNames: nil, completion: nil)
-                                            }
-                                        }
-                                    }
-                                }
-                                self.navigationController?.popViewControllerAnimated(true)
-                            }else{
-                                AlertManager.showAlert(self, title: "Error", message: "There was an error. Please try again.", buttonNames: nil, completion: nil)
-                            }
-                        }
+            if self.identifier != nil{
+                let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")
+                let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+                if result.count > 0{
+                    let accounttype: Accounttypes = result.lastObject as! Accounttypes
+                    accounttype.name = "\(self.nameTextField!.text)"
+                    accounttype.type = self.selectedPickerValue! as NSNumber
+                    //accounttype.url = accounttype.id > 0 ? url : "accounttypes/add"
+                    accounttype.modified = DVDateFormatter.currentDate
+                    //accounttype.synced = false
+                    var error: NSError?
+                    moc.save(&error)
+                    if error == nil{
+                        println("only updated coredata. sync required")
+                        self.navigationController?.popViewControllerAnimated(true)
+                    }else{
+                        AlertManager.showAlert(self, title: "Error", message: "There was an error. Please try again.", buttonNames: nil, completion: nil)
+                        println(error!.localizedDescription)
                     }
                 }
-            })
+            }else if let accounttype: Accounttypes = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounttypes), managedObjectContext: moc) as? Accounttypes{
+                accounttype.identifier = DVDateFormatter.currentTimestamp
+                println(accounttype.identifier)
+                //accounttype.id = -1
+                //accounttype.user_id = userID.integerValue
+                accounttype.name = "\(self.nameTextField!.text)"
+                accounttype.type = self.selectedPickerValue! as NSNumber
+                accounttype.modified = DVDateFormatter.currentDate
+                accounttype.created = DVDateFormatter.currentDate
+                //accounttype.url = url
+                //accounttype.synced = false
+                let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
+                if success == false{
+                    AlertManager.showAlert(self, title: "Error", message: "There was an error. Please try again.", buttonNames: nil, completion: nil)
+                    println("failed to save in coredata. accounttype.id: \(accounttype.id)")
+                }else{
+                    println("Saved to coredata. sync required")
+                    self.navigationController?.popViewControllerAnimated(true)
+                }
+            }else{
+                AlertManager.showAlert(self, title: "Error", message: "There was an error. Please try again.", buttonNames: nil, completion: nil)
+            }
         }else{
             AlertManager.showAlert(self, title: "Warning", message: "Please enter account type name", buttonNames: nil, completion: nil)
         }

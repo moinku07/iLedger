@@ -11,7 +11,7 @@ import UIKit
 class DVDateFormatter: NSObject {
     class var currentTimestamp: String {
         get {
-            return "\(NSDate().timeIntervalSince1970 * 1000)"
+            return NSNumber(double: NSDate().timeIntervalSince1970 * 100000).stringValue
         }
     }
     
@@ -25,7 +25,7 @@ class DVDateFormatter: NSObject {
         get {
             let formatter: NSDateFormatter = NSDateFormatter()
             formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-            formatter.timeZone = NSTimeZone(name: "Asia/Dhaka")
+            //formatter.timeZone = NSTimeZone(name: "Asia/Dhaka")
             formatter.locale = NSLocale(localeIdentifier: "en_US")
             return formatter.stringFromDate(NSDate())
         }
@@ -36,7 +36,7 @@ class DVDateFormatter: NSObject {
         
         let formatter: NSDateFormatter = NSDateFormatter()
         formatter.dateFormat = dateFormat
-        formatter.timeZone = NSTimeZone(name: "Asia/Dhaka")
+        //formatter.timeZone = NSTimeZone(name: "Asia/Dhaka")
         formatter.locale = NSLocale(localeIdentifier: "en_US")
         return formatter.stringFromDate(date)
     }
@@ -46,7 +46,7 @@ class DVDateFormatter: NSObject {
         
         let formatter: NSDateFormatter = NSDateFormatter()
         formatter.dateFormat = dateFormat
-        formatter.timeZone = NSTimeZone(name: "Asia/Dhaka")
+        //formatter.timeZone = NSTimeZone(name: "Asia/Dhaka")
         formatter.locale = NSLocale(localeIdentifier: "en_US")
         return formatter.dateFromString(date)!
     }
@@ -57,12 +57,12 @@ class DVDateFormatter: NSObject {
         
         var calendar: NSCalendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
         //println(calendar.timeZone)
-        calendar.timeZone = NSTimeZone(name: "Asia/Dhaka")!
+        //calendar.timeZone = NSTimeZone(name: "Asia/Dhaka")!
         calendar.locale = NSLocale(localeIdentifier: "en_US")
         
         var dateComponents: NSDateComponents = calendar.components(
             (NSCalendarUnit.CalendarUnitYear | NSCalendarUnit.CalendarUnitMonth | NSCalendarUnit.CalendarUnitDay | NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute | NSCalendarUnit.CalendarUnitSecond), fromDate: nDate)
-        dateComponents.timeZone = NSTimeZone(name: "Asia/Dhaka")
+        //dateComponents.timeZone = NSTimeZone(name: "Asia/Dhaka")
         
         if years != nil{
             dateComponents.year = years!
@@ -94,11 +94,11 @@ class DVDateFormatter: NSObject {
         
         var calendar: NSCalendar = NSCalendar(calendarIdentifier: NSCalendarIdentifierGregorian)!
         //println(calendar.timeZone)
-        calendar.timeZone = NSTimeZone(name: "Asia/Dhaka")!
+        //calendar.timeZone = NSTimeZone(name: "Asia/Dhaka")!
         calendar.locale = NSLocale(localeIdentifier: "en_US")
         
         var dateComponents: NSDateComponents = NSDateComponents()
-        dateComponents.timeZone = NSTimeZone(name: "Asia/Dhaka")
+        //dateComponents.timeZone = NSTimeZone(name: "Asia/Dhaka")
         
         if years != nil{
             dateComponents.year = years!
@@ -189,7 +189,7 @@ class DVDateFormatter: NSObject {
     class func getTimeStamp(timestring: String) -> NSTimeInterval{
         let formatter: NSDateFormatter = NSDateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        formatter.timeZone = NSTimeZone(name: "Asia/Dhaka")
+        //formatter.timeZone = NSTimeZone(name: "Asia/Dhaka")
         formatter.locale = NSLocale(localeIdentifier: "en_US")
         let date: NSDate = formatter.dateFromString(timestring)!
         return (date.timeIntervalSince1970 * 1000)
@@ -197,7 +197,7 @@ class DVDateFormatter: NSObject {
     class func compare(ts1: String, ts2: String) -> NSComparisonResult{
         let formatter: NSDateFormatter = NSDateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        formatter.timeZone = NSTimeZone(name: "Asia/Dhaka")
+        //formatter.timeZone = NSTimeZone(name: "Asia/Dhaka")
         formatter.locale = NSLocale(localeIdentifier: "en_US")
         let date1: NSDate = formatter.dateFromString(ts1)!
         let date2: NSDate = formatter.dateFromString(ts2)!

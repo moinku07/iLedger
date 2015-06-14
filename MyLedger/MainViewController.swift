@@ -9,59 +9,17 @@
 import UIKit
 import CoreData
 
-class MainViewController: UITabBarController, SideBarDelegate {
-    
-    var sideBar: SideBar!
-    
-    let menuItems: NSMutableArray = [["title": "Logout", "icon": "icon-nav-logout"]]
-    
-    var accounttypesSyncTimer: NSTimer!
-    var accountsSyncTimer: NSTimer!
+class MainViewController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         self.navigationController?.navigationBarHidden = false
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 250 * 1000000), dispatch_get_main_queue()){
-            self.sideBar = SideBar(sourceView: self.view.window!, menuItems: self.menuItems)
-            self.sideBar.delegate = self
-            self.sideBar.shouldDeselectSelectedRow = true
-            //self.sideBar.menuItems = self.menuItems
-        }
-        
-        self.synchronizeAccountTypes()
-        accounttypesSyncTimer = NSTimer.scheduledTimerWithTimeInterval(60.0 * 15, target: self, selector: Selector("synchronizeAccountTypes"), userInfo: nil, repeats: true)
-        
-        self.synchronizeAccounts()
-        accountsSyncTimer = NSTimer.scheduledTimerWithTimeInterval(60.0 * 5, target: self, selector: Selector("synchronizeAccounts"), userInfo: nil, repeats: true)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    func sideBarDidSelectRowAtIndex(index: Int, dict: NSDictionary) {
-        if index == 0{
-            var prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
-            prefs.setObject(nil, forKey: "username")
-            prefs.setObject(nil, forKey: "password")
-            prefs.synchronize()
-            self.view.window?.rootViewController?.dismissViewControllerAnimated(true, completion: nil)
-        }
-        sideBar.showSideBar(false)
-        sideBar.removeFromSuperview()
-    }
-    
-    // MARK: - synchronizeAccountTypes
-    func synchronizeAccountTypes(){
-        DVSync.synchronizeAccountTypes()
-    }
-    
-    // MARK: - synchronizeAccounts
-    func synchronizeAccounts(){
-        DVSync.synchronizeAccounts()
     }
     
     /*

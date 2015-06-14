@@ -12,7 +12,6 @@ import CoreData
 class AccountAddViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate, UITextViewDelegate {
     
     var isEdit: Bool = false
-    var acTypeID: Int?
     var identifier: String?
     @IBOutlet var tableView: UITableView!
     
@@ -38,12 +37,14 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     
     var pickerDataValues: NSMutableArray = [1, 2]
     var pickerDataTitles: NSMutableArray = ["Add", "Sub"]
-    var selectedPickerValue: Int?
+    var selectedPickerValue: Double?
     
     let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
     
     var originalTableVeiwContentSize: CGSize!
     var originalTableVeiwContentOffset: CGPoint!
+    
+    var moc: NSManagedObjectContext!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,9 +67,54 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        let userID: NSNumber = (prefs.objectForKey("userID") as! NSString).integerValue
-        let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-        let predicate: NSPredicate = NSPredicate(format: "user_id == '\(userID)' AND isdeleted = NO")
+        moc = CoreDataHelper.managedObjectContext(dataBaseFilename: "MyLedger")
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("persistentStoreDidChange"), name: NSPersistentStoreCoordinatorStoresDidChangeNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("persistentStoreWillChange:"), name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: moc.persistentStoreCoordinator)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("retrieveICloudChanges:"), name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: moc.persistentStoreCoordinator)
+        
+        loadAccountTypes()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreCoordinatorStoresDidChangeNotification, object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: moc.persistentStoreCoordinator)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: moc.persistentStoreCoordinator)
+    }
+    
+    func persistentStoreDidChange(){
+        println("persistentStoreDidChange")
+        loadAccountTypes()
+    }
+    
+    func persistentStoreWillChange(notification: NSNotification){
+        println("persistentStoreWillChange")
+        moc.performBlock { () -> Void in
+            if self.moc.hasChanges{
+                var error: NSError? = nil
+                self.moc.save(&error)
+                if error != nil{
+                    println("Save error: \(error)")
+                }else{
+                    //drop any managed object references
+                    self.moc.reset()
+                }
+            }
+        }
+    }
+    
+    func retrieveICloudChanges(notification: NSNotification){
+        println("retrieveICloudChanges")
+        moc.performBlock { () -> Void in
+            self.moc.mergeChangesFromContextDidSaveNotification(notification)
+            self.loadAccountTypes()
+        }
+    }
+    
+    func loadAccountTypes(){
+        let predicate: NSPredicate = NSPredicate(format: "isdeleted = NO")
         //let sorter: NSSortDescriptor = NSSortDescriptor(key: "identifier", ascending: false)
         let sorter: NSSortDescriptor = NSSortDescriptor(key: "name", ascending: true)
         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: nil)
@@ -79,16 +125,18 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
             pickerDataTitles.removeAllObjects()
             for (index, item) in enumerate(result){
                 if let accounttype: Accounttypes = item as? Accounttypes{
-                    pickerDataValues.addObject(accounttype.id.integerValue)
+                    pickerDataValues.addObject((accounttype.identifier as NSString).doubleValue)
                     pickerDataTitles.addObject(accounttype.name)
                 }
             }
         }
         
+        self.tableView.reloadData()
+        
         //println(pickerDataValues)
         //println(pickerDataTitles)
         
-        println(tableData)
+        //println(tableData)
     }
 
     override func didReceiveMemoryWarning() {
@@ -113,7 +161,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         var height: CGFloat = (self.indexPathHasPicker(indexPath) ? self.pickerCellRowHeight! : self.tableView.rowHeight)
         height = (self.indexPathHasTextView(indexPath) ? self.textviewCellRowHeight : height)
-        println(self.indexPathHasTextView(indexPath) ? self.textviewCellRowHeight : height)
+        //println(self.indexPathHasTextView(indexPath) ? self.textviewCellRowHeight : height)
         return height
     }
     
@@ -204,13 +252,13 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                     if let label1: UILabel = cell.viewWithTag(1) as? UILabel{
                         label1.text = rowData.objectForKey("title") as? String
                     }
-                    
-                    if let pickerValue: Int = rowData.objectForKey("value") as? Int{
+                    //println(rowData.objectForKey("value"))
+                    if let pickerValue: Double = rowData.objectForKey("value") as? Double{
                         selectedPickerValue = pickerValue
                         let label2: UILabel = cell.viewWithTag(2) as! UILabel
                         label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
                     }else if selectedPickerValue == nil{
-                        selectedPickerValue = pickerDataValues.objectAtIndex(0) as? Int
+                        selectedPickerValue = pickerDataValues.objectAtIndex(0) as? Double
                         let label2: UILabel = cell.viewWithTag(2) as! UILabel
                         label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
                     }
@@ -331,10 +379,11 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        selectedPickerValue = pickerDataValues.objectAtIndex(row) as? Int
+        selectedPickerValue = pickerDataValues.objectAtIndex(row) as? Double
         let indexPath: NSIndexPath = NSIndexPath(forRow: datePickerIndexPath!.row - 1, inSection: datePickerIndexPath!.section)
         if let cell: UITableViewCell = tableView.cellForRowAtIndexPath(indexPath){
             let label2: UILabel = cell.viewWithTag(2) as! UILabel
+            //println(pickerDataValues)
             label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
         }
     }
@@ -348,173 +397,73 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     
     @IBAction func onSubmitTap(sender: UIButton) {
         if nameTextField != nil && nameTextField!.text != ""{
-            var activityIndicator = UICustomActivityView()
-            activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false)
-            
-            let userID: NSString = prefs.objectForKey("userID") as! NSString
-            let actypeid: String = acTypeID != nil ? String(acTypeID!) : ""
-            let url: String = isEdit ? "accounts/edit" : "accounts/add"
-            let postData: NSDictionary = [
-                "Account": [
-                    "description": nameTextView!.text,
-                    "amount": nameTextField!.text,
-                    "accounttype_id": selectedPickerValue!,
-                    "user_id": userID.integerValue,
-                    "ajax" : true,
-                    "id" : actypeid
-                ]
-            ]
-            //println(postData)
-            DataManager.postDataAsyncWithCallback(url, data: postData, json: true, completion: { (data, error) -> Void in
-                dispatch_async(dispatch_get_main_queue()){
-                    let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-                    activityIndicator.hideActivityIndicator()
-                    if error != nil{
-                        if error!.code == -1004 || error!.code == -1009{
-                            if self.identifier != nil{
-                                let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")
-                                let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
-                                if result.count > 0{
-                                    let account: Accounts = result.lastObject as! Accounts
-                                    account.details = "\(self.nameTextView!.text)"
-                                    account.accounttype_id = self.selectedPickerValue! as NSNumber
-                                    account.amount = NSDecimalNumber(string: self.nameTextField!.text)
-                                    account.url = account.id > 0 ? url : "accounts/add"
-                                    account.modified = DVDateFormatter.currentDate
-                                    account.synced = false
-                                    
-                                    // accounttype for account
-                                    let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")
-                                    let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
-                                    if result.count > 0{
-                                        let accounttype: Accounttypes = result.lastObject as! Accounttypes
-                                        account.accounttype = accounttype
-                                    }
-                                    //end
-                                    
-                                    var error: NSError?
-                                    moc.save(&error)
-                                    if error == nil{
-                                        println("only updated coredata. sync required")
-                                    }else{
-                                        println(error!.localizedDescription)
-                                    }
-                                }
-                            }else{
-                                if let account: Accounts = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounts), managedObjectContext: moc) as? Accounts{
-                                    if let postdata: NSData = NSJSONSerialization.dataWithJSONObject(postData, options: NSJSONWritingOptions.allZeros, error: nil){
-                                        account.identifier = DVDateFormatter.currentTimestamp
-                                        account.id = -1
-                                        account.user_id = userID.integerValue
-                                        account.details = "\(self.nameTextView!.text)"
-                                        account.accounttype_id = self.selectedPickerValue! as NSNumber
-                                        account.amount = NSDecimalNumber(string: self.nameTextField!.text)
-                                        account.modified = DVDateFormatter.currentDate
-                                        account.created = DVDateFormatter.currentDate
-                                        account.url = url
-                                        account.synced = false
-                                        
-                                        // accounttype for account
-                                        let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")
-                                        let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
-                                        if result.count > 0{
-                                            let accounttype: Accounttypes = result.lastObject as! Accounttypes
-                                            account.accounttype = accounttype
-                                        }
-                                        //end
-                                        
-                                        let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
-                                        if success == false{
-                                            println("failed to save in coredata. account.id: \(account.id)")
-                                        }else{
-                                            println("Saved to coredata. sync required")
-                                        }
-                                    }else{
-                                        AlertManager.showAlert(self, title: "Error", message: error!.localizedDescription, buttonNames: nil, completion: nil)
-                                    }
-                                }
-                            }
-                            self.navigationController?.popViewControllerAnimated(true)
-                        }else{
-                            AlertManager.showAlert(self, title: "Error", message: error!.localizedDescription, buttonNames: nil, completion: nil)
-                        }
-                    }else if data != nil{
-                        println(NSString(data: data!, encoding: NSUTF8StringEncoding))
-                        //return
-                        
-                        if let response: NSDictionary = NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.allZeros, error: nil) as? NSDictionary{
-                            if response.objectForKey("success") as? Bool == true{
-                                if let savedData: NSDictionary = response.objectForKey("data") as? NSDictionary{
-                                    if self.identifier != nil{
-                                        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")
-                                        let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
-                                        if result.count > 0{
-                                            let account: Accounts = result.lastObject as! Accounts
-                                            account.details = "\(self.nameTextView!.text)"
-                                            account.accounttype_id = self.selectedPickerValue! as NSNumber
-                                            account.amount = NSDecimalNumber(string: self.nameTextField!.text)
-                                            account.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as! String, format: nil)
-                                            account.synced = true
-                                            
-                                            // accounttype for account
-                                            let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")
-                                            let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
-                                            if result.count > 0{
-                                                let accounttype: Accounttypes = result.lastObject as! Accounttypes
-                                                account.accounttype = accounttype
-                                            }
-                                            //end
-                                            
-                                            var error: NSError?
-                                            moc.save(&error)
-                                            if error == nil{
-                                                println("posted and updated coredata")
-                                            }else{
-                                                println(error!.localizedDescription)
-                                            }
-                                        }
-                                    }else{
-                                        if let account: Accounts = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounts), managedObjectContext: moc) as? Accounts{
-                                            if let postdata: NSData = NSJSONSerialization.dataWithJSONObject(postData, options: NSJSONWritingOptions.allZeros, error: nil){
-                                                account.identifier = DVDateFormatter.currentTimestamp
-                                                account.id = (savedData.objectForKey("id") as! NSString).integerValue
-                                                account.user_id = userID.integerValue
-                                                account.details = "\(self.nameTextView!.text)"
-                                                account.accounttype_id = self.selectedPickerValue! as NSNumber
-                                                account.amount = NSDecimalNumber(string: self.nameTextField!.text)
-                                                account.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as! String, format: nil)
-                                                account.synced = true
-                                                account.url = ""
-                                                
-                                                // accounttype for account
-                                                let predicate: NSPredicate = NSPredicate(format: "id == \(account.accounttype_id)")
-                                                let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
-                                                if result.count > 0{
-                                                    let accounttype: Accounttypes = result.lastObject as! Accounttypes
-                                                    account.accounttype = accounttype
-                                                }
-                                                //end
-                                                
-                                                let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
-                                                if success == false{
-                                                    println("saved on server. failed to save in coredata. account.id: \(account.id)")
-                                                }else{
-                                                    println("Saved on both server and coredata.")
-                                                }
-                                            }else{
-                                                AlertManager.showAlert(self, title: "Error", message: error!.localizedDescription, buttonNames: nil, completion: nil)
-                                            }
-                                        }
-                                    }
-                                }
-                                self.navigationController?.popViewControllerAnimated(true)
-                            }else{
-                                AlertManager.showAlert(self, title: "Error", message: "There was an error. Please try again.", buttonNames: nil, completion: nil)
-                            }
-                        }
+            if self.identifier != nil{
+                let predicate: NSPredicate = NSPredicate(format: "identifier == '\(self.identifier!)'")
+                let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounts), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+                if result.count > 0{
+                    let account: Accounts = result.lastObject as! Accounts
+                    account.details = "\(self.nameTextView!.text)"
+                    println(self.selectedPickerValue!)
+                    account.accounttype_id = self.selectedPickerValue! as Double
+                    println(account.accounttype_id)
+                    account.amount = NSDecimalNumber(string: self.nameTextField!.text)
+                    account.modified = DVDateFormatter.currentDate
+                    //account.synced = false
+                    
+                    // accounttype for account
+                    let predicate: NSPredicate = NSPredicate(format: "identifier == \(account.accounttype_id)")
+                    println(predicate)
+                    let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+                    println(result)
+                    if result.count > 0{
+                        let accounttype: Accounttypes = result.lastObject as! Accounttypes
+                        account.accounttype = accounttype
+                    }
+                    //end
+                    
+                    var error: NSError?
+                    moc.save(&error)
+                    if error == nil{
+                        self.navigationController?.popViewControllerAnimated(true)
+                        println("only updated coredata. sync required")
+                    }else{
+                        AlertManager.showAlert(self, title: "Error", message: "There was an error. Please try again", buttonNames: nil, completion: nil)
+                        println(error!.localizedDescription)
                     }
                 }
-            })
+            }else{
+                if let account: Accounts = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounts), managedObjectContext: moc) as? Accounts{
+                    account.identifier = DVDateFormatter.currentTimestamp
+                    account.details = "\(self.nameTextView!.text)"
+                    println(self.selectedPickerValue!)
+                    account.accounttype_id = self.selectedPickerValue! as Double
+                    println(account.accounttype_id)
+                    account.amount = NSDecimalNumber(string: self.nameTextField!.text)
+                    account.modified = DVDateFormatter.currentDate
+                    account.created = DVDateFormatter.currentDate
+                    //account.synced = false
+                    
+                    // accounttype for account
+                    let predicate: NSPredicate = NSPredicate(format: "identifier == \(account.accounttype_id)")
+                    println(predicate)
+                    let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+                    println(result)
+                    if result.count > 0{
+                        let accounttype: Accounttypes = result.lastObject as! Accounttypes
+                        account.accounttype = accounttype
+                    }
+                    //end
+                    
+                    let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
+                    if success == false{
+                        AlertManager.showAlert(self, title: "Error", message: "There was an error. Please try again", buttonNames: nil, completion: nil)
+                        println("failed to save in coredata. account.id: \(account.id)")
+                    }else{
+                        self.navigationController?.popViewControllerAnimated(true)
+                        println("Saved to coredata. sync required")
+                    }
+                }
+            }
         }else{
             AlertManager.showAlert(self, title: "Warning", message: "Please enter account type name", buttonNames: nil, completion: nil)
         }

@@ -16,6 +16,8 @@ class ACTypesListTableViewController: UITableViewController {
     
     let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
     
+    var moc: NSManagedObjectContext!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -34,7 +36,50 @@ class ACTypesListTableViewController: UITableViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
+        moc = CoreDataHelper.managedObjectContext(dataBaseFilename: "MyLedger")
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("persistentStoreDidChange"), name: NSPersistentStoreCoordinatorStoresDidChangeNotification, object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("persistentStoreWillChange:"), name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: moc.persistentStoreCoordinator)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("retrieveICloudChanges:"), name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: moc.persistentStoreCoordinator)
+        
         loadLocalData()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreCoordinatorStoresDidChangeNotification, object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: moc.persistentStoreCoordinator)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: moc.persistentStoreCoordinator)
+    }
+    
+    func persistentStoreDidChange(){
+        println("persistentStoreDidChange")
+        loadLocalData()
+    }
+    
+    func persistentStoreWillChange(notification: NSNotification){
+        println("persistentStoreWillChange")
+        moc.performBlock { () -> Void in
+            if self.moc.hasChanges{
+                var error: NSError? = nil
+                self.moc.save(&error)
+                if error != nil{
+                    println("Save error: \(error)")
+                }else{
+                    //drop any managed object references
+                    self.moc.reset()
+                }
+            }
+        }
+    }
+    
+    func retrieveICloudChanges(notification: NSNotification){
+        println("retrieveICloudChanges")
+        moc.performBlock { () -> Void in
+            self.moc.mergeChangesFromContextDidSaveNotification(notification)
+            self.loadLocalData()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -75,7 +120,7 @@ class ACTypesListTableViewController: UITableViewController {
         
         if let cellData = self.tableData.objectAtIndex(indexPath.row) as? NSDictionary{
             nextVC.isEdit = true
-            nextVC.acTypeID = (cellData.objectForKey("id") as! NSString).integerValue
+            //nextVC.acTypeID = (cellData.objectForKey("id") as! NSString).integerValue
             nextVC.identifier = cellData.objectForKey("identifier") as! NSString as String
             nextVC.tableData = [["title": "Name", "type": "input", "placeHolder": "Name", "value": cellData.objectForKey("name") as! NSString],["title": "Type", "type": "picker", "value": (cellData.objectForKey("type") as! NSString).integerValue]]
         }
@@ -105,7 +150,6 @@ class ACTypesListTableViewController: UITableViewController {
     
     func deleteRowAt(indexPath: NSIndexPath){
         let dict: NSDictionary = tableData.objectAtIndex(indexPath.row) as! NSDictionary
-        let ID: NSString = dict.objectForKey("id") as! NSString
         let identifier: NSString = dict.objectForKey("identifier") as! NSString
         // calculate view's center for activity indicator
         var centerOfView: CGPoint = self.view.center
@@ -116,71 +160,22 @@ class ACTypesListTableViewController: UITableViewController {
             centerOfView.y = centerOfView.y - 41.5/2
         }
         //println(UIApplication.sharedApplication().statusBarOrientation.rawValue)
-        // activity indicator
-        var activityIndicator = UICustomActivityView()
-        activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false, centerPoint: centerOfView)
-        let postdata: NSDictionary = ["Accounttype": ["ajax": true]]
-        println("accounttypes/delete/\(ID)")
-        DataManager.postDataAsyncWithCallback("accounttypes/delete/\(ID)", data: postdata, json: true) { (data, error) -> Void in
-            dispatch_async(dispatch_get_main_queue()){
-                let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-                activityIndicator.hideActivityIndicator()
-                if error != nil{
-                    if error!.code == -1004 || error!.code == -1009{
-                        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(identifier)'")
-                        let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
-                        if result.count > 0{
-                            let accounttype: Accounttypes = result.lastObject as! Accounttypes
-                            accounttype.isdeleted = true
-                            accounttype.modified = DVDateFormatter.currentDate
-                            accounttype.synced = false
-                            var error: NSError?
-                            moc.save(&error)
-                            if error == nil{
-                                self.tableData.removeObjectAtIndex(indexPath.row)
-                                self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-                                println("only updated coredata. sync required")
-                            }else{
-                                println(error!.localizedDescription)
-                            }
-                        }
-                    }else{
-                        AlertManager.showAlert(self, title: "Error", message: error!.localizedDescription, buttonNames: nil, completion: nil)
-                    }
-                }else if data != nil{
-                    //println(NSString(data: data!, encoding: NSUTF8StringEncoding))
-                    //return
-                    
-                    if let response: NSDictionary = NSJSONSerialization.JSONObjectWithData(data!, options: NSJSONReadingOptions.allZeros, error: nil) as? NSDictionary{
-                        if response.objectForKey("success") as? Bool == true{
-                            if let savedData: NSDictionary = response.objectForKey("data") as? NSDictionary{
-                                //println(identifier)
-                                let predicate: NSPredicate = NSPredicate(format: "identifier == '\(identifier)'")
-                                let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
-                                if result.count > 0{
-                                    //println("here")
-                                    let accounttype: Accounttypes = result.lastObject as! Accounttypes
-                                    accounttype.isdeleted = true
-                                    accounttype.modified = DVDateFormatter.getDate(savedData.objectForKey("modified") as! String, format: nil)
-                                    accounttype.synced = true
-                                    var error: NSError?
-                                    moc.save(&error)
-                                    if error == nil{
-                                        self.tableData.removeObjectAtIndex(indexPath.row)
-                                        self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-                                        println("posted and updated coredata")
-                                    }else{
-                                        println(error!.localizedDescription)
-                                    }
-                                }else{
-                                    //println("here2")
-                                }
-                            }
-                        }else{
-                            AlertManager.showAlert(self, title: "Error", message: "There was an error. Please try again.", buttonNames: nil, completion: nil)
-                        }
-                    }
-                }
+        
+        let predicate: NSPredicate = NSPredicate(format: "identifier == '\(identifier)'")
+        let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
+        if result.count > 0{
+            let accounttype: Accounttypes = result.lastObject as! Accounttypes
+            accounttype.isdeleted = true
+            accounttype.modified = DVDateFormatter.currentDate
+            //accounttype.synced = false
+            var error: NSError?
+            moc.save(&error)
+            if error == nil{
+                self.tableData.removeObjectAtIndex(indexPath.row)
+                self.tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                println("only updated coredata. sync required")
+            }else{
+                println(error!.localizedDescription)
             }
         }
     }
@@ -210,76 +205,10 @@ class ACTypesListTableViewController: UITableViewController {
     }
     */
     
-    // MARK: - Load Account Types List from server
-    
-    func loadDataFromServer(){
-        // calculate view's center for activity indicator
-        var centerOfView: CGPoint = self.view.center
-        if UIApplication.sharedApplication().statusBarOrientation == UIInterfaceOrientation.Portrait{
-            centerOfView.y = centerOfView.y - 57/2
-        }
-        else{
-            centerOfView.y = centerOfView.y - 41.5/2
-        }
-        //println(UIApplication.sharedApplication().statusBarOrientation.rawValue)
-        // activity indicator
-        var activityIndicator = UICustomActivityView()
-        activityIndicator.showActivityIndicator(self.view, style: UIActivityIndicatorViewStyle.Gray, shouldHaveContainer: false, centerPoint: centerOfView)
-        
-        DataManager.loadDataAsyncWithCallback("accounttypes/list.json", completion: { (data, error) -> Void in
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            activityIndicator.hideActivityIndicator()
-                if error == nil && data != nil{
-                    var err: NSError? = nil
-                    var json: NSArray? = NSJSONSerialization.JSONObjectWithData(data!,options: NSJSONReadingOptions.AllowFragments,error:&err) as? NSArray
-                    if err == nil{
-                        if json != nil && json!.count > 0{
-                            self.tableData.removeAllObjects()
-                            //self.tableData = json!
-                            //self.tableView.reloadData()
-                            let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-                            var error: NSError?
-                            //let userID: NSNumber = self.prefs.objectForKey("userID") as NSNumber
-                            //reverse json array
-                            var reverseArray: NSMutableArray = NSMutableArray(array: json!)
-                            json = reverseArray.reverseObjectEnumerator().allObjects
-                            for (index, item) in enumerate(json!){
-                                //self.tableData.addObject(item)
-                                if let dict: NSDictionary = item as? NSDictionary{
-                                    if let accounttype: Accounttypes = CoreDataHelper.insertManagedObject(NSStringFromClass(Accounttypes), managedObjectContext: moc) as? Accounttypes{
-                                        accounttype.identifier = DVDateFormatter.currentTimestamp
-                                        accounttype.id = (dict.objectForKey("id") as! NSString).integerValue
-                                        accounttype.user_id = (dict.objectForKey("user_id") as! NSString).integerValue
-                                        accounttype.name = dict.objectForKey("name") as! NSString as String
-                                        accounttype.type = (dict.objectForKey("type") as! NSString).integerValue
-                                        accounttype.modified = DVDateFormatter.getDate(dict.objectForKey("modified") as! NSString as String, format: nil)
-                                        accounttype.synced = true
-                                        if let isdeleted: Bool = dict.objectForKey("isdeleted") as? Bool{
-                                            accounttype.isdeleted = isdeleted
-                                        }
-                                        accounttype.url = ""
-                                        let success: Bool = CoreDataHelper.saveManagedObjectContext(moc)
-                                        if success == false{
-                                            println("failed to save accounttype.id: \(accounttype.id)")
-                                        }
-                                    }
-                                    
-                                }
-                            }
-                            println("load server done")
-                            self.loadLocalData()
-                        }
-                    }
-                }
-            })
-        })
-    }
     
     // MARK: - loadLocalData
     func loadLocalData(){
-        let userID: NSNumber = (prefs.objectForKey("userID") as! NSString).integerValue
-        let moc: NSManagedObjectContext = CoreDataHelper.managedObjectContext(dataBaseFilename: nil)
-        let predicate: NSPredicate = NSPredicate(format: "user_id == '\(userID)' AND isdeleted = NO")
+        let predicate: NSPredicate = NSPredicate(format: "isdeleted = NO")
         let sorter: NSSortDescriptor = NSSortDescriptor(key: "identifier", ascending: false)
         let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: [sorter], managedObjectContext: moc, limit: nil)
         if result.count > 0{
@@ -290,29 +219,21 @@ class ACTypesListTableViewController: UITableViewController {
                 if let accounttype: Accounttypes = item as? Accounttypes{
                     dict = NSMutableDictionary()
                     dict.setObject(accounttype.identifier, forKey: "identifier")
-                    dict.setObject(accounttype.id.stringValue, forKey: "id")
-                    dict.setObject(accounttype.user_id.stringValue, forKey: "user_id")
+                    //dict.setObject(accounttype.id.stringValue, forKey: "id")
+                    //dict.setObject(accounttype.user_id.stringValue, forKey: "user_id")
                     dict.setObject(accounttype.name, forKey: "name")
                     dict.setObject(accounttype.type.stringValue, forKey: "type")
                     dict.setObject(accounttype.modified, forKey: "modified")
                     //println(accounttype.modified)
-                    dict.setObject(accounttype.synced, forKey: "synced")
-                    dict.setObject(accounttype.url, forKey: "url")
+                    //dict.setObject(accounttype.synced, forKey: "synced")
+                    //dict.setObject(accounttype.url, forKey: "url")
                     tableData.addObject(dict)
                     
                     //if accounttype.id >
                 }
             }
             tableView.reloadData()
-        }else{
-            println("load from server")
-            self.loadDataFromServer()
         }
-        
-    }
-    
-    // MARK: - synchronizeWithServer
-    func synchronizeWithServer(){
         
     }
     

@@ -11,13 +11,9 @@ import CoreData
 
 class CoreDataHelper: NSObject {
     
-    class func directoryForDatabaseFilename()->NSString{
-        return NSHomeDirectory().stringByAppendingString("/Library/PrivateData");
-    }
-    
     class func dataBaseFilename(name: String? = nil) ->NSString{
         if name != nil{
-            return "\(name).sqlite";
+            return "\(name!).sqlite";
         }
         return "database.sqlite";
     }
@@ -25,22 +21,20 @@ class CoreDataHelper: NSObject {
     class func managedObjectContext(dataBaseFilename: String? = nil) -> NSManagedObjectContext{
         var error: NSError? = nil;
         
-        NSFileManager.defaultManager().createDirectoryAtPath(CoreDataHelper.directoryForDatabaseFilename() as String, withIntermediateDirectories: true, attributes: nil, error: &error);
-        
-        if error != nil{
-            println("Error: \(error?.localizedDescription)");
-        }
-        let path: NSString = "\(CoreDataHelper.directoryForDatabaseFilename())/\(CoreDataHelper.dataBaseFilename(name: dataBaseFilename))";
-        //println("path: \(path)");
-        
-        let url: NSURL = NSURL(fileURLWithPath: path as String)!;
+        let urls: NSArray = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
+        var url: NSURL = urls.lastObject as! NSURL
+        url = url.URLByAppendingPathComponent(CoreDataHelper.dataBaseFilename(name: dataBaseFilename) as String)
+        //println(url)
         
         let managedModel: NSManagedObjectModel = NSManagedObjectModel.mergedModelFromBundles(nil)!;
+        //println(managedModel)
         
         var storeCoordinator: NSPersistentStoreCoordinator = NSPersistentStoreCoordinator(managedObjectModel: managedModel);
         
         let mOptions = [NSMigratePersistentStoresAutomaticallyOption: true,
-            NSInferMappingModelAutomaticallyOption: true]
+            NSInferMappingModelAutomaticallyOption: true,
+            NSPersistentStoreUbiquitousContentNameKey: "MyLedgerStore"
+        ]
         if let success = storeCoordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: mOptions, error: &error){
             if (error != nil){
                 println("Error: \(error?.localizedDescription)");
