@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7531" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Z48-p2-NAb">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E11f" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Z48-p2-NAb">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7520"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -924,10 +924,16 @@
                                                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" tag="2" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yXK-Li-io3">
                                                     <rect key="frame" x="8" y="37" width="584" height="105"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="height" constant="105" id="Ppp-vl-9Eh"/>
+                                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" priority="750" constant="50" id="Ppp-vl-9Eh"/>
+                                                        <constraint firstAttribute="height" priority="250" constant="105" id="YPc-K8-KBw"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                    <variation key="default">
+                                                        <mask key="constraints">
+                                                            <exclude reference="Ppp-vl-9Eh"/>
+                                                        </mask>
+                                                    </variation>
                                                 </textView>
                                             </subviews>
                                             <constraints>
@@ -943,6 +949,7 @@
                                             <variation key="default">
                                                 <mask key="constraints">
                                                     <exclude reference="94W-g7-bI1"/>
+                                                    <exclude reference="JWZ-sR-tp1"/>
                                                 </mask>
                                             </variation>
                                         </tableViewCellContentView>
@@ -1113,10 +1120,20 @@
                                             <constraints>
                                                 <constraint firstItem="hBs-GN-oZW" firstAttribute="leading" secondItem="TEs-Mi-qAX" secondAttribute="trailing" constant="8" id="IDF-ri-ddN"/>
                                                 <constraint firstAttribute="trailing" secondItem="hBs-GN-oZW" secondAttribute="trailing" constant="8" id="OFE-72-OcF"/>
+                                                <constraint firstAttribute="trailing" secondItem="hBs-GN-oZW" secondAttribute="trailing" constant="8" id="Olm-Ua-9lC"/>
                                                 <constraint firstItem="TEs-Mi-qAX" firstAttribute="leading" secondItem="2Bp-hL-g4W" secondAttribute="leading" constant="8" id="Qdc-xZ-PXF"/>
+                                                <constraint firstItem="hBs-GN-oZW" firstAttribute="leading" secondItem="TEs-Mi-qAX" secondAttribute="trailing" constant="8" id="o11-e1-5Q6"/>
                                                 <constraint firstAttribute="centerY" secondItem="hBs-GN-oZW" secondAttribute="centerY" id="t2D-kl-R1z"/>
                                                 <constraint firstAttribute="centerY" secondItem="TEs-Mi-qAX" secondAttribute="centerY" id="ydV-vJ-X2L"/>
+                                                <constraint firstItem="TEs-Mi-qAX" firstAttribute="leading" secondItem="2Bp-hL-g4W" secondAttribute="leading" constant="8" id="zB8-xO-5Lh"/>
                                             </constraints>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="Qdc-xZ-PXF"/>
+                                                    <exclude reference="IDF-ri-ddN"/>
+                                                    <exclude reference="OFE-72-OcF"/>
+                                                </mask>
+                                            </variation>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="pickerCell" id="w0F-7e-DbI" userLabel="pickerCell">
@@ -1141,12 +1158,22 @@
                                                 </label>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstItem="afQ-Ll-H6D" firstAttribute="leading" secondItem="cOx-dZ-ObI" secondAttribute="trailing" constant="8" id="VnL-pp-882"/>
+                                                <constraint firstItem="cOx-dZ-ObI" firstAttribute="leading" secondItem="jG7-MW-GX8" secondAttribute="leading" constant="8" id="YD0-hE-Qpc"/>
+                                                <constraint firstAttribute="trailing" secondItem="afQ-Ll-H6D" secondAttribute="trailing" constant="8" id="aC2-hR-eaY"/>
                                                 <constraint firstItem="afQ-Ll-H6D" firstAttribute="leading" secondItem="cOx-dZ-ObI" secondAttribute="trailing" constant="8" id="dK0-a8-hsE"/>
                                                 <constraint firstAttribute="centerY" secondItem="afQ-Ll-H6D" secondAttribute="centerY" id="gDt-wa-R1o"/>
                                                 <constraint firstItem="cOx-dZ-ObI" firstAttribute="leading" secondItem="jG7-MW-GX8" secondAttribute="leadingMargin" id="jaC-Ra-R4O"/>
                                                 <constraint firstAttribute="trailing" secondItem="afQ-Ll-H6D" secondAttribute="trailing" constant="8" id="kJj-uV-qHw"/>
                                                 <constraint firstAttribute="centerY" secondItem="cOx-dZ-ObI" secondAttribute="centerY" id="x4a-sK-Z86"/>
                                             </constraints>
+                                            <variation key="default">
+                                                <mask key="constraints">
+                                                    <exclude reference="jaC-Ra-R4O"/>
+                                                    <exclude reference="dK0-a8-hsE"/>
+                                                    <exclude reference="kJj-uV-qHw"/>
+                                                </mask>
+                                            </variation>
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="datePicker" rowHeight="216" id="IoA-GX-kiZ" userLabel="datePicker">

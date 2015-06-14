@@ -43,6 +43,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
     
     var originalTableVeiwContentSize: CGSize!
+    var originalTableVeiwContentOffset: CGPoint!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -544,6 +545,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     
     func textFieldDidBeginEditing(textField: UITextField) {
         originalTableVeiwContentSize = tableView.contentSize
+        originalTableVeiwContentOffset = tableView.contentOffset
         if originalTableVeiwContentSize.height + 300 >= self.tableView.frame.size.height{
             println("originalTableVeiwContentSize")
             self.tableView.contentSize = CGSizeMake(self.originalTableVeiwContentSize.width, self.originalTableVeiwContentSize.height + 300)
@@ -553,6 +555,12 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
             println(self.tableView.indexPathForCell(cell))
             self.selectedIndexPath = self.tableView.indexPathForCell(cell)
         }
+        
+        if let cell: UITableViewCell = textField.superview?.superview?.superview as? UITableViewCell{
+            self.selectedIndexPath = tableView.indexPathForCell(cell)
+        }else if let cell: UITableViewCell = textField.superview?.superview as? UITableViewCell{
+            self.selectedIndexPath = tableView.indexPathForCell(cell)
+        }
         if self.selectedIndexPath != nil{
             println("before scroll")
             println(self.selectedIndexPath)
@@ -560,10 +568,16 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                 self.tableView.scrollToRowAtIndexPath(self.selectedIndexPath!, atScrollPosition: UITableViewScrollPosition.Top, animated: true)
                 println("after scroll")
             //})
+            let cellPosition: CGRect = tableView.rectForRowAtIndexPath(self.selectedIndexPath!)
+            println(cellPosition.origin.y)
+            let offsetY: CGFloat = 280 - (tableView.frame.size.height - cellPosition.origin.y - 64)
+            println(offsetY)
+            tableView.setContentOffset(CGPointMake(0, offsetY), animated: true)
         }
     }
     
     func textFieldDidEndEditing(textField: UITextField) {
+        tableView.setContentOffset(originalTableVeiwContentOffset, animated: true)
         if originalTableVeiwContentSize != nil && self.tableView != nil{
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 250 * Int64(NSEC_PER_MSEC)), dispatch_get_main_queue()){
                 self.tableView.contentSize = self.originalTableVeiwContentSize
