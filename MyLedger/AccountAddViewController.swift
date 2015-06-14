@@ -19,7 +19,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     var nameTextField: UITextField?
     var nameTextView: UITextView?
     
-    var tableData: NSMutableArray = [["title": "Type", "type": "picker"/*, "value": 2*/],["title": "Description", "type": "textview"],["title": "Amount", "type": "input"]]
+    var tableData: NSMutableArray = [["title": "Type", "type": "picker"/*, "value": 2*/],["title": "Details", "type": "textview"],["title": "Amount", "type": "input"]]
     
     var dateFormatter: NSDateFormatter?
     var pickerCellRowHeight: CGFloat?
@@ -113,7 +113,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         var height: CGFloat = (self.indexPathHasPicker(indexPath) ? self.pickerCellRowHeight! : self.tableView.rowHeight)
         height = (self.indexPathHasTextView(indexPath) ? self.textviewCellRowHeight : height)
-        //println(self.indexPathHasTextView(indexPath) ? self.textviewCellRowHeight : height)
+        println(self.indexPathHasTextView(indexPath) ? self.textviewCellRowHeight : height)
         return height
     }
     
@@ -248,6 +248,11 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                 nIndexPath = self.textviewIndexPath!
             }
             if indexPath.compare(nIndexPath) == NSComparisonResult.OrderedSame{
+                return true
+            }
+        }else{
+            let rowData: NSDictionary = self.tableData.objectAtIndex(indexPath.row) as! NSDictionary
+            if rowData.objectForKey("type") as? String == "textview"{
                 return true
             }
         }
