@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CD484DC31A204DD200702357"
-               BuildableName = "MyLedger.app"
-               BlueprintName = "MyLedger"
-               ReferencedContainer = "container:MyLedger.xcodeproj">
+               BuildableName = "iLedger.app"
+               BlueprintName = "iLedger"
+               ReferencedContainer = "container:iLedger.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -29,9 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CD484DDB1A204DD200702357"
-               BuildableName = "MyLedgerTests.xctest"
-               BlueprintName = "MyLedgerTests"
-               ReferencedContainer = "container:MyLedger.xcodeproj">
+               BuildableName = "iLedgerTests.xctest"
+               BlueprintName = "iLedgerTests"
+               ReferencedContainer = "container:iLedger.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,9 +47,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CD484DDB1A204DD200702357"
-               BuildableName = "MyLedgerTests.xctest"
-               BlueprintName = "MyLedgerTests"
-               ReferencedContainer = "container:MyLedger.xcodeproj">
+               BuildableName = "iLedgerTests.xctest"
+               BlueprintName = "iLedgerTests"
+               ReferencedContainer = "container:iLedger.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -57,9 +57,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CD484DC31A204DD200702357"
-            BuildableName = "MyLedger.app"
-            BlueprintName = "MyLedger"
-            ReferencedContainer = "container:MyLedger.xcodeproj">
+            BuildableName = "iLedger.app"
+            BlueprintName = "iLedger"
+            ReferencedContainer = "container:iLedger.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -72,13 +72,14 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CD484DC31A204DD200702357"
-            BuildableName = "MyLedger.app"
-            BlueprintName = "MyLedger"
-            ReferencedContainer = "container:MyLedger.xcodeproj">
+            BuildableName = "iLedger.app"
+            BlueprintName = "iLedger"
+            ReferencedContainer = "container:iLedger.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -90,13 +91,14 @@
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CD484DC31A204DD200702357"
-            BuildableName = "MyLedger.app"
-            BlueprintName = "MyLedger"
-            ReferencedContainer = "container:MyLedger.xcodeproj">
+            BuildableName = "iLedger.app"
+            BlueprintName = "iLedger"
+            ReferencedContainer = "container:iLedger.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

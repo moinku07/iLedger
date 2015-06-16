@@ -47,15 +47,15 @@
 		CD06A7431AC68E9800E5E62D /* AccountNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountNavigationController.swift; sourceTree = "<group>"; };
 		CD12A5371ACEADA00054BB2B /* AccountDatePickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountDatePickerViewController.swift; sourceTree = "<group>"; };
 		CD2701FC1AC7DA5F00CF4244 /* AccountsListTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountsListTableViewController.swift; sourceTree = "<group>"; };
-		CD4073C81B2D866200003824 /* MyLedger.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = MyLedger.entitlements; sourceTree = "<group>"; };
-		CD484DC41A204DD200702357 /* MyLedger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyLedger.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD2ADB9A1B2FFC8F00F02184 /* iLedger.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = iLedger.entitlements; sourceTree = "<group>"; };
+		CD484DC41A204DD200702357 /* iLedger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iLedger.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD484DC81A204DD200702357 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CD484DC91A204DD200702357 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CD484DCC1A204DD200702357 /* MyLedger.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyLedger.xcdatamodel; sourceTree = "<group>"; };
 		CD484DD11A204DD200702357 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		CD484DD31A204DD200702357 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		CD484DD61A204DD200702357 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		CD484DDC1A204DD200702357 /* MyLedgerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyLedgerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD484DDC1A204DD200702357 /* iLedgerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iLedgerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD484DE11A204DD200702357 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CD484DE21A204DD200702357 /* MyLedgerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyLedgerTests.swift; sourceTree = "<group>"; };
 		CD4C784C1A2C3F1B00C7260C /* MainViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -109,8 +109,8 @@
 		CD484DBB1A204DD200702357 = {
 			isa = PBXGroup;
 			children = (
-				CD484DC61A204DD200702357 /* MyLedger */,
-				CD484DDF1A204DD200702357 /* MyLedgerTests */,
+				CD484DC61A204DD200702357 /* iLedger */,
+				CD484DDF1A204DD200702357 /* iLedgerTests */,
 				CD484DC51A204DD200702357 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -118,16 +118,16 @@
 		CD484DC51A204DD200702357 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CD484DC41A204DD200702357 /* MyLedger.app */,
-				CD484DDC1A204DD200702357 /* MyLedgerTests.xctest */,
+				CD484DC41A204DD200702357 /* iLedger.app */,
+				CD484DDC1A204DD200702357 /* iLedgerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		CD484DC61A204DD200702357 /* MyLedger */ = {
+		CD484DC61A204DD200702357 /* iLedger */ = {
 			isa = PBXGroup;
 			children = (
-				CD4073C81B2D866200003824 /* MyLedger.entitlements */,
+				CD2ADB9A1B2FFC8F00F02184 /* iLedger.entitlements */,
 				CD484DC91A204DD200702357 /* AppDelegate.swift */,
 				CDEFD31C1A2D8ECF00A51C74 /* Helper Files */,
 				CD4C784C1A2C3F1B00C7260C /* MainViewController.swift */,
@@ -139,7 +139,7 @@
 				CDDC0BA11AAD708800239B2C /* CoreData */,
 				CD484DC71A204DD200702357 /* Supporting Files */,
 			);
-			path = MyLedger;
+			path = iLedger;
 			sourceTree = "<group>";
 		};
 		CD484DC71A204DD200702357 /* Supporting Files */ = {
@@ -150,13 +150,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		CD484DDF1A204DD200702357 /* MyLedgerTests */ = {
+		CD484DDF1A204DD200702357 /* iLedgerTests */ = {
 			isa = PBXGroup;
 			children = (
 				CD484DE21A204DD200702357 /* MyLedgerTests.swift */,
 				CD484DE01A204DD200702357 /* Supporting Files */,
 			);
-			path = MyLedgerTests;
+			path = iLedgerTests;
 			sourceTree = "<group>";
 		};
 		CD484DE01A204DD200702357 /* Supporting Files */ = {
@@ -202,9 +202,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		CD484DC31A204DD200702357 /* MyLedger */ = {
+		CD484DC31A204DD200702357 /* iLedger */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CD484DE61A204DD200702357 /* Build configuration list for PBXNativeTarget "MyLedger" */;
+			buildConfigurationList = CD484DE61A204DD200702357 /* Build configuration list for PBXNativeTarget "iLedger" */;
 			buildPhases = (
 				CD484DC01A204DD200702357 /* Sources */,
 				CD484DC11A204DD200702357 /* Frameworks */,
@@ -214,14 +214,14 @@
 			);
 			dependencies = (
 			);
-			name = MyLedger;
+			name = iLedger;
 			productName = MyLedger;
-			productReference = CD484DC41A204DD200702357 /* MyLedger.app */;
+			productReference = CD484DC41A204DD200702357 /* iLedger.app */;
 			productType = "com.apple.product-type.application";
 		};
-		CD484DDB1A204DD200702357 /* MyLedgerTests */ = {
+		CD484DDB1A204DD200702357 /* iLedgerTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CD484DE91A204DD200702357 /* Build configuration list for PBXNativeTarget "MyLedgerTests" */;
+			buildConfigurationList = CD484DE91A204DD200702357 /* Build configuration list for PBXNativeTarget "iLedgerTests" */;
 			buildPhases = (
 				CD484DD81A204DD200702357 /* Sources */,
 				CD484DD91A204DD200702357 /* Frameworks */,
@@ -232,9 +232,9 @@
 			dependencies = (
 				CD484DDE1A204DD200702357 /* PBXTargetDependency */,
 			);
-			name = MyLedgerTests;
+			name = iLedgerTests;
 			productName = MyLedgerTests;
-			productReference = CD484DDC1A204DD200702357 /* MyLedgerTests.xctest */;
+			productReference = CD484DDC1A204DD200702357 /* iLedgerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -261,7 +261,7 @@
 					};
 				};
 			};
-			buildConfigurationList = CD484DBF1A204DD200702357 /* Build configuration list for PBXProject "MyLedger" */;
+			buildConfigurationList = CD484DBF1A204DD200702357 /* Build configuration list for PBXProject "iLedger" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -274,8 +274,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				CD484DC31A204DD200702357 /* MyLedger */,
-				CD484DDB1A204DD200702357 /* MyLedgerTests */,
+				CD484DC31A204DD200702357 /* iLedger */,
+				CD484DDB1A204DD200702357 /* iLedgerTests */,
 			);
 		};
 /* End PBXProject section */
@@ -340,7 +340,7 @@
 /* Begin PBXTargetDependency section */
 		CD484DDE1A204DD200702357 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = CD484DC31A204DD200702357 /* MyLedger */;
+			target = CD484DC31A204DD200702357 /* iLedger */;
 			targetProxy = CD484DDD1A204DD200702357 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -449,13 +449,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_ENTITLEMENTS = MyLedger/MyLedger.entitlements;
+				CODE_SIGN_ENTITLEMENTS = iLedger/iLedger.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				INFOPLIST_FILE = MyLedger/Info.plist;
+				INFOPLIST_FILE = iLedger/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = iLedger;
 				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
@@ -465,13 +465,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_ENTITLEMENTS = MyLedger/MyLedger.entitlements;
+				CODE_SIGN_ENTITLEMENTS = iLedger/iLedger.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				INFOPLIST_FILE = MyLedger/Info.plist;
+				INFOPLIST_FILE = iLedger/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = iLedger;
 				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
@@ -488,10 +488,10 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = MyLedgerTests/Info.plist;
+				INFOPLIST_FILE = iLedgerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyLedger.app/MyLedger";
+				PRODUCT_NAME = iLedgerTests;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iLedger.app/iLedger";
 			};
 			name = Debug;
 		};
@@ -503,17 +503,17 @@
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = MyLedgerTests/Info.plist;
+				INFOPLIST_FILE = iLedgerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyLedger.app/MyLedger";
+				PRODUCT_NAME = iLedgerTests;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/iLedger.app/iLedger";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		CD484DBF1A204DD200702357 /* Build configuration list for PBXProject "MyLedger" */ = {
+		CD484DBF1A204DD200702357 /* Build configuration list for PBXProject "iLedger" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CD484DE41A204DD200702357 /* Debug */,
@@ -522,7 +522,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CD484DE61A204DD200702357 /* Build configuration list for PBXNativeTarget "MyLedger" */ = {
+		CD484DE61A204DD200702357 /* Build configuration list for PBXNativeTarget "iLedger" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CD484DE71A204DD200702357 /* Debug */,
@@ -531,7 +531,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CD484DE91A204DD200702357 /* Build configuration list for PBXNativeTarget "MyLedgerTests" */ = {
+		CD484DE91A204DD200702357 /* Build configuration list for PBXNativeTarget "iLedgerTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CD484DEA1A204DD200702357 /* Debug */,
