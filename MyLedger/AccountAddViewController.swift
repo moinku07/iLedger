@@ -523,10 +523,11 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                 println("after scroll")
             //})
             let cellPosition: CGRect = tableView.rectForRowAtIndexPath(self.selectedIndexPath!)
-            println(cellPosition.origin.y)
-            let offsetY: CGFloat = 280 - (tableView.frame.size.height - cellPosition.origin.y - 64)
-            println(offsetY)
-            tableView.setContentOffset(CGPointMake(0, offsetY), animated: true)
+            if cellPosition.origin.y + 64 + 280 > self.view.bounds.size.height{
+                let offsetY: CGFloat = 280 - (tableView.frame.size.height - cellPosition.origin.y - 64)
+                //println(offsetY)
+                tableView.setContentOffset(CGPointMake(0, offsetY), animated: true)
+            }
         }
     }
     

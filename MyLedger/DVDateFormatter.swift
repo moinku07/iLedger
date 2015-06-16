@@ -11,7 +11,7 @@ import UIKit
 class DVDateFormatter: NSObject {
     class var currentTimestamp: String {
         get {
-            return NSNumber(double: NSDate().timeIntervalSince1970 * 100000).stringValue
+            return NSNumber(double: NSDate().timeIntervalSince1970 * 1000000).stringValue
         }
     }
     
