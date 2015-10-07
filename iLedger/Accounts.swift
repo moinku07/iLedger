@@ -12,7 +12,7 @@ import CoreData
 @objc(Accounts)
 class Accounts: NSManagedObject {
 
-    @NSManaged var accounttype_id: Double
+    @NSManaged var accounttype_id: String
     @NSManaged var amount: NSDecimalNumber
     @NSManaged var details: String
     @NSManaged var id: NSNumber

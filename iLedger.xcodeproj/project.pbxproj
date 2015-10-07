@@ -48,6 +48,7 @@
 		CD12A5371ACEADA00054BB2B /* AccountDatePickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountDatePickerViewController.swift; sourceTree = "<group>"; };
 		CD2701FC1AC7DA5F00CF4244 /* AccountsListTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountsListTableViewController.swift; sourceTree = "<group>"; };
 		CD2ADB9A1B2FFC8F00F02184 /* iLedger.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = iLedger.entitlements; sourceTree = "<group>"; };
+		CD2ADB9B1B30014200F02184 /* MyLedgerV4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyLedgerV4.xcdatamodel; sourceTree = "<group>"; };
 		CD484DC41A204DD200702357 /* iLedger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iLedger.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD484DC81A204DD200702357 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CD484DC91A204DD200702357 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -546,11 +547,12 @@
 		CD484DCB1A204DD200702357 /* MyLedger.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				CD2ADB9B1B30014200F02184 /* MyLedgerV4.xcdatamodel */,
 				CD7B70791AD0F88300E16E21 /* MyLedgerV3.xcdatamodel */,
 				CD7B70781AD0F37000E16E21 /* MyLedgerV2.xcdatamodel */,
 				CD484DCC1A204DD200702357 /* MyLedger.xcdatamodel */,
 			);
-			currentVersion = CD7B70791AD0F88300E16E21 /* MyLedgerV3.xcdatamodel */;
+			currentVersion = CD2ADB9B1B30014200F02184 /* MyLedgerV4.xcdatamodel */;
 			path = MyLedger.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

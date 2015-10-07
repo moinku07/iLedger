@@ -37,7 +37,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     
     var pickerDataValues: NSMutableArray = [1, 2]
     var pickerDataTitles: NSMutableArray = ["Add", "Sub"]
-    var selectedPickerValue: Double?
+    var selectedPickerValue: String?
     
     let prefs:NSUserDefaults = NSUserDefaults.standardUserDefaults()
     
@@ -125,7 +125,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
             pickerDataTitles.removeAllObjects()
             for (index, item) in enumerate(result){
                 if let accounttype: Accounttypes = item as? Accounttypes{
-                    pickerDataValues.addObject((accounttype.identifier as NSString).doubleValue)
+                    pickerDataValues.addObject((accounttype.identifier as String))
                     pickerDataTitles.addObject(accounttype.name)
                 }
             }
@@ -253,12 +253,12 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                         label1.text = rowData.objectForKey("title") as? String
                     }
                     //println(rowData.objectForKey("value"))
-                    if let pickerValue: Double = rowData.objectForKey("value") as? Double{
+                    if let pickerValue: String = rowData.objectForKey("value") as? String{
                         selectedPickerValue = pickerValue
                         let label2: UILabel = cell.viewWithTag(2) as! UILabel
                         label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
                     }else if selectedPickerValue == nil{
-                        selectedPickerValue = pickerDataValues.objectAtIndex(0) as? Double
+                        selectedPickerValue = pickerDataValues.objectAtIndex(0) as? String
                         let label2: UILabel = cell.viewWithTag(2) as! UILabel
                         label2.text = pickerDataTitles.objectAtIndex(pickerDataValues.indexOfObject(selectedPickerValue!)) as? String
                     }
@@ -379,7 +379,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        selectedPickerValue = pickerDataValues.objectAtIndex(row) as? Double
+        selectedPickerValue = pickerDataValues.objectAtIndex(row) as? String
         let indexPath: NSIndexPath = NSIndexPath(forRow: datePickerIndexPath!.row - 1, inSection: datePickerIndexPath!.section)
         if let cell: UITableViewCell = tableView.cellForRowAtIndexPath(indexPath){
             let label2: UILabel = cell.viewWithTag(2) as! UILabel
@@ -404,7 +404,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                     let account: Accounts = result.lastObject as! Accounts
                     account.details = "\(self.nameTextView!.text)"
                     println(self.selectedPickerValue!)
-                    account.accounttype_id = self.selectedPickerValue! as Double
+                    account.accounttype_id = self.selectedPickerValue!
                     println(account.accounttype_id)
                     account.amount = NSDecimalNumber(string: self.nameTextField!.text)
                     account.modified = DVDateFormatter.currentDate
@@ -412,9 +412,9 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                     
                     // accounttype for account
                     let predicate: NSPredicate = NSPredicate(format: "identifier == \(account.accounttype_id)")
-                    println(predicate)
+                    //println(predicate)
                     let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
-                    println(result)
+                    //println(result)
                     if result.count > 0{
                         let accounttype: Accounttypes = result.lastObject as! Accounttypes
                         account.accounttype = accounttype
@@ -436,7 +436,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                     account.identifier = DVDateFormatter.currentTimestamp
                     account.details = "\(self.nameTextView!.text)"
                     println(self.selectedPickerValue!)
-                    account.accounttype_id = self.selectedPickerValue! as Double
+                    account.accounttype_id = self.selectedPickerValue!
                     println(account.accounttype_id)
                     account.amount = NSDecimalNumber(string: self.nameTextField!.text)
                     account.modified = DVDateFormatter.currentDate
@@ -445,9 +445,9 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
                     
                     // accounttype for account
                     let predicate: NSPredicate = NSPredicate(format: "identifier == \(account.accounttype_id)")
-                    println(predicate)
+                    //println(predicate)
                     let result: NSArray = CoreDataHelper.fetchEntities(NSStringFromClass(Accounttypes), withPredicate: predicate, andSorter: nil, managedObjectContext: moc, limit: 1)
-                    println(result)
+                    //println(result)
                     if result.count > 0{
                         let accounttype: Accounttypes = result.lastObject as! Accounttypes
                         account.accounttype = accounttype
@@ -483,7 +483,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
         
         // Setup the buttons to be put in the system.
         var item: UIBarButtonItem = UIBarButtonItem()
-        item = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.Bordered, target: self, action: Selector("onTextViewDoneTap") )
+        item = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.Plain, target: self, action: Selector("onTextViewDoneTap") )
         
         let flexSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
         var toolbarButtons = [flexSpace,item]
@@ -550,7 +550,7 @@ class AccountAddViewController: UIViewController, UITableViewDataSource, UITable
         
         // Setup the buttons to be put in the system.
         var item: UIBarButtonItem = UIBarButtonItem()
-        item = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.Bordered, target: self, action: Selector("onTextViewDoneTap") )
+        item = UIBarButtonItem(title: "Done", style: UIBarButtonItemStyle.Plain, target: self, action: Selector("onTextViewDoneTap") )
         
         let flexSpace: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil)
         var toolbarButtons = [flexSpace,item]

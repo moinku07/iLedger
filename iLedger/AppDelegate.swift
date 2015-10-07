@@ -66,7 +66,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         var error: NSError? = nil
         var failureReason = "There was an error creating or loading the application's saved data."
         let mOptions = [NSMigratePersistentStoresAutomaticallyOption: true,
-            NSInferMappingModelAutomaticallyOption: true]
+            NSInferMappingModelAutomaticallyOption: true,
+            NSPersistentStoreUbiquitousContentNameKey: "MyLedgerStore"]
         if coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: mOptions, error: &error) == nil {
             coordinator = nil
             // Report any error we got.

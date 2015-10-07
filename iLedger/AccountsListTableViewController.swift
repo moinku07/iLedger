@@ -118,9 +118,8 @@ class AccountsListTableViewController: UITableViewController {
         if let cellData = self.tableData.objectAtIndex(indexPath.row) as? NSDictionary{
             nextVC.isEdit = true
             //nextVC.acTypeID = (cellData.objectForKey("id") as! NSString).integerValue
-            nextVC.identifier = cellData.objectForKey("identifier") as! NSString as String
-            println(cellData.objectForKey("accounttype_id"))
-            nextVC.tableData = [["title": "Type", "type": "picker", "value": cellData.objectForKey("accounttype_id") as! Double],["title": "Details", "type": "textview", "value": cellData.objectForKey("details") as! NSString],["title": "Amount", "type": "input", "value": cellData.objectForKey("amount") as! NSString]]
+            nextVC.identifier = cellData.objectForKey("identifier") as? String
+            nextVC.tableData = [["title": "Type", "type": "picker", "value": cellData.objectForKey("accounttype_id") as! String],["title": "Details", "type": "textview", "value": cellData.objectForKey("details") as! NSString],["title": "Amount", "type": "input", "value": cellData.objectForKey("amount") as! NSString]]
             //nextVC.tableData = [["title": "Name", "type": "input", "placeHolder": "Name", "value": cellData.objectForKey("name") as NSString],["title": "Type", "type": "picker", "value": (cellData.objectForKey("type") as NSString).integerValue]]
         }
         self.navigationController?.pushViewController(nextVC, animated: true)

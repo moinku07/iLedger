@@ -189,7 +189,7 @@ class AccountSummaryViewController: UIViewController {
         table += "<tr style = \"height:40px;\"><td colspan=\"3\" style=\"text-align:right;padding-right: 10px;\">Total</td><td style=\"text-align:right\">\(income)</td><td style=\"text-align:right\">\(expense)</td><td style=\"text-align:right\">\(balance)</td></tr>"
         table += "</table>"
         
-        var html: String = "<!doctype html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi\" /><title>Summary</title><style type=\"text/css\">table tr:nth-child(even){background:#f9f9f9}</style></head><body><div>" + table + "</div></body></html>"
+        var html: String = "<!doctype html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi\" /><title>Summary</title><style type=\"text/css\">table tr:nth-child(even){background:#f9f9f9}</style></head><body><div style=\"width:100%\">" + table + "</div></body></html>"
         
         //println(html)
         
